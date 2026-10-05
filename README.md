@@ -1,8 +1,3 @@
-# Ajedrez TPO
-
-Estructura inicial de clases Java, sin atributos, metodos ni logica.
-Las estrategias implementan IMovementStrategy y Game implementa IGameService.
-Las relaciones de composicion se agregaran al implementar los atributos.
 
 ## Carpetas
 

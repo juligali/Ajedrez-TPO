@@ -4,6 +4,12 @@ import ar.edu.ajedrez.core.board.Board;
 import ar.edu.ajedrez.core.board.Position;
 
 
+/**
+ * Las implementaciones deben ser inmutables. Las consultas no deben modificar
+ * el tablero, las piezas ni el estado de la estrategia. Board.copy comparte piezas
+ * y estrategias, por lo que esta condición es necesaria para simular sin efectos laterales.
+ * Precondición: from está dentro del tablero y contiene la pieza consultada.
+ */
 public interface IMovementStrategy {
     /** La pieza puede realizar este movimiento según sus reglas. */
     boolean canMove(Board board, Position from, Position to);

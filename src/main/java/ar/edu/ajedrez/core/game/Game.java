@@ -18,7 +18,7 @@ public class Game implements IGameService {
     private final CheckDetector checkDetector;
 
     public Game(Board board, MoveValidator validator, CheckDetector checkDetector) {
-        this.board = Objects.requireNonNull(board, "board");
+        this.board = Objects.requireNonNull(board, "board").copy();
         this.validator = Objects.requireNonNull(validator, "validator");
         this.checkDetector = Objects.requireNonNull(checkDetector, "checkDetector");
     }

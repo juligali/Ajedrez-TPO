@@ -8,7 +8,7 @@ import java.util.Objects;
  * resultados completos en los tests.
  *
  * @param reason motivo del rechazo; null si la jugada es válida
- *               (se crea siempre mediante valid() o rejected(...))
+ *               (se recomienda crear mediante valid() o rejected(...); el constructor del record también es público)
  */
 public record ValidationResult(RejectionReason reason) {
    private static final ValidationResult VALID = new ValidationResult(null);

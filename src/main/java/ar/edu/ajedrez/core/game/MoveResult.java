@@ -1,5 +1,7 @@
 package ar.edu.ajedrez.core.game;
 
+import java.util.Objects;
+
 import ar.edu.ajedrez.core.pieces.Piece;
 import ar.edu.ajedrez.core.validation.RejectionReason;
 
@@ -26,7 +28,7 @@ public class MoveResult {
     }
 
     public static MoveResult rejected(RejectionReason reason) {
-        return new MoveResult(false, reason, null, false);
+        return new MoveResult(false, Objects.requireNonNull(reason, "reason"), null, false);
     }
 
     public boolean isAccepted() {

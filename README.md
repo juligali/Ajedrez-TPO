@@ -1,4 +1,3 @@
-````markdown
 # Ajedrez TPO — Ingeniería de Software
 
 
@@ -40,7 +39,7 @@ src/main/java/ar/edu/ajedrez/
 │   │   └── MoveResult.java
 │   └── validation/
 │       ├── MoveValidator.java
-│       └── CheckDetector.java
+│       ├── CheckDetector.java
 │       ├── ValidationResult.java
 │       └── RejectionReason.java     
 └── app/
@@ -94,7 +93,7 @@ Contiene:
 
 Recibe su estrategia por constructor y expone `canMove` y `canAttack`, que delegan en ella las reglas particulares de movimiento y ataque. Así, quien consulta a una pieza no necesita conocer su estrategia.
 
-Es inmutable, así que las copias del tablero pueden compartir piezas. Su igualdad es por identidad: cada objeto es una pieza concreta de la partida.
+Sus atributos no cambian después de construirla. Las copias del tablero pueden compartir piezas siempre que las estrategias también sean inmutables y sus consultas no tengan efectos secundarios. Su igualdad es por identidad: cada objeto es una pieza concreta de la partida.
 
 ### PieceColor
 
@@ -107,7 +106,7 @@ Se utiliza para representar el color de las piezas y el turno actual.
 Define el contrato de las estrategias de movimiento:
 
 - `canMove(board, from, to)`: comprueba si la pieza puede realizar un movimiento.
-- `canAttack(board, from, target)`: comprueba si la pieza amenaza una casilla, esté ocupada o no. Por defecto equivale a `canMove`; solo `PawnMovement` la sobreescribe.
+- `canAttack(board, from, target)`: comprueba si la pieza amenaza una casilla, esté ocupada o no. Por defecto equivale a `canMove`; `PawnMovement` la sobreescribe por sus ataques diagonales y `QueenMovement` para delegar el ataque en sus dos estrategias.
 
 Movimiento y ataque se distinguen porque el peón avanza hacia adelante y ataca en diagonal.
 
@@ -341,7 +340,7 @@ Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo 
 
 ### Tablero con dimensiones configurables y piezas inmutables
 
-**Qué:** `Board` recibe sus dimensiones por constructor y guarda las piezas en una matriz. `Position` es un valor inmutable con igualdad por contenido, y `Piece` es inmutable. `Board.copy()` duplica las casillas pero comparte las piezas.
+**Qué:** `Board` recibe sus dimensiones por constructor y guarda las piezas en una matriz. `Position` es un valor inmutable con igualdad por contenido, y `Piece` conserva atributos finales. El contrato exige estrategias inmutables y consultas sin efectos secundarios. `Board.copy()` duplica las casillas pero comparte las piezas.
 
 **Por qué:** las dimensiones no están escritas en el núcleo, así que otro tamaño de tablero se resuelve en `StandardGame` sin tocar las reglas (hay que definir una disposición inicial para ese tamaño). Con piezas inmutables, simular una jugada sobre una copia es barato y no puede alterar el tablero real, que es lo que usa `MoveValidator` para proteger al rey. `Position` con igualdad por contenido permite compararla en los tests y usarla en colecciones. Se eligió una matriz en vez de un `Map<Position, Piece>` por el acceso directo y el recorrido ordenado; con las dimensiones por constructor, el `Map` no aportaba flexibilidad extra.
 
@@ -349,7 +348,7 @@ Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo 
 
 ### Contrato de estrategia sin color y con ataque por defecto
 
-**Qué:** `canMove` y `canAttack` no reciben el color de la pieza: la estrategia lo obtiene de la pieza que está en `from`. `canAttack` tiene una implementación por defecto igual a `canMove`, y solo `PawnMovement` la sobreescribe. `Piece` expone ambos métodos y delega en su estrategia.
+**Qué:** `canMove` y `canAttack` no reciben el color de la pieza: la estrategia lo obtiene de la pieza que está en `from`. `canAttack` tiene una implementación por defecto igual a `canMove`, y `PawnMovement` la sobreescribe por sus ataques diagonales y `QueenMovement` para delegar el ataque en sus dos estrategias. `Piece` expone ambos métodos y delega en su estrategia.
 
 **Por qué:** el color ya está en la pieza del origen, y pasarlo aparte permitía enviar uno que no coincidiera con ella. Cinco de las seis piezas amenazan exactamente las casillas a las que pueden moverse, así que repetir el mismo método en cada una duplicaría código sin aportar nada. El método por defecto evita una clase base abstracta, que sería herencia justo donde se busca composición. A cambio, el contrato tiene una precondición (en `from` está la pieza dueña de la estrategia), que `MoveValidator` garantiza, y los tests de cada estrategia arman un tablero con la pieza colocada. `Piece` delega para que el resto del núcleo no dependa de cómo está implementado el movimiento.
 
@@ -359,7 +358,7 @@ Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo 
 
 **Qué:** cada estrategia responde si un movimiento concreto es posible (`canMove(board, from, to)`) y si amenaza una casilla concreta (`canAttack`). No genera la lista de todos los destinos posibles de la pieza. El ejemplo de la cátedra hace lo contrario: genera los movimientos posibles y verifica si el destino está en esa lista.
 
-**Por qué:** el alcance obligatorio solo necesita validar la jugada que propone el jugador, de a una, y detectar si un rey está amenazado, que también es una pregunta sobre una casilla puntual. Un método que responde sí o no es más simple de implementar y de testear (una pregunta, una respuesta) y evita construir una lista de destinos cuando solo importa uno. El costo es que saber si un jugador tiene alguna jugada legal, o mostrar los movimientos posibles, se resuelve por fuerza bruta: probar cada pieza contra cada casilla. Con 16 piezas como máximo y 64 casillas son 1024 consultas, cada una con su simulación sobre una copia del tablero, que en un tablero de 8×8 es un costo aceptable.
+**Por qué:** el alcance obligatorio solo necesita validar la jugada que propone el jugador, de a una, y detectar si un rey está amenazado, que también es una pregunta sobre una casilla puntual. Un método que responde sí o no es más simple de implementar y de testear (una pregunta, una respuesta) y evita construir una lista de destinos cuando solo importa uno. El costo es que saber si un jugador tiene alguna jugada legal, o mostrar los movimientos posibles, se resuelve por fuerza bruta: probar cada pieza contra cada casilla. En la partida estándar, un jugador comienza con 16 piezas: probarlas contra 64 casillas supone hasta 1024 candidatos antes de filtrar movimientos. Solo los candidatos que superen las comprobaciones previas necesitan simulación. El rendimiento debe medirse antes de optimizar.
 
 **Cuándo cambiar esta decisión:** si el grupo suma jaque mate, ahogado, oponente con IA o resaltado de movimientos legales, y la fuerza bruta se repite en varios lugares o se vuelve lenta, conviene agregar a `IMovementStrategy` un método que genere los destinos (`possibleMoves`), manteniendo `canMove` como consulta puntual. Se puede agregar como método por defecto basado en `canMove`, de modo que las estrategias existentes no se modifiquen, y cada pieza lo sobreescriba solo si necesita eficiencia.
 
@@ -377,6 +376,10 @@ Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo 
 - **Observer:** se evaluará si varios componentes necesitan reaccionar a eventos de la partida.
 - **State:** se evaluará si aparecen fases con comportamientos diferentes.
 - **Factory:** se evaluará si la elección y creación de objetos requiere una lógica específica. `StandardGame` funciona inicialmente como punto de composición.
+
+## Aislamiento de la partida
+
+`Game` conserva una copia del tablero recibido en el constructor. Así, modificar el tablero utilizado para crear la partida no cambia su estado interno. `snapshot()` también devuelve una copia. Ambas copias comparten piezas y estrategias, que deben respetar el contrato de inmutabilidad.
 
 ## Testing
 
@@ -417,4 +420,3 @@ Cada cambio relevante deberá incluir:
 - Pruebas de su comportamiento.
 - Actualización del UML.
 - Justificación de la decisión en formato **qué / por qué / cuándo cambiarla**.
-````

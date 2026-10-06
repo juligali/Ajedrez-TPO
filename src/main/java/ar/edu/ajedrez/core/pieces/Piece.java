@@ -12,7 +12,7 @@ import ar.edu.ajedrez.core.movement.IMovementStrategy;
  * del tablero pueden compartir piezas sin riesgo. Su igualdad es por identidad.
  * Delega las reglas de movimiento y ataque en su estrategia, sin exponerla.
  */
-public class Piece {
+public final class Piece {
     private final String name;              // solo para mostrar la pieza: ninguna regla depende de él
     private final PieceColor color;
     private final IMovementStrategy movement;

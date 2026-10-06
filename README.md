@@ -41,9 +41,14 @@ src/main/java/ar/edu/ajedrez/
 │   └── validation/
 │       ├── MoveValidator.java
 │       └── CheckDetector.java
+│       ├── ValidationResult.java
+│       └── RejectionReason.java     
 └── app/
     ├── StandardGame.java
     └── ConsoleUI.java
+docs/
+├── UML-Ajedrez-TPO.puml   (fuente del diagrama de clases)
+└── UML-Ajedrez-TPO.pdf    (diagrama renderizado)
 ```
 
 El paquete `core` contiene las reglas y el estado del juego. No depende de consola, interfaz gráfica, bases de datos ni servicios externos.
@@ -61,15 +66,20 @@ Sus responsabilidades son:
 - Conocer las dimensiones del tablero.
 - Comprobar si una posición está dentro de sus límites.
 - Consultar qué pieza ocupa una casilla.
-- Colocar y actualizar piezas.
+- Colocar y mover piezas (el destino ocupado queda capturado).
+- Indicar las posiciones que ocupan las piezas de un color, para que `CheckDetector` encuentre al rey y a los atacantes.
 - Permitir obtener una copia del estado del tablero.
+- Compararse por contenido con otro tablero, para que los tests verifiquen el estado antes y después de una jugada
 
 `Board` guarda el estado. La coordinación de turnos y la validación de jugadas corresponden a otras clases.
+Sus operaciones exigen posiciones dentro del tablero: quien reciba posiciones de afuera, como `MoveValidator`, consulta `contains` antes.
 
 ### Position
 
 Representa una casilla mediante fila y columna.
 Permite expresar posiciones con un objeto, evitando pasar números sueltos por todos los métodos.
+
+Es un valor inmutable con igualdad por contenido, así que dos posiciones con la misma fila y columna son la misma casilla. No valida límites: una posición fuera del tablero es un dato legítimo que `MoveValidator` debe poder rechazar con `OUT_OF_BOUNDS`.
 
 ### Piece
 
@@ -77,12 +87,14 @@ Representa una pieza concreta de la partida.
 
 Contiene:
 
-- Nombre o identificación.
+- Nombre, solo para mostrar la pieza: ninguna regla depende de él.
 - Color.
 - Una estrategia de movimiento.
-- Una forma explícita de identificar si es el rey, necesaria para detectar jaque.
+- Un indicador explícito de que es el rey (`isKing()`), necesario para detectar jaque.
 
-Recibe su estrategia por constructor y delega en ella las reglas particulares de movimiento y ataque.
+Recibe su estrategia por constructor y expone `canMove` y `canAttack`, que delegan en ella las reglas particulares de movimiento y ataque. Así, quien consulta a una pieza no necesita conocer su estrategia.
+
+Es inmutable, así que las copias del tablero pueden compartir piezas. Su igualdad es por identidad: cada objeto es una pieza concreta de la partida.
 
 ### PieceColor
 
@@ -94,12 +106,14 @@ Se utiliza para representar el color de las piezas y el turno actual.
 
 Define el contrato de las estrategias de movimiento:
 
-- `canMove(...)`: comprueba si la pieza puede realizar un movimiento.
-- `canAttack(...)`: comprueba si la pieza amenaza una casilla.
+- `canMove(board, from, to)`: comprueba si la pieza puede realizar un movimiento.
+- `canAttack(board, from, target)`: comprueba si la pieza amenaza una casilla, esté ocupada o no. Por defecto equivale a `canMove`; solo `PawnMovement` la sobreescribe.
 
 Movimiento y ataque se distinguen porque el peón avanza hacia adelante y ataca en diagonal.
 
-Las estrategias comprueban las reglas particulares de cada pieza. La protección del propio rey corresponde a la validación general.
+Las estrategias comprueban las reglas particulares de cada pieza. La protección del propio rey y el rechazo de un destino con pieza propia corresponden a la validación general.
+
+Ninguno de los métodos recibe el color: la estrategia lo obtiene de la pieza que está en `from`. Esa es una precondición del contrato (el origen está dentro del tablero y contiene la pieza dueña de la estrategia), que `MoveValidator` garantiza al verificar los límites y la pieza de origen antes de consultar a la estrategia.
 
 ### Estrategias concretas
 
@@ -107,7 +121,7 @@ Cada clase implementa `IMovementStrategy`:
 
 | Clase | Responsabilidad |
 |---|---|
-| `PawnMovement` | Avance y captura diagonal del peón. |
+| `PawnMovement` | Avance del peón (una casilla, o dos desde su fila inicial) y captura en diagonal. |
 | `RookMovement` | Movimiento horizontal y vertical de la torre. |
 | `KnightMovement` | Movimiento en L del caballo, que puede saltar obstáculos. |
 | `BishopMovement` | Movimiento diagonal del alfil. |
@@ -116,7 +130,9 @@ Cada clase implementa `IMovementStrategy`:
 
 Las estrategias de torre, alfil y reina comprueban que el camino esté libre.
 
-`QueenMovement` recibe las estrategias de torre y alfil por constructor y reutiliza sus reglas mediante composición.
+`PawnMovement` recibe por constructor su dirección (+1 o -1) y su fila inicial. `StandardGame` crea una instancia por color y las piezas de ese color la comparten, porque no tiene estado. La convención de filas es la de los ejemplos de la cátedra: las blancas empiezan en la fila 1 y avanzan hacia filas mayores; las negras empiezan en la fila 6 y avanzan hacia filas menores.
+
+`QueenMovement` recibe las estrategias de torre y alfil por constructor y reutiliza sus reglas mediante composición, tanto para mover como para atacar.
 
 ### Game
 
@@ -160,7 +176,7 @@ Representa la respuesta a una solicitud de movimiento.
 Puede informar:
 
 - Si la jugada fue aceptada.
-- El motivo de un rechazo.
+- El motivo de un rechazo, como `RejectionReason` (dato, no texto).
 - La pieza capturada, si hubo alguna.
 - Si la jugada produjo jaque.
 
@@ -183,13 +199,13 @@ Verifica:
 
 Para comprobar la seguridad del rey, puede simular el movimiento en una copia del tablero y consultar a `CheckDetector`.
 
-El resultado de la validación deberá permitir comunicar el motivo del rechazo.
+`validate` devuelve un `ValidationResult`: indica si la jugada es válida y, si no lo es, el `RejectionReason` que corresponde. Hay un motivo por cada regla de la lista anterior (`OUT_OF_BOUNDS`, `NO_PIECE_AT_ORIGIN`, `NOT_PLAYERS_TURN`, `SAME_SQUARE`, `OWN_PIECE_AT_DESTINATION`, `ILLEGAL_MOVEMENT`, `KING_CAPTURE`, `LEAVES_KING_IN_CHECK`). Las reglas se evalúan en ese orden y se informa la primera que falla.
 
 ### CheckDetector
 
 Determina si el rey de un color está amenazado.
 
-Localiza al rey y consulta las estrategias de ataque de las piezas enemigas.
+Localiza al rey (mediante `Piece.isKing()`) y consulta las estrategias de ataque de las piezas enemigas.
 
 Se mantiene separado de `MoveValidator` para poder probarlo de manera independiente y reutilizarlo tanto en la validación como en la consulta del estado de la partida.
 
@@ -218,7 +234,7 @@ Sus responsabilidades son:
 - Leer las jugadas ingresadas.
 - Convertirlas en solicitudes `Move`.
 - Llamar a `IGameService`.
-- Mostrar los resultados.
+- Mostrar los resultados, traduciendo cada `RejectionReason` a un mensaje legible.
 
 Recibe un `IGameService` por constructor. Las reglas del ajedrez permanecen en el núcleo.
 
@@ -242,6 +258,8 @@ Recibe un `IGameService` por constructor. Las reglas del ajedrez permanecen en e
 | `Move` tiene dos `Position` | Representa origen y destino. |
 | `MoveResult` puede referenciar `Piece` | Informa la pieza capturada. |
 | `MoveValidator` usa `CheckDetector` | Comprueba que el propio rey quede protegido. |
+| `MoveValidator` devuelve `ValidationResult` | Informa si la jugada es válida y, si no, por qué. |
+| `ValidationResult` y `MoveResult` tienen `RejectionReason` | Comparten el motivo del rechazo como dato. |
 | `CheckDetector` usa las estrategias | Determina qué casillas amenazan las piezas enemigas. |
 | `ConsoleUI` usa `IGameService` | Solicita operaciones al núcleo mediante su contrato. |
 | `StandardGame` crea y conecta los objetos | Centraliza el armado de la partida. |
@@ -297,6 +315,54 @@ Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo 
 
 **Cuándo cambiar esta decisión:** en un prototipo descartable donde mantener esa frontera no aporte valor. En este TPO la separación es un requisito.
 
+### Motivo de rechazo como dato
+
+**Qué:** `MoveValidator.validate` devuelve un `ValidationResult` que, si la jugada se rechaza, trae un `RejectionReason` (enum). `MoveResult` propaga ese motivo. El texto que ve el jugador lo arma `ConsoleUI`.
+
+**Por qué:** un `boolean` no dice por qué se rechazó, y un `String` armado en el núcleo mezcla las reglas con la presentación (idioma, formato) y obliga a los tests a comparar texto. Con un enum, los tests verifican el motivo exacto y cada adaptador decide cómo mostrarlo.
+
+**Cuándo cambiar esta decisión:** si una validación exitosa tuviera que transportar información adicional (por ejemplo, qué jugada especial es, como enroque o captura al paso), `ValidationResult` pasaría a llevar más datos o se modelaría con tipos distintos para "válida" y "rechazada".
+
+### Rey identificado con un indicador explícito
+
+**Qué:** `Piece` recibe por constructor un booleano que indica si es el rey y lo expone con `isKing()`. `CheckDetector` y `MoveValidator` usan ese método. El nombre de la pieza queda solo para mostrarla.
+
+**Por qué:** comparar el nombre con `"King"` hace depender una regla central de un texto: un error de tipeo no falla al compilar y rompe en silencio la detección de jaque. Un enum de tipos de pieza evitaría el texto, pero habría que modificarlo cada vez que se agrega una pieza, contra el requisito de sumar clases sin modificar las existentes. Con el indicador, una pieza nueva no obliga a tocar nada.
+
+**Cuándo cambiar esta decisión:** si más reglas necesitaran saber de qué pieza se trata (por ejemplo enroque o promoción), un booleano por cada rol no escala y convendría un concepto propio, como un tipo o una capacidad de la pieza.
+
+### Peón configurado con dirección y fila inicial
+
+**Qué:** `PawnMovement` recibe por constructor su dirección (+1 o -1) y su fila inicial. `StandardGame` arma una instancia para las blancas (dirección +1, fila 1) y otra para las negras (dirección -1, fila 6).
+
+**Por qué:** el peón es la única pieza cuyo movimiento depende de su historia (el doble paso inicial) y de su color (hacia dónde avanza). Como un peón nunca retrocede, estar en su fila inicial equivale a no haberse movido, así que no hace falta un estado `hasMoved`. Ese estado obligaría a que `Piece` fuera mutable, y las copias del tablero que se usan para simular jugadas comparten las piezas: una simulación podría alterar el tablero real. Tampoco se escriben las filas 1 y 6 dentro de la estrategia, para que no dependa de un tablero de 8×8.
+
+**Cuándo cambiar esta decisión:** si se agrega la captura al paso, que depende de la última jugada del rival y no de la posición del peón, la estrategia necesitaría acceso al historial de jugadas. También si una variante permitiera que los peones retrocedan o se coloquen en cualquier fila.
+
+### Tablero con dimensiones configurables y piezas inmutables
+
+**Qué:** `Board` recibe sus dimensiones por constructor y guarda las piezas en una matriz. `Position` es un valor inmutable con igualdad por contenido, y `Piece` es inmutable. `Board.copy()` duplica las casillas pero comparte las piezas.
+
+**Por qué:** las dimensiones no están escritas en el núcleo, así que otro tamaño de tablero se resuelve en `StandardGame` sin tocar las reglas (hay que definir una disposición inicial para ese tamaño). Con piezas inmutables, simular una jugada sobre una copia es barato y no puede alterar el tablero real, que es lo que usa `MoveValidator` para proteger al rey. `Position` con igualdad por contenido permite compararla en los tests y usarla en colecciones. Se eligió una matriz en vez de un `Map<Position, Piece>` por el acceso directo y el recorrido ordenado; con las dimensiones por constructor, el `Map` no aportaba flexibilidad extra.
+
+**Cuándo cambiar esta decisión:** si las piezas necesitaran estado propio (por ejemplo, un contador de movimientos), dejarían de ser inmutables y `copy()` tendría que duplicarlas. Si hubiera tableros muy grandes y casi vacíos, convendría una estructura dispersa como un `Map`.
+
+### Contrato de estrategia sin color y con ataque por defecto
+
+**Qué:** `canMove` y `canAttack` no reciben el color de la pieza: la estrategia lo obtiene de la pieza que está en `from`. `canAttack` tiene una implementación por defecto igual a `canMove`, y solo `PawnMovement` la sobreescribe. `Piece` expone ambos métodos y delega en su estrategia.
+
+**Por qué:** el color ya está en la pieza del origen, y pasarlo aparte permitía enviar uno que no coincidiera con ella. Cinco de las seis piezas amenazan exactamente las casillas a las que pueden moverse, así que repetir el mismo método en cada una duplicaría código sin aportar nada. El método por defecto evita una clase base abstracta, que sería herencia justo donde se busca composición. A cambio, el contrato tiene una precondición (en `from` está la pieza dueña de la estrategia), que `MoveValidator` garantiza, y los tests de cada estrategia arman un tablero con la pieza colocada. `Piece` delega para que el resto del núcleo no dependa de cómo está implementado el movimiento.
+
+**Cuándo cambiar esta decisión:** si más de una o dos piezas necesitaran sobreescribir `canAttack`, conviene volverlo abstracto y que cada pieza lo declare, para que la diferencia no quede escondida en un valor por defecto. Si alguna estrategia necesitara más contexto que el tablero y las casillas (por ejemplo, el historial de jugadas para la captura al paso), el contrato tendría que recibirlo.
+
+### Movimiento como consulta puntual y no como lista de destinos
+
+**Qué:** cada estrategia responde si un movimiento concreto es posible (`canMove(board, from, to)`) y si amenaza una casilla concreta (`canAttack`). No genera la lista de todos los destinos posibles de la pieza. El ejemplo de la cátedra hace lo contrario: genera los movimientos posibles y verifica si el destino está en esa lista.
+
+**Por qué:** el alcance obligatorio solo necesita validar la jugada que propone el jugador, de a una, y detectar si un rey está amenazado, que también es una pregunta sobre una casilla puntual. Un método que responde sí o no es más simple de implementar y de testear (una pregunta, una respuesta) y evita construir una lista de destinos cuando solo importa uno. El costo es que saber si un jugador tiene alguna jugada legal, o mostrar los movimientos posibles, se resuelve por fuerza bruta: probar cada pieza contra cada casilla. Con 16 piezas como máximo y 64 casillas son 1024 consultas, cada una con su simulación sobre una copia del tablero, que en un tablero de 8×8 es un costo aceptable.
+
+**Cuándo cambiar esta decisión:** si el grupo suma jaque mate, ahogado, oponente con IA o resaltado de movimientos legales, y la fuerza bruta se repite en varios lugares o se vuelve lenta, conviene agregar a `IMovementStrategy` un método que genere los destinos (`possibleMoves`), manteniendo `canMove` como consulta puntual. Se puede agregar como método por defecto basado en `canMove`, de modo que las estrategias existentes no se modifiquen, y cada pieza lo sobreescriba solo si necesita eficiencia.
+
 ### Turnos sin State
 
 **Qué:** el turno se representa mediante `PieceColor`.
@@ -341,7 +407,9 @@ Cambiar las dimensiones también requiere definir una disposición inicial adecu
 
 ## UML y documentación
 
-El UML inicial sirve como guía de diseño. Durante el desarrollo deberá actualizarse para representar las clases y relaciones realmente implementadas.
+El diagrama de clases está en `docs/UML-Ajedrez-TPO.puml` (fuente PlantUML) y `docs/UML-Ajedrez-TPO.pdf` (diagrama renderizado). Refleja el código actual: muestra los atributos y los métodos públicos de cada clase, y las firmas ya están definidas en el código, aunque la lógica de movimiento, validación y partida todavía se implementa con TDD. Para regenerar el PDF se puede usar el plugin de PlantUML de IntelliJ, o PlantUML con Graphviz.
+
+Durante el desarrollo el UML deberá seguir actualizándose para representar las clases y relaciones realmente implementadas.
 
 Cada cambio relevante deberá incluir:
 

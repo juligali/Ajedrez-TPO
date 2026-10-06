@@ -1,0 +1,240 @@
+@startuml UML-Ajedrez-TPO
+title Ajedrez TPO - Diseño actual (refleja el código del repositorio)
+
+left to right direction
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam ranksep 55
+skinparam nodesep 30
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #F6F6F6
+  BorderColor #444444
+}
+skinparam note {
+  BackgroundColor #FFFFE0
+  BorderColor #999966
+}
+
+package app {
+  class StandardGame {
+    + {static} create() : IGameService
+  }
+  class ConsoleUI {
+    - game : IGameService
+    + ConsoleUI(game : IGameService)
+    + run() : void
+  }
+}
+
+package core {
+
+  package game {
+    interface IGameService {
+      + move(move : Move) : MoveResult
+      + currentTurn() : PieceColor
+      + snapshot() : Board
+    }
+    class Game {
+      - board : Board
+      - turn : PieceColor
+      - validator : MoveValidator
+      - checkDetector : CheckDetector
+      + Game(board : Board, validator : MoveValidator, checkDetector : CheckDetector)
+      + move(move : Move) : MoveResult
+      + currentTurn() : PieceColor
+      + snapshot() : Board
+    }
+    class Move <<record>> {
+      - from : Position
+      - to : Position
+      + Move(from : Position, to : Position)
+      + from() : Position
+      + to() : Position
+    }
+    class MoveResult {
+      - accepted : boolean
+      - reason : RejectionReason
+      - captured : Piece
+      - check : boolean
+      + {static} accepted(captured : Piece, check : boolean) : MoveResult
+      + {static} rejected(reason : RejectionReason) : MoveResult
+      + isAccepted() : boolean
+      + reason() : RejectionReason
+      + captured() : Piece
+      + isCheck() : boolean
+    }
+  }
+
+  package validation {
+    class MoveValidator {
+      - checkDetector : CheckDetector
+      + MoveValidator(checkDetector : CheckDetector)
+      + validate(board : Board, move : Move, turn : PieceColor) : ValidationResult
+    }
+    class CheckDetector {
+      + isInCheck(board : Board, color : PieceColor) : boolean
+    }
+    class ValidationResult <<record>> {
+      - reason : RejectionReason
+      - {static} VALID : ValidationResult
+      + ValidationResult(reason : RejectionReason)
+      + {static} valid() : ValidationResult
+      + {static} rejected(reason : RejectionReason) : ValidationResult
+      + isValid() : boolean
+      + reason() : RejectionReason
+    }
+    enum RejectionReason {
+      OUT_OF_BOUNDS
+      NO_PIECE_AT_ORIGIN
+      NOT_PLAYERS_TURN
+      SAME_SQUARE
+      OWN_PIECE_AT_DESTINATION
+      ILLEGAL_MOVEMENT
+      KING_CAPTURE
+      LEAVES_KING_IN_CHECK
+    }
+  }
+
+  package board {
+    class Board {
+      - squares : Piece[][]
+      + Board(rows : int, columns : int)
+      + rows() : int
+      + columns() : int
+      + contains(position : Position) : boolean
+      + pieceAt(position : Position) : Piece
+      + isEmpty(position : Position) : boolean
+      + place(piece : Piece, position : Position) : void
+      + movePiece(from : Position, to : Position) : void
+      + positionsOf(color : PieceColor) : List<Position>
+      + copy() : Board
+    }
+    class Position <<record>> {
+      - row : int
+      - column : int
+      + Position(row : int, column : int)
+      + row() : int
+      + column() : int
+    }
+  }
+
+  package pieces {
+    class Piece <<final>> {
+      - name : String
+      - color : PieceColor
+      - movement : IMovementStrategy
+      - king : boolean
+      + Piece(name : String, color : PieceColor, movement : IMovementStrategy, king : boolean)
+      + name() : String
+      + color() : PieceColor
+      + isKing() : boolean
+      + canMove(board : Board, from : Position, to : Position) : boolean
+      + canAttack(board : Board, from : Position, target : Position) : boolean
+    }
+    enum PieceColor {
+      WHITE
+      BLACK
+    }
+  }
+
+  package movement {
+    interface IMovementStrategy {
+      + canMove(board : Board, from : Position, to : Position) : boolean
+      + canAttack(board : Board, from : Position, target : Position) : boolean
+    }
+    class PawnMovement {
+      - direction : int
+      - startRow : int
+      + PawnMovement(direction : int, startRow : int)
+      + canMove(board : Board, from : Position, to : Position) : boolean
+      + canAttack(board : Board, from : Position, target : Position) : boolean
+    }
+    class RookMovement {
+      + canMove(board : Board, from : Position, to : Position) : boolean
+    }
+    class BishopMovement {
+      + canMove(board : Board, from : Position, to : Position) : boolean
+    }
+    class KnightMovement {
+      + canMove(board : Board, from : Position, to : Position) : boolean
+    }
+    class KingMovement {
+      + canMove(board : Board, from : Position, to : Position) : boolean
+    }
+    class QueenMovement {
+      - rook : IMovementStrategy
+      - bishop : IMovementStrategy
+      + QueenMovement(rook : IMovementStrategy, bishop : IMovementStrategy)
+      + canMove(board : Board, from : Position, to : Position) : boolean
+      + canAttack(board : Board, from : Position, target : Position) : boolean
+    }
+  }
+}
+
+' ---------- app ----------
+ConsoleUI --> IGameService : solicita jugadas
+StandardGame ..> Game : crea
+StandardGame ..> MoveValidator : crea
+StandardGame ..> CheckDetector : crea
+StandardGame ..> Board : crea
+StandardGame ..> Piece : crea
+StandardGame ..> IMovementStrategy : conecta\nimplementaciones
+
+' ---------- game ----------
+Game ..|> IGameService
+Game *-- Board : tablero propio
+Game --> MoveValidator : valida
+Game --> CheckDetector : consulta jaque
+Game --> PieceColor : turno
+Game ..> Move : recibe
+Game ..> MoveResult : devuelve
+Move --> Position : from / to
+MoveResult --> RejectionReason : motivo (0..1)
+MoveResult --> Piece : capturada (0..1)
+
+' ---------- validation ----------
+MoveValidator --> CheckDetector : consulta jaque
+MoveValidator ..> ValidationResult : devuelve
+ValidationResult --> RejectionReason : motivo (0..1)
+CheckDetector ..> Board : consulta casillas
+CheckDetector ..> Piece : consulta ataques y rey
+
+' ---------- board / pieces ----------
+Board o-- "0..*" Piece : contiene
+Board ..> Position : consulta casillas
+Piece --> PieceColor : color
+Piece --> IMovementStrategy : delega movimiento
+
+' ---------- movement ----------
+PawnMovement ..|> IMovementStrategy
+RookMovement ..|> IMovementStrategy
+BishopMovement ..|> IMovementStrategy
+KnightMovement ..|> IMovementStrategy
+KingMovement ..|> IMovementStrategy
+QueenMovement ..|> IMovementStrategy
+QueenMovement --> IMovementStrategy : rook\nbishop
+IMovementStrategy ..> Board
+IMovementStrategy ..> Position
+
+note top of IMovementStrategy
+  Patrón Strategy.
+  canAttack es un método por defecto
+  igual a canMove; solo PawnMovement
+  y QueenMovement lo sobreescriben.
+end note
+
+note bottom of StandardGame
+  Punto de composición: crea y conecta
+  los objetos mediante sus constructores.
+end note
+
+note as legend
+  Se muestran los atributos y los métodos públicos. Las firmas están
+  definidas en el código; la lógica de movimiento, validación y
+  partida se implementa con TDD.
+end note
+
+@enduml

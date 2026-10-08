@@ -1,7 +1,45 @@
 # Ajedrez TPO — Ingeniería de Software
 
 
-> Este README describe la arquitectura propuesta. Las clases y relaciones se implementarán progresivamente.
+> El núcleo de movimientos está implementado y probado. La validación completa, la detección de jaque y la aplicación jugable siguen en desarrollo. Las secciones de arquitectura describen tanto el código existente como las responsabilidades previstas, identificadas como pendientes.
+
+## Estado actual
+
+- [x] Java 21, Maven y JUnit 5 configurados.
+- [x] Tablero, posiciones, piezas, colores y resultados de jugadas.
+- [x] Las seis estrategias de movimiento implementadas.
+- [x] Camino libre compartido mediante `PathClearChecker`.
+- [x] Copias del tablero para aislar el estado de `Game`.
+- [x] Tests de las seis estrategias: 105 casos aprobados en la última ejecución.
+- [ ] Detección de jaque: `CheckDetector`.
+- [ ] Validación completa: `MoveValidator`.
+- [ ] Ejecución de jugadas, capturas y alternancia de turnos: `Game.move()`.
+- [ ] Partida inicial con 32 piezas: `StandardGame.create()`.
+- [ ] Consola y método `main`.
+- [ ] Actualizar el UML con `PathClearChecker` y regenerar su PDF.
+- [ ] Revisar las dependencias sobrantes de TestNG y JUnit 4 en `pom.xml`.
+
+Todavía no se puede jugar una partida completa. Los métodos pendientes lanzan `UnsupportedOperationException`.
+
+## Requisitos y comandos
+
+Se necesita JDK 21 y Maven disponible en la terminal. También se puede ejecutar Maven desde el IDE configurado con JDK 21.
+
+Desde la raíz del proyecto:
+
+```sh
+mvn test
+```
+
+Maven lee `pom.xml`, resuelve las dependencias, compila el código y ejecuta los tests con JUnit 5 y Surefire. Los archivos generados y los informes quedan en `target/` y `target/surefire-reports/`.
+
+Para compilar sin ejecutar las pruebas:
+
+```sh
+mvn compile
+```
+
+El comando `mvn` requiere que Maven esté instalado y agregado al PATH; en la última verificación se utilizó una instalación local por su ruta completa. No hay Maven Wrapper en el repositorio.
 
 ## Alcance obligatorio
 
@@ -16,6 +54,7 @@
 ## Organización del proyecto
 
 ```text
+pom.xml                     (configuración de Maven)
 src/main/java/ar/edu/ajedrez/
 ├── core/
 │   ├── board/
@@ -31,7 +70,8 @@ src/main/java/ar/edu/ajedrez/
 │   │   ├── KnightMovement.java
 │   │   ├── BishopMovement.java
 │   │   ├── QueenMovement.java
-│   │   └── KingMovement.java
+│   │   ├── KingMovement.java
+│   │   └── PathClearChecker.java
 │   ├── game/
 │   │   ├── IGameService.java
 │   │   ├── Game.java
@@ -45,6 +85,13 @@ src/main/java/ar/edu/ajedrez/
 └── app/
     ├── StandardGame.java
     └── ConsoleUI.java
+src/test/java/ar/edu/ajedrez/core/movement/
+├── RookMovementTest.java
+├── BishopMovementTest.java
+├── KnightMovementTest.java
+├── KingMovementTest.java
+├── PawnMovementTest.java
+└── QueenMovementTest.java
 docs/
 ├── UML-Ajedrez-TPO.puml   (fuente del diagrama de clases)
 └── UML-Ajedrez-TPO.pdf    (diagrama renderizado)
@@ -127,15 +174,17 @@ Cada clase implementa `IMovementStrategy`:
 | `QueenMovement` | Combinación de movimientos de torre y alfil. |
 | `KingMovement` | Movimiento del rey de una casilla en cualquier dirección. |
 
-Las estrategias de torre, alfil y reina comprueban que el camino esté libre.
+Torre y alfil usan `PathClearChecker` para comprobar las casillas intermedias. La reina reutiliza esta comprobación mediante ambas estrategias. El destino no se considera un obstáculo intermedio: la validación general debe rechazar las piezas propias.
 
-`PawnMovement` recibe por constructor su dirección (+1 o -1) y su fila inicial. `StandardGame` crea una instancia por color y las piezas de ese color la comparten, porque no tiene estado. La convención de filas es la de los ejemplos de la cátedra: las blancas empiezan en la fila 1 y avanzan hacia filas mayores; las negras empiezan en la fila 6 y avanzan hacia filas menores.
+`PawnMovement` recibe por constructor su dirección (+1 o -1) y su fila inicial. Cuando se implemente, `StandardGame` creará una instancia por color y las piezas de ese color la comparten, porque no tiene estado mutable. La convención de filas es la de los ejemplos de la cátedra: las blancas empiezan en la fila 1 y avanzan hacia filas mayores; las negras empiezan en la fila 6 y avanzan hacia filas menores.
 
 `QueenMovement` recibe las estrategias de torre y alfil por constructor y reutiliza sus reglas mediante composición, tanto para mover como para atacar.
 
 ### Game
 
-Coordina la partida.
+Estado: constructor, turno inicial y `snapshot()` implementados; `move()` pendiente.
+
+Su responsabilidad prevista es coordinar la partida.
 
 Sus responsabilidades son:
 
@@ -183,7 +232,9 @@ Permite que la interfaz muestre resultados sin incorporar reglas del juego.
 
 ### MoveValidator
 
-Comprueba si una jugada completa es válida.
+Estado: `validate()` pendiente. Las comprobaciones y su orden indicados a continuación describen el contrato previsto.
+
+Su responsabilidad es comprobar si una jugada completa es válida.
 
 Verifica:
 
@@ -202,7 +253,9 @@ Para comprobar la seguridad del rey, puede simular el movimiento en una copia de
 
 ### CheckDetector
 
-Determina si el rey de un color está amenazado.
+Estado: detección pendiente.
+
+Su responsabilidad es determinar si el rey de un color está amenazado.
 
 Localiza al rey (mediante `Piece.isKing()`) y consulta las estrategias de ataque de las piezas enemigas.
 
@@ -210,7 +263,9 @@ Se mantiene separado de `MoveValidator` para poder probarlo de manera independie
 
 ### StandardGame
 
-Arma la partida estándar de 8×8.
+Estado: `create()` pendiente.
+
+Deberá armar la partida estándar de 8×8.
 
 Crea y conecta:
 
@@ -225,7 +280,9 @@ Es el punto de composición de la aplicación: concentra la creación de impleme
 
 ### ConsoleUI
 
-Es el adaptador de consola.
+Estado: `run()` pendiente. También falta el método `main` que inicia la aplicación.
+
+Es el adaptador de consola previsto.
 
 Sus responsabilidades son:
 
@@ -265,6 +322,8 @@ Recibe un `IGameService` por constructor. Las reglas del ajedrez permanecen en e
 
 ## Flujo de una jugada
 
+Flujo previsto: todavía no está conectado, porque faltan la consola, el validador y la ejecución de jugadas.
+
 1. `ConsoleUI` recibe el origen y destino ingresados por el jugador.
 2. Construye un `Move` y lo entrega a `IGameService`.
 3. `Game` solicita la validación a `MoveValidator`.
@@ -298,7 +357,7 @@ Para agregar una pieza nueva se implementa otra estrategia y se incorpora su con
 
 ### Inyección de dependencias por constructor
 
-**Qué:** los objetos reciben sus colaboradores al construirse. `StandardGame` conecta las implementaciones concretas.
+**Qué:** los objetos reciben sus colaboradores al construirse. `StandardGame` será el encargado de conectar las implementaciones concretas cuando se implemente.
 
 **Por qué:** las dependencias quedan explícitas y los objetos nacen con los colaboradores necesarios.
 
@@ -332,9 +391,9 @@ Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo 
 
 ### Peón configurado con dirección y fila inicial
 
-**Qué:** `PawnMovement` recibe por constructor su dirección (+1 o -1) y su fila inicial. `StandardGame` arma una instancia para las blancas (dirección +1, fila 1) y otra para las negras (dirección -1, fila 6).
+**Qué:** `PawnMovement` recibe por constructor su dirección (+1 o -1) y su fila inicial. `StandardGame` deberá armar una instancia para las blancas (dirección +1, fila 1) y otra para las negras (dirección -1, fila 6).
 
-**Por qué:** el peón es la única pieza cuyo movimiento depende de su historia (el doble paso inicial) y de su color (hacia dónde avanza). Como un peón nunca retrocede, estar en su fila inicial equivale a no haberse movido, así que no hace falta un estado `hasMoved`. Ese estado obligaría a que `Piece` fuera mutable, y las copias del tablero que se usan para simular jugadas comparten las piezas: una simulación podría alterar el tablero real. Tampoco se escriben las filas 1 y 6 dentro de la estrategia, para que no dependa de un tablero de 8×8.
+**Por qué:** el peón es la única pieza cuyo movimiento depende de su historia (el doble paso inicial) y de su color (hacia dónde avanza). Como un peón nunca retrocede, estar en su fila inicial equivale a no haberse movido, así que no hace falta un estado `hasMoved`. Un estado mutable dentro de `Piece` requeriría revisar las copias del tablero, que comparten las piezas, para evitar que una simulación altere el tablero real. También podría modelarse de forma inmutable o guardarse por separado; la fila inicial evita ese estado adicional para el alcance actual. Tampoco se escriben las filas 1 y 6 dentro de la estrategia, para que no dependa de un tablero de 8×8.
 
 **Cuándo cambiar esta decisión:** si se agrega la captura al paso, que depende de la última jugada del rival y no de la posición del peón, la estrategia necesitaría acceso al historial de jugadas. También si una variante permitiera que los peones retrocedan o se coloquen en cualquier fila.
 
@@ -383,17 +442,31 @@ Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo 
 
 ## Testing
 
-Las pruebas del núcleo deberán ejecutarse sin consola, interfaz gráfica ni servicios externos.
+Los tests actuales se ejecutan sin consola, interfaz gráfica ni servicios externos.
 
-Se probarán, entre otros escenarios:
+| Estrategia | Casos aprobados |
+|---|---:|
+| Torre | 5 |
+| Alfil | 6 |
+| Caballo | 16 |
+| Rey | 16 |
+| Peón | 22 |
+| Reina | 40 |
+| **Total** | **105** |
 
-- Movimientos válidos e inválidos de las seis piezas.
-- Obstáculos y límites del tablero.
-- Captura de piezas enemigas.
+Última verificación: `mvn test` finalizó con `BUILD SUCCESS`, sin fallos, errores ni casos omitidos. Los casos parametrizados se cuentan por cada combinación ejecutada.
+
+Se prueban movimientos válidos e inválidos, obstáculos en piezas deslizantes, saltos del caballo, avances y capturas del peón en ambos sentidos, ataques y conservación del tablero durante las consultas.
+
+Para caballo, rey y peón se escribieron las pruebas antes de implementar, se comprobó que fallaban por los métodos pendientes y luego se implementaron las reglas. Los tests de la reina se agregaron sobre su implementación existente.
+
+Las siguientes pruebas de integración del núcleo y validación general siguen pendientes:
+
+- Límites del tablero y rechazo de posiciones fuera de él.
+- Capturas aplicadas a través de `Game.move()`.
 - Rechazo de capturas de piezas propias.
 - Alternancia de turnos.
 - Conservación del estado después de una jugada rechazada.
-- Ataque diagonal del peón.
 - Detección de jaque.
 - Rechazo de jugadas que dejen al propio rey en jaque.
 
@@ -410,7 +483,7 @@ Cambiar las dimensiones también requiere definir una disposición inicial adecu
 
 ## UML y documentación
 
-El diagrama de clases está en `docs/UML-Ajedrez-TPO.puml` (fuente PlantUML) y `docs/UML-Ajedrez-TPO.pdf` (diagrama renderizado). Refleja el código actual: muestra los atributos y los métodos públicos de cada clase, y las firmas ya están definidas en el código, aunque la lógica de movimiento, validación y partida todavía se implementa con TDD. Para regenerar el PDF se puede usar el plugin de PlantUML de IntelliJ, o PlantUML con Graphviz.
+El diagrama de clases está en `docs/UML-Ajedrez-TPO.puml` (fuente PlantUML) y `docs/UML-Ajedrez-TPO.pdf` (diagrama renderizado). Documenta la estructura y los contratos de la arquitectura. Las seis estrategias de movimiento ya están implementadas; la validación y la coordinación de la partida siguen pendientes. El archivo PlantUML todavía no incluye `PathClearChecker`: falta actualizar la fuente y regenerar el PDF antes de considerarlo sincronizado con el código actual. Para regenerar el PDF se puede usar el plugin de PlantUML de IntelliJ, o PlantUML con Graphviz.
 
 Durante el desarrollo el UML deberá seguir actualizándose para representar las clases y relaciones realmente implementadas.
 

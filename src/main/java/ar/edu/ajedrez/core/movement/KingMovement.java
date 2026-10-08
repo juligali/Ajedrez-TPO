@@ -9,7 +9,10 @@ import ar.edu.ajedrez.core.board.Position;
 public class KingMovement implements IMovementStrategy {
     @Override
     public boolean canMove(Board board, Position from, Position to) {
-        throw new UnsupportedOperationException("Pendiente: se implementa con TDD");
+        int rowDifference = Math.abs(to.row() - from.row());
+        int columnDifference = Math.abs(to.column() - from.column());
+        // La seguridad del rey y el destino con pieza propia los valida MoveValidator.
+        return Math.max(rowDifference, columnDifference) == 1;
     }
 
 }

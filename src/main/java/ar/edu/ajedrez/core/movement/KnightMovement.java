@@ -9,6 +9,9 @@ import ar.edu.ajedrez.core.board.Position;
 public class KnightMovement implements IMovementStrategy {
     @Override
     public boolean canMove(Board board, Position from, Position to) {
-        throw new UnsupportedOperationException("Pendiente: se implementa con TDD");
+        int rowDifference = Math.abs(to.row() - from.row());
+        int columnDifference = Math.abs(to.column() - from.column());
+        return (rowDifference == 2 && columnDifference == 1)
+                || (rowDifference == 1 && columnDifference == 2);
     }
 }

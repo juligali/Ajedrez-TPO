@@ -8,7 +8,7 @@ import ar.edu.ajedrez.core.board.Position;
  * así que la estrategia no asume el tamaño del tablero ni el color de la pieza.
  * No tiene estado mutable: las piezas de un mismo color pueden compartir una instancia.
  *
- * Reglas (se implementan con TDD):
+ * Reglas:
  * - Avanza una casilla en su dirección si el destino está vacío.
  * - Desde su fila inicial puede avanzar dos casillas si ambas están vacías.
  * - Captura una casilla en diagonal hacia adelante si hay una pieza enemiga.
@@ -31,12 +31,32 @@ public class PawnMovement implements IMovementStrategy {
 
     @Override
     public boolean canMove(Board board, Position from, Position to) {
-        throw new UnsupportedOperationException("Pendiente: se implementa con TDD");
+        int rowDifference = to.row() - from.row();
+        int columnDifference = to.column() - from.column();
+
+        if (columnDifference == 0) {
+            if (!board.isEmpty(to)) {
+                return false;
+            }
+            if (rowDifference == direction) {
+                return true;
+            }
+            return from.row() == startRow
+                    && rowDifference == 2 * direction
+                    && board.isEmpty(new Position(from.row() + direction, from.column()));
+        }
+
+        if (!canAttack(board, from, to)) {
+            return false;
+        }
+        return !board.isEmpty(to)
+                && board.pieceAt(to).color() != board.pieceAt(from).color();
     }
 
-    // Único caso en que atacar difiere de moverse: ataca en diagonal aunque la casilla esté vacía.
+    // El peon ataca en diagonal aunque la casilla este vacia.
     @Override
     public boolean canAttack(Board board, Position from, Position target) {
-        throw new UnsupportedOperationException("Pendiente: se implementa con TDD");
+        return target.row() - from.row() == direction
+                && Math.abs(target.column() - from.column()) == 1;
     }
 }

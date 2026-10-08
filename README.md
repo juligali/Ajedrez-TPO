@@ -1,7 +1,7 @@
 # Ajedrez TPO — Ingeniería de Software
 
 
-> El núcleo de movimientos está implementado y probado. La validación completa, la detección de jaque y la aplicación jugable siguen en desarrollo. Las secciones de arquitectura describen tanto el código existente como las responsabilidades previstas, identificadas como pendientes.
+> El núcleo de movimientos está implementado y probado. La detección de jaque también está implementada y probada. La validación completa y la aplicación jugable siguen en desarrollo. Las secciones de arquitectura describen tanto el código existente como las responsabilidades previstas, identificadas como pendientes.
 
 ## Estado actual
 
@@ -11,7 +11,7 @@
 - [x] Camino libre compartido mediante `PathClearChecker`.
 - [x] Copias del tablero para aislar el estado de `Game`.
 - [x] Tests de las seis estrategias: 105 casos aprobados en la última ejecución.
-- [ ] Detección de jaque: `CheckDetector`.
+- [x] Detección de jaque: `CheckDetector`, con 36 casos de prueba.
 - [ ] Validación completa: `MoveValidator`.
 - [ ] Ejecución de jugadas, capturas y alternancia de turnos: `Game.move()`.
 - [ ] Partida inicial con 32 piezas: `StandardGame.create()`.
@@ -92,6 +92,8 @@ src/test/java/ar/edu/ajedrez/core/movement/
 ├── KingMovementTest.java
 ├── PawnMovementTest.java
 └── QueenMovementTest.java
+src/test/java/ar/edu/ajedrez/core/validation/
+└── CheckDetectorTest.java
 docs/
 ├── UML-Ajedrez-TPO.puml   (fuente del diagrama de clases)
 └── UML-Ajedrez-TPO.pdf    (diagrama renderizado)
@@ -253,7 +255,7 @@ Para comprobar la seguridad del rey, puede simular el movimiento en una copia de
 
 ### CheckDetector
 
-Estado: detección pendiente.
+Estado: `isInCheck()` implementado y probado. Consulta las estrategias de ataque sin modificar el tablero. Exige exactamente un rey del color consultado; si falta o hay varios, lanza `IllegalStateException`. Una pieza enemiga clavada sigue amenazando las casillas de su patrón de ataque.
 
 Su responsabilidad es determinar si el rey de un color está amenazado.
 
@@ -444,7 +446,7 @@ Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo 
 
 Los tests actuales se ejecutan sin consola, interfaz gráfica ni servicios externos.
 
-| Estrategia | Casos aprobados |
+| Unidad | Casos aprobados |
 |---|---:|
 | Torre | 5 |
 | Alfil | 6 |
@@ -452,13 +454,14 @@ Los tests actuales se ejecutan sin consola, interfaz gráfica ni servicios exter
 | Rey | 16 |
 | Peón | 22 |
 | Reina | 40 |
-| **Total** | **105** |
+| Detector de jaque | 36 |
+| **Total** | **141** |
 
 Última verificación: `mvn test` finalizó con `BUILD SUCCESS`, sin fallos, errores ni casos omitidos. Los casos parametrizados se cuentan por cada combinación ejecutada.
 
 Se prueban movimientos válidos e inválidos, obstáculos en piezas deslizantes, saltos del caballo, avances y capturas del peón en ambos sentidos, ataques y conservación del tablero durante las consultas.
 
-Para caballo, rey y peón se escribieron las pruebas antes de implementar, se comprobó que fallaban por los métodos pendientes y luego se implementaron las reglas. Los tests de la reina se agregaron sobre su implementación existente.
+Para caballo, rey y peón se escribieron las pruebas antes de implementar, se comprobó que fallaban por los métodos pendientes y luego se implementaron las reglas. Los tests de la reina se agregaron sobre su implementación existente. Para `CheckDetector` también se siguió prueba que falla → implementación → verificación de toda la suite. Sus pruebas usan estrategias reales para cubrir ataques de las seis piezas, ambos colores, obstáculos, piezas clavadas, posiciones inválidas y conservación del tablero.
 
 Las siguientes pruebas de integración del núcleo y validación general siguen pendientes:
 
@@ -467,7 +470,6 @@ Las siguientes pruebas de integración del núcleo y validación general siguen 
 - Rechazo de capturas de piezas propias.
 - Alternancia de turnos.
 - Conservación del estado después de una jugada rechazada.
-- Detección de jaque.
 - Rechazo de jugadas que dejen al propio rey en jaque.
 
 ## Extensibilidad

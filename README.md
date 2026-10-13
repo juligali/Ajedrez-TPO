@@ -4,7 +4,7 @@ Ajedrez local para **una persona contra IA o dos personas en la misma computador
 
 [Ver una captura de la interfaz](docs/vista-previa.png).
 
-Se desarrolló a partir de la estructura de paquetes de **Ajedrez-TPO - copia**. Esa base tenía clases vacías y un README de diseño propuesto. Esta carpeta contiene una implementación funcional; el directorio original no fue modificado.
+La versión web se desarrolló a partir de la estructura inicial de Ajedrez-TPO y luego se integró en este repositorio, conservando su historial de Git. El proyecto actual incluye el juego completo, los adaptadores web y de consola y las pruebas con Maven y JUnit 5.
 
 ## Actualización del juego
 
@@ -48,7 +48,7 @@ El cronómetro mide el tiempo desde que se crea la partida, **incluyendo el tiem
 
 Si falla la escritura, se revierte la operación y se informa el error. Un archivo corrupto se rechaza sin sobrescribirlo silenciosamente. El adaptador escribe primero un temporal y usa reemplazo atómico cuando el sistema lo permite. Usá un solo servidor por archivo de guardado.
 
-La partida abierta al actualizar se conservó con **29 medias jugadas**. Como no había un reloj en la versión anterior, su cronómetro comienza desde la migración. El guardado personal no se incluye en el ZIP.
+Los guardados son locales y no se versionan en Git. Si no existe un archivo de guardado, la web permite configurar una partida nueva.
 
 ### Nuevas clases y contratos
 
@@ -68,9 +68,9 @@ La persistencia ahora justifica una interfaz de salida real y dobles de prueba. 
 
 ### Pruebas de la actualización
 
-**47 pruebas Java**: las 31 originales y 16 en FeatureTests. Se agregaron puntaje, corona, mate con un atacante, cinco niveles legales, separación de modos, repositorio de archivo, recuperación, al paso tras carga, reloj y reversión ante fallos de guardado.
+**47 pruebas con JUnit 5**: 31 escenarios en `ChessTest` y 16 en `FeatureTest`. Se agregaron puntaje, corona, mate con un atacante, cinco niveles legales, separación de modos, repositorio de archivo, recuperación, al paso tras carga, reloj y reversión ante fallos de guardado.
 
-El repositorio en memoria, el reloj controlado y la IA sustituible permiten probar sin infraestructura. Una prueba utiliza también el archivo real. La misma orden run.ps1 -Test ejecuta ambas suites.
+El repositorio en memoria, el reloj controlado y la IA sustituible permiten probar sin infraestructura. Una prueba utiliza el repositorio de archivo real con una carpeta temporal aislada mediante `@TempDir`. Tanto `mvn test` como `run.ps1 -Test` ejecutan ambas suites.
 
 La comprobación opcional **tools/verify-features.cjs** usa Node.js, Playwright y Chrome. Prueba tutorial, puntos, corona, cronómetro, recarga, cinco niveles, deshacer/rehacer y ancho de 390 px. **Reinicia la partida**, así que debe usarse con un servidor de prueba, por ejemplo:
 
@@ -83,7 +83,7 @@ En otra terminal, establecé CHESS_URL en http://127.0.0.1:8082 antes de ejecuta
 **Requisito:** JDK 21, con `java` y `javac` disponibles en PATH. Se utiliza Maven para compilar y JUnit 5 para ejecutar las pruebas. La primera compilación puede necesitar Internet para descargar dependencias; jugar después es local y no necesita npm ni base de datos.
 
 1. Hacé doble clic en **Jugar.bat**.
-2. Esperá el mensaje “Ajedrez de bloques listo”.
+2. Se abrirá una ventana de comandos: esperá a que Maven compile y aparezca “Ajedrez de bloques listo”. En VS Code, abrir `Jugar.bat` en el editor muestra su código; para ejecutarlo, usá el Explorador de archivos de Windows.
 3. Abrí **http://127.0.0.1:8080** en Chrome, Edge o Firefox.
 4. Seguí el tutorial y elegí modo y nivel. Seleccioná una pieza y después una casilla marcada. Empiezan las blancas.
 5. Dejá abierta la consola mientras jugás. Para detener el servidor, presioná Ctrl+C.
@@ -110,7 +110,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -Console
 
 Ingresá movimientos como `e2 e4`, o los comandos `deshacer`, `rehacer` y `salir`. Para elegir una promoción, por ejemplo: `a7 a8 KNIGHT`. Sin tercer argumento, promociona a reina.
 
-La consola y la web usan el mismo núcleo. Cada ejecución del programa crea su propia partida.
+La consola y la web usan el mismo núcleo. La consola inicia una partida nueva sin guardado de sesión. La web recupera la partida guardada si existe; si no, permite configurar una nueva. Las pestañas conectadas al mismo servidor comparten esa partida.
 
 ## Personajes
 
@@ -269,7 +269,7 @@ Ejecutá:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -Test
 ```
 
-Hay **31 pruebas originales**, más **16 pruebas nuevas de sesión, IA y persistencia**, en ChessTest.java y FeatureTest.java. Usan @Test, @DisplayName y aserciones de JUnit 5; una condición fallida hace fallar la construcción. JUnit 5 ejecuta cada escenario por separado mediante Maven y publica los informes en target/surefire-reports. No necesitan navegador ni servidor.
+Hay **47 escenarios de prueba**: 31 en `ChessTest.java` y 16 de sesión, IA y persistencia en `FeatureTest.java`. Usan @Test, @DisplayName y aserciones de JUnit 5; una condición fallida hace fallar la construcción. JUnit 5 ejecuta cada escenario por separado mediante Maven y publica los informes en target/surefire-reports. No necesitan navegador ni servidor.
 
 Aplicamos **Arrange / Act / Assert**: preparar un tablero, ejecutar una acción y comprobar el resultado. La suite incluye pruebas unitarias de estrategias y pruebas de integración entre los objetos del dominio.
 
@@ -288,7 +288,9 @@ Cobertura principal:
 
 Un **stub** de `IMovementStrategy` comprueba que `Piece` use el comportamiento inyectado. La sesión agrega un repositorio en memoria, un reloj controlado y una IA sustituible como dobles de prueba.
 
-También se verificaron en Chrome los flujos de interfaz. El script opcional `tools/verify-ui.cjs` requiere Node.js, Playwright y Chrome; **no son necesarios para jugar ni para ejecutar las pruebas Java**. Las pruebas de UI reinician la partida, así que deben correrse sobre un servidor dedicado a pruebas.
+Después de integrar la versión web y migrar a Maven, se ejecutaron los 47 tests de JUnit 5 sin fallos y se comprobó por HTTP la partida inicial, destinos legales, movimiento, cambio de turno, deshacer, rehacer y entrega del HTML. Esta verificación no incluye una revisión visual completa ni la ejecución de toda la suite de navegador tras la migración.
+
+El script opcional `tools/verify-ui.cjs` requiere Node.js, Playwright y Chrome; **no son necesarios para jugar ni para ejecutar las pruebas Java**. Las pruebas de UI reinician la partida, así que deben correrse sobre un servidor dedicado a pruebas.
 
 La prueba HTTP opcional se ejecuta con Node.js 18 o superior y el servidor activo: `node tools/verify-api.mjs`. Comprueba el contrato del adaptador, incluyendo rechazos sin mutación y revisiones desactualizadas. También reinicia la partida.
 
@@ -321,7 +323,7 @@ Las pruebas reportan el tiempo observado de la suite; eso **no reemplaza un prof
 - **Diagramas y relaciones entre clases:** [docs/arquitectura.md](docs/arquitectura.md).
 - **Ágil:** se incluye un backlog sencillo por funcionalidades verificables. Es una guía para continuar el TPO, no evidencia de ceremonias de Scrum realizadas.
 - **BPO y SLA:** no contratamos un proveedor ni consumimos un servicio externo. La relación útil es la idea de contrato: `IGameService` establece qué operaciones ofrece la partida. Los objetivos de calidad locales no se presentan como un SLA contractual.
-- **Material consultado:** [docs/material-de-clase.md](docs/material-de-clase.md) relaciona las nueve presentaciones con decisiones concretas del código.
+- **Material consultado:** [docs/material-de-clase.md](docs/material-de-clase.md) relaciona el material de clase con decisiones concretas del código.
 
 ## Estructura
 
@@ -340,9 +342,11 @@ src/main/java/ar/edu/ajedrez/
   app/persistence/ FileGameRepository
 src/test/java/ar/edu/ajedrez/
                   ChessTest y FeatureTest
-web/              index.html, styles.css, app.js, pieces.js y favicon.svg
+web/              index.html, styles.css, app.js, pieces.js,
+                  tutorial.js y favicon.svg
 docs/             arquitectura, requisitos y relación con las clases
 tools/            comprobación opcional de interfaz
+pom.xml           Java 21, JUnit 5, compilador y Surefire de Maven
 run.ps1           compilación, ejecución y pruebas
 Jugar.bat         entrada para Windows
 ```

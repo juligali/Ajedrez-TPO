@@ -1,5 +1,6 @@
 package ar.edu.ajedrez;
 
+import java.io.IOException;
 import java.time.*;
 import java.util.*;
 import org.junit.jupiter.api.Test;
@@ -24,13 +25,18 @@ class FeatureTest {
     static final MoveValidator validator=new MoveValidator(detector,factory);
     static class MemoryRepository implements IGameRepository {
         SavedMatch saved; boolean fail;
+        @Override
         public Optional<SavedMatch> load(){return Optional.ofNullable(saved);}
+        @Override
         public void save(SavedMatch m){if(fail)throw new PersistenceException("Disco simulado",null);saved=m;}
     }
     static class TestClock extends Clock {
         long now=100000;
+        @Override
         public ZoneId getZone(){return ZoneOffset.UTC;}
+        @Override
         public Clock withZone(ZoneId zone){return this;}
+        @Override
         public Instant instant(){return Instant.ofEpochMilli(now);}
     }
     static void expect(boolean condition,String message){assertTrue(condition, message);}
@@ -194,7 +200,7 @@ class FeatureTest {
             Path file=directory.resolve("match.properties");FileGameRepository repo=new FileGameRepository(file);
             MatchSession s=session(repo,new TestClock());s.newGame(GameMode.TWO_PLAYERS,Difficulty.EXTREME);s.move(move("e2","e4"));
             expect(session(new FileGameRepository(file),new TestClock()).getGame().getHistory().size()==1,"Persistencia en disco");
-            try{Files.writeString(file,"version=broken");}catch(Exception e){throw new RuntimeException(e);}
+            try{Files.writeString(file,"version=broken");}catch(IOException e){throw new java.io.UncheckedIOException(e);}
             try{repo.load();throw new AssertionError("Aceptó archivo inválido");}catch(PersistenceException expected){}
     }
 }

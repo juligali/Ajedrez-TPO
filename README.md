@@ -1,497 +1,381 @@
-# Ajedrez TPO — Ingeniería de Software
+# BLOCKMATE · Ajedrez de Minecraft
 
+Ajedrez local para **una persona contra IA o dos personas en la misma computadora**, con reglas implementadas en Java y una interfaz de personajes hechos con bloques.
 
-> El núcleo de movimientos está implementado y probado. La detección de jaque también está implementada y probada. La validación completa y la aplicación jugable siguen en desarrollo. Las secciones de arquitectura describen tanto el código existente como las responsabilidades previstas, identificadas como pendientes.
+[Ver una captura de la interfaz](docs/vista-previa.png).
 
-## Estado actual
+Se desarrolló a partir de la estructura de paquetes de **Ajedrez-TPO - copia**. Esa base tenía clases vacías y un README de diseño propuesto. Esta carpeta contiene una implementación funcional; el directorio original no fue modificado.
 
-- [x] Java 21, Maven y JUnit 5 configurados.
-- [x] Tablero, posiciones, piezas, colores y resultados de jugadas.
-- [x] Las seis estrategias de movimiento implementadas.
-- [x] Camino libre compartido mediante `PathClearChecker`.
-- [x] Copias del tablero para aislar el estado de `Game`.
-- [x] Tests de las seis estrategias: 105 casos aprobados en la última ejecución.
-- [x] Detección de jaque: `CheckDetector`, con 36 casos de prueba.
-- [ ] Validación completa: `MoveValidator`.
-- [ ] Ejecución de jugadas, capturas y alternancia de turnos: `Game.move()`.
-- [ ] Partida inicial con 32 piezas: `StandardGame.create()`.
-- [ ] Consola y método `main`.
-- [ ] Actualizar el UML con `PathClearChecker` y regenerar su PDF.
-- [ ] Revisar las dependencias sobrantes de TestNG y JUnit 4 en `pom.xml`.
+## Actualización del juego
 
-Todavía no se puede jugar una partida completa. Los métodos pendientes lanzan `UnsupportedOperationException`.
+[Informe Word sobre clases del núcleo, puertos y adaptadores](docs/Informe%20arquitectura%20Ajedrez%20Minecraft.docx).
 
-## Requisitos y comandos
+### Puntos y ganador
 
-Se necesita JDK 21 y Maven disponible en la terminal. También se puede ejecutar Maven desde el IDE configurado con JDK 21.
+Cada equipo suma los valores de las piezas rivales que captura: **peón 1, caballo 3, alfil 3, torre 5 y reina 9**. El rey no tiene valor numérico ni se captura. El marcador empieza en cero, se corrige al deshacer/rehacer y no determina el ganador. La corona aparece únicamente para el ganador por jaque mate y desaparece al deshacer el final.
 
-Desde la raíz del proyecto:
+Se puede dar mate con una sola pieza atacante si la posición no tiene defensa legal. Las pruebas incluyen una torre apoyada por el rey y un caballo con el rey rival encerrado por piezas propias. Rey y caballo contra rey sigue siendo material insuficiente.
 
-```sh
-mvn test
+### Tutorial
+
+Antes de crear una partida se muestra **Cómo se juega**: incluye un tablero interactivo para cada una de las seis piezas, sus movimientos y valores, el objetivo del juego y reglas especiales. Tocá una casilla marcada para probar un movimiento. Los aros del peón muestran capturas de piezas rivales. Podés volver a consultarlo desde **Cómo jugar**.
+
+Se mantienen los destinos legales resaltados en la partida real. El tutorial es ilustrativo y no altera el juego.
+
+### Uno o dos jugadores
+
+Al empezar elegís el modo. En **dos jugadores** ambos equipos son humanos y la IA no interviene. En **solo** jugás con blancas y la IA responde con negras.
+
+| Nivel | Comportamiento |
+|---|---|
+| Súper fácil | Movimiento legal al azar |
+| Fácil | Prioriza capturas/promociones, con un 35 % de elecciones aleatorias |
+| Medio | Hasta 2 medias jugadas, 1.200 nodos o 600 ms |
+| Difícil | Hasta 3 medias jugadas, 5.000 nodos o 1.200 ms |
+| Hiper mega difícil | Hasta 4 medias jugadas, 16.000 nodos o 2.200 ms |
+
+La IA es **didáctica y local**, no un motor profesional ni una clasificación Elo. Los niveles superiores usan minimax con poda alfa-beta, evaluando material y posición. La profundidad alcanzada depende de los límites. No utiliza aprendizaje automático.
+
+En solo, **deshacer** normalmente revierte tu movimiento y su respuesta para volver a tu decisión anterior. Rehacer restaura ambos. Si la IA todavía no respondió, se deshace sólo el movimiento humano.
+
+### Guardado y cronómetro
+
+La partida se guarda automáticamente después de crearla, mover, responder la IA, deshacer y rehacer. También hay un botón **Guardar partida**.
+
+El archivo es **data/current-match.properties**, dentro de esta carpeta. Conserva movimientos, cursor del historial, modo, dificultad y marcas de tiempo. Al cargar se reconstruyen tablero, capturas, puntaje, turnos, al paso, derechos de enroque, repetición y posibilidad de rehacer. Si la IA quedó pendiente, responde al volver a abrir la web.
+
+El cronómetro mide el tiempo desde que se crea la partida, **incluyendo el tiempo con el juego cerrado**. Se detiene al terminar y se reanuda al deshacer el final, sin retroceder. Una partida nueva reemplaza el único guardado y reinicia reloj y puntos, después de la confirmación.
+
+Si falla la escritura, se revierte la operación y se informa el error. Un archivo corrupto se rechaza sin sobrescribirlo silenciosamente. El adaptador escribe primero un temporal y usa reemplazo atómico cuando el sistema lo permite. Usá un solo servidor por archivo de guardado.
+
+La partida abierta al actualizar se conservó con **29 medias jugadas**. Como no había un reloj en la versión anterior, su cronómetro comienza desde la migración. El guardado personal no se incluye en el ZIP.
+
+### Nuevas clases y contratos
+
+- **IMatchService / MatchSession:** puerto de entrada y coordinación de sesión, IA, reloj y guardado.
+- **IGameService / Game:** reglas de partida y puntaje por capturas.
+- **IGameRepository:** puerto de salida para cargar y guardar.
+- **FileGameRepository:** adaptador que implementa el contrato con un archivo Properties.
+- **SavedMatch:** datos de la sesión, secuencia de movimientos y posición actual del historial.
+- **IChessAi / MinimaxAi:** contrato de elección de jugada y estrategia local por nivel.
+- **GameMode / Difficulty:** configuración explícita.
+- **Clock:** abstracción estándar de Java inyectada para medir tiempo y probarlo.
+- **PersistenceException:** comunica fallos de almacenamiento sin importar clases del adaptador.
+
+La web entra por IMatchService. MatchSession llama a IGameService y a los puertos de salida. La consola sigue entrando directamente por IGameService y ofrece sólo el ajedrez básico; los modos, tutorial y guardado de sesión corresponden a la web.
+
+La persistencia ahora justifica una interfaz de salida real y dobles de prueba. Se conservan Strategy, Simple Factory, Command, inyección por constructor y composición.
+
+### Pruebas de la actualización
+
+**47 pruebas Java**: las 31 originales y 16 en FeatureTests. Se agregaron puntaje, corona, mate con un atacante, cinco niveles legales, separación de modos, repositorio de archivo, recuperación, al paso tras carga, reloj y reversión ante fallos de guardado.
+
+El repositorio en memoria, el reloj controlado y la IA sustituible permiten probar sin infraestructura. Una prueba utiliza también el archivo real. La misma orden run.ps1 -Test ejecuta ambas suites.
+
+La comprobación opcional **tools/verify-features.cjs** usa Node.js, Playwright y Chrome. Prueba tutorial, puntos, corona, cronómetro, recarga, cinco niveles, deshacer/rehacer y ancho de 390 px. **Reinicia la partida**, así que debe usarse con un servidor de prueba, por ejemplo:
+
+    java -cp target/classes ar.edu.ajedrez.app.WebServer 8082 build/ui-test-match.properties
+
+En otra terminal, establecé CHESS_URL en http://127.0.0.1:8082 antes de ejecutar los scripts de prueba. Nunca los ejecutes sobre una partida personal que quieras conservar.
+
+## Cómo jugar
+
+**Requisito:** JDK 21, con `java` y `javac` disponibles en PATH. Se utiliza Maven para compilar y JUnit 5 para ejecutar las pruebas. La primera compilación puede necesitar Internet para descargar dependencias; jugar después es local y no necesita npm ni base de datos.
+
+1. Hacé doble clic en **Jugar.bat**.
+2. Esperá el mensaje “Ajedrez de bloques listo”.
+3. Abrí **http://127.0.0.1:8080** en Chrome, Edge o Firefox.
+4. Seguí el tutorial y elegí modo y nivel. Seleccioná una pieza y después una casilla marcada. Empiezan las blancas.
+5. Dejá abierta la consola mientras jugás. Para detener el servidor, presioná Ctrl+C.
+
+También se puede ejecutar desde PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1
 ```
 
-Maven lee `pom.xml`, resuelve las dependencias, compila el código y ejecuta los tests con JUnit 5 y Surefire. Los archivos generados y los informes quedan en `target/` y `target/surefire-reports/`.
+Si el puerto 8080 está ocupado:
 
-Para compilar sin ejecutar las pruebas:
-
-```sh
-mvn compile
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -Port 8081
 ```
 
-El comando `mvn` requiere que Maven esté instalado y agregado al PATH; en la última verificación se utilizó una instalación local por su ruta completa. No hay Maven Wrapper en el repositorio.
+Abrí entonces http://127.0.0.1:8081. Si aparece “javac no se reconoce”, revisá la instalación del **JDK**, que incluye el compilador, y volvé a abrir la terminal.
 
-## Alcance obligatorio
+### Interfaz alternativa de consola
 
-- Tablero de 8×8.
-- Peón, torre, caballo, alfil, reina y rey con movimientos válidos.
-- Alternancia de turnos.
-- Captura de piezas.
-- Rechazo de movimientos inválidos.
-- Detección de jaque.
-- Tests unitarios del núcleo.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -Console
+```
 
-## Organización del proyecto
+Ingresá movimientos como `e2 e4`, o los comandos `deshacer`, `rehacer` y `salir`. Para elegir una promoción, por ejemplo: `a7 a8 KNIGHT`. Sin tercer argumento, promociona a reina.
+
+La consola y la web usan el mismo núcleo. Cada ejecución del programa crea su propia partida.
+
+## Personajes
+
+| Pieza | Personaje | Movimiento |
+|---|---|---|
+| Rey | Steve con corona y espada | Una casilla en cualquier dirección |
+| Reina | Alex con corona | Rectas y diagonales |
+| Torre | Gólem de hierro | Horizontal y vertical |
+| Alfil | Bruja con sombrero y poción | Diagonales |
+| Caballo | Caballo de Minecraft | En L, saltando piezas |
+| Peón | Creeper | Avanza hacia adelante y captura en diagonal |
+
+Los dos bandos usan los mismos personajes, como en la referencia. Se distinguen por las **bases claras con borde dorado** y **oscuras con borde rojizo**. El texto de turno y las etiquetas de las casillas también identifican el color.
+
+Los modelos son dibujos voxel originales construidos con cubos en Canvas 2D. Se proyectan para mostrar volumen, caras iluminadas y sombras. No se descargan recursos externos ni se utilizan modelos oficiales. Es un proyecto académico inspirado en Minecraft, sin afiliación con Mojang o Microsoft.
+
+## Funcionalidades implementadas
+
+- Tablero de 8 × 8 y disposición inicial clásica.
+- Movimientos de las seis piezas, obstáculos, capturas y alternancia de turnos.
+- Destinos legales resaltados y ayuda contextual de la pieza seleccionada.
+- Rechazo de jugadas que dejen al propio rey en jaque.
+- Jaque, jaque mate y ahogado. El rey no se captura.
+- Enroque corto y largo, con control de derechos, obstáculos y casillas amenazadas.
+- Captura al paso, disponible únicamente en la jugada inmediata siguiente.
+- Promoción a reina, torre, alfil o caballo, mediante un selector.
+- Historial de movimientos y piezas capturadas.
+- Deshacer y rehacer, incluyendo capturas, enroque, al paso, promoción y fin de partida.
+- Nueva partida con confirmación y giro del tablero.
+- Sonido opcional generado localmente, inicialmente apagado.
+- Interfaz adaptable a pantallas angostas y controles utilizables con teclado.
+
+**Teclado:** Tab para recorrer los controles, Enter o Espacio para activarlos, flechas entre casillas y Escape para quitar una selección o cerrar un diálogo.
+
+### Alcance y simplificaciones
+
+- Es una partida **local**, con IA opcional y cronómetro general. No tiene cuentas ni multijugador por Internet.
+- Una instancia del servidor contiene una sola partida. Las pestañas comparten esa partida. Se comprueba una revisión del estado para rechazar acciones desactualizadas; no hay sincronización instantánea entre pestañas.
+- La partida se recupera desde el archivo local incluso después de cerrar Java.
+- La notación del historial es descriptiva, por ejemplo `e2 → e4`, `e4 × d5` y `O-O`. No se implementa importación/exportación PGN ni notación SAN completa.
+- La triple repetición y los 50 movimientos por bando sin capturas ni movimientos de peón producen **tablas automáticas**, en lugar del mecanismo de reclamación de torneo.
+- Se detecta material insuficiente en los casos básicos: rey contra rey, rey y una pieza menor contra rey, y posiciones con sólo reyes y alfiles del mismo color de casilla. No se pretende resolver todas las posibles posiciones muertas.
+- No se incluyeron rendición ni tablas por acuerdo.
+
+## Arquitectura: lo visto en clase
+
+La organización sigue la separación **núcleo / adaptadores** de las unidades 00 y 01.
 
 ```text
-pom.xml                     (configuración de Maven)
-src/main/java/ar/edu/ajedrez/
-├── core/
-│   ├── board/
-│   │   ├── Board.java
-│   │   └── Position.java
-│   ├── pieces/
-│   │   ├── Piece.java
-│   │   └── PieceColor.java
-│   ├── movement/
-│   │   ├── IMovementStrategy.java
-│   │   ├── PawnMovement.java
-│   │   ├── RookMovement.java
-│   │   ├── KnightMovement.java
-│   │   ├── BishopMovement.java
-│   │   ├── QueenMovement.java
-│   │   ├── KingMovement.java
-│   │   └── PathClearChecker.java
-│   ├── game/
-│   │   ├── IGameService.java
-│   │   ├── Game.java
-│   │   ├── Move.java
-│   │   └── MoveResult.java
-│   └── validation/
-│       ├── MoveValidator.java
-│       ├── CheckDetector.java
-│       ├── ValidationResult.java
-│       └── RejectionReason.java     
-└── app/
-    ├── StandardGame.java
-    └── ConsoleUI.java
-src/test/java/ar/edu/ajedrez/core/movement/
-├── RookMovementTest.java
-├── BishopMovementTest.java
-├── KnightMovementTest.java
-├── KingMovementTest.java
-├── PawnMovementTest.java
-└── QueenMovementTest.java
-src/test/java/ar/edu/ajedrez/core/validation/
-└── CheckDetectorTest.java
-docs/
-├── UML-Ajedrez-TPO.puml   (fuente del diagrama de clases)
-└── UML-Ajedrez-TPO.pdf    (diagrama renderizado)
+Navegador (HTML, CSS, Canvas, JavaScript)
+                 |
+        WebServer: adaptador HTTP
+                 |
+       IMatchService / MatchSession
+                 |
+           IGameService  <--- ConsoleUI
+                 |
+                Game
+         /       |        \
+ MoveValidator  Board   MoveCommand
+       |          |
+ CheckDetector   Piece
+                  |
+          IMovementStrategy
+                  |
+       Seis estrategias concretas
 ```
 
-El paquete `core` contiene las reglas y el estado del juego. No depende de consola, interfaz gráfica, bases de datos ni servicios externos.
+- **Núcleo (`core`):** reglas, piezas, tablero, turnos, validación e historial.
+- **Puerto de entrada (`IGameService`):** operaciones de la partida, sin HTTP ni elementos gráficos.
+- **Adaptadores (app):** servidor web, consola y repositorio de archivo.
+- **Punto de composición (`StandardGame`):** crea los objetos y conecta sus dependencias mediante constructores.
+- **Presentación (`web`):** dibuja y envía solicitudes. No decide si una jugada es legal.
 
-El paquete `app` contiene el armado de la partida y el adaptador de consola.
+Es una aplicación monolítica pequeña con una frontera de puertos y adaptadores. No hay microservicios ni contenedor de inyección. El núcleo no importa clases del servidor web, del navegador o de la consola.
 
-## Clases y responsabilidades
+### Flujo de una jugada
 
-### Board
+1. El usuario selecciona origen y destino.
+2. El navegador pide a WebServer que realice el movimiento mediante IMatchService; MatchSession coordina las reglas y el guardado.
+3. MatchSession construye la operación de sesión y llama a IGameService.move; después solicita guardar mediante IGameRepository.
+4. `Game` consulta a `MoveValidator`.
+5. La estrategia comprueba el movimiento propio de la pieza. El validador simula la jugada para verificar que el rey quede protegido.
+6. Si es legal, se ejecuta un `MoveCommand`, se guarda en el historial y cambia el turno.
+7. `Game` determina si hay jaque o final de partida.
+8. El adaptador devuelve el estado y la interfaz lo muestra.
 
-Representa el tablero y guarda las piezas que ocupan sus casillas.
+Una jugada rechazada conserva tablero, turno, historial y posibilidad de rehacer.
 
-Sus responsabilidades son:
+## Patrones de diseño utilizados
 
-- Conocer las dimensiones del tablero.
-- Comprobar si una posición está dentro de sus límites.
-- Consultar qué pieza ocupa una casilla.
-- Colocar y mover piezas (el destino ocupado queda capturado).
-- Indicar las posiciones que ocupan las piezas de un color, para que `CheckDetector` encuentre al rey y a los atacantes.
-- Permitir obtener una copia del estado del tablero.
-- Compararse por contenido con otro tablero, para que los tests verifiquen el estado antes y después de una jugada
+### 1. Strategy: movimientos de piezas
 
-`Board` guarda el estado. La coordinación de turnos y la validación de jugadas corresponden a otras clases.
-Sus operaciones exigen posiciones dentro del tablero: quien reciba posiciones de afuera, como `MoveValidator`, consulta `contains` antes.
+**Qué:** `Piece` recibe un `IMovementStrategy` por constructor. `PawnMovement`, `RookMovement`, `KnightMovement`, `BishopMovement`, `QueenMovement` y `KingMovement` implementan el contrato.
 
-### Position
+**Por qué:** cada pieza tiene un algoritmo distinto y podemos probarlo por separado. `Piece` delega el comportamiento sin tener un gran condicional que conozca todas las reglas.
 
-Representa una casilla mediante fila y columna.
-Permite expresar posiciones con un objeto, evitando pasar números sueltos por todos los métodos.
+**Ejemplo real:** `Piece.canMove` llama a `movement.canMove`. El peón redefine también `canAttack`, porque avanzar y atacar son cosas distintas.
 
-Es un valor inmutable con igualdad por contenido, así que dos posiciones con la misma fila y columna son la misma casilla. No valida límites: una posición fuera del tablero es un dato legítimo que `MoveValidator` debe poder rechazar con `OUT_OF_BOUNDS`.
+**Cuándo cambiarlo:** si hubiera un único comportamiento fijo, separar estrategias podría resultar innecesario. Agregar una pieza nueva requiere su estrategia y su configuración de creación y presentación; no significa que todo el sistema se extienda sin tocar ningún archivo.
 
-### Piece
+### 2. Simple Factory: creación de piezas
 
-Representa una pieza concreta de la partida.
+**Qué:** `PieceFactory.create(type, color)` elige la estrategia que corresponde al tipo solicitado.
 
-Contiene:
+**Por qué:** la decisión de construcción aparece al armar el tablero y al promocionar peones. Centralizarla evita duplicar esa selección.
 
-- Nombre, solo para mostrar la pieza: ninguna regla depende de él.
-- Color.
-- Una estrategia de movimiento.
-- Un indicador explícito de que es el rey (`isKing()`), necesario para detectar jaque.
+**Ejemplo real:** la reina recibe una `QueenMovement` construida con los comportamientos de torre y alfil. Las estrategias no tienen estado y se comparten dentro de la fábrica.
 
-Recibe su estrategia por constructor y expone `canMove` y `canAttack`, que delegan en ella las reglas particulares de movimiento y ataque. Así, quien consulta a una pieza no necesita conocer su estrategia.
+**Cuándo cambiarlo:** si sólo se creara un objeto de tipo fijo, usar directamente su constructor sería más claro.
 
-Sus atributos no cambian después de construirla. Las copias del tablero pueden compartir piezas siempre que las estrategias también sean inmutables y sus consultas no tengan efectos secundarios. Su igualdad es por identidad: cada objeto es una pieza concreta de la partida.
+Se trata de una **fábrica simple**, en el sentido de centralización de creación visto en clase. No es una jerarquía de Factory Method ni Abstract Factory.
 
-### PieceColor
+### 3. Command: deshacer y rehacer
 
-Es un enum con los valores `WHITE` y `BLACK`.
+**Qué:** `MoveCommand` implementa `ICommand`, con `execute()` y `undo()`. Contiene la jugada y una copia del tablero anterior.
 
-Se utiliza para representar el color de las piezas y el turno actual.
+**Por qué:** necesitamos revertir exactamente los cambios, incluyendo capturas y jugadas especiales. `Game` administra una lista de comandos ejecutados y una pila de comandos para rehacer.
 
-### IMovementStrategy
+**Ejemplo real:** al deshacer una captura al paso vuelven ambos peones a su lugar, se restaura la posibilidad de captura al paso y vuelve el turno anterior. Una jugada válida nueva elimina la rama de rehacer.
 
-Define el contrato de las estrategias de movimiento:
+**Decisión de simplicidad:** guardamos una copia de las 64 referencias del tablero, los datos de al paso y el contador de medias jugadas. Las piezas son inmutables, por lo que no hace falta copiar cada objeto. Para un tablero pequeño es una solución fácil de explicar.
 
-- `canMove(board, from, to)`: comprueba si la pieza puede realizar un movimiento.
-- `canAttack(board, from, target)`: comprueba si la pieza amenaza una casilla, esté ocupada o no. Por defecto equivale a `canMove`; `PawnMovement` la sobreescribe por sus ataques diagonales y `QueenMovement` para delegar el ataque en sus dos estrategias.
+**Cuándo cambiarlo:** para tableros muy grandes o historiales enormes se podría almacenar sólo la diferencia de cada jugada, después de medir el costo real.
 
-Movimiento y ataque se distinguen porque el peón avanza hacia adelante y ataca en diagonal.
+`Move` es únicamente una solicitud de datos. El patrón Command está en `MoveCommand`, no en el nombre de la solicitud.
 
-Las estrategias comprueban las reglas particulares de cada pieza. La protección del propio rey y el rechazo de un destino con pieza propia corresponden a la validación general.
+### Patrones que no forzamos
 
-Ninguno de los métodos recibe el color: la estrategia lo obtiene de la pieza que está en `from`. Esa es una precondición del contrato (el origen está dentro del tablero y contiene la pieza dueña de la estrategia), que `MoveValidator` garantiza al verificar los límites y la pieza de origen antes de consultar a la estrategia.
+- **State:** el flujo actual tiene pocos estados estables; se resuelve con el color del turno y un estado calculado. No hay una clase por estado.
+- **Observer:** el núcleo no necesita suscripciones. La interfaz actualiza la pantalla al recibir una respuesta. Usar eventos del navegador no se presenta como una implementación propia de Observer en Java.
+- **Object Pool:** no hay evidencia de que la creación de objetos justifique un pool.
+- **Singleton:** no se agregó un acceso global a la partida.
 
-### Estrategias concretas
+Estas decisiones siguen el criterio de la materia: **qué, por qué y cuándo cambiar la decisión**, evitando abstracciones sin una necesidad real.
 
-Cada clase implementa `IMovementStrategy`:
+## SOLID, composición e inyección de dependencias
 
-| Clase | Responsabilidad |
+| Concepto | Aplicación concreta |
 |---|---|
-| `PawnMovement` | Avance del peón (una casilla, o dos desde su fila inicial) y captura en diagonal. |
-| `RookMovement` | Movimiento horizontal y vertical de la torre. |
-| `KnightMovement` | Movimiento en L del caballo, que puede saltar obstáculos. |
-| `BishopMovement` | Movimiento diagonal del alfil. |
-| `QueenMovement` | Combinación de movimientos de torre y alfil. |
-| `KingMovement` | Movimiento del rey de una casilla en cualquier dirección. |
-
-Torre y alfil usan `PathClearChecker` para comprobar las casillas intermedias. La reina reutiliza esta comprobación mediante ambas estrategias. El destino no se considera un obstáculo intermedio: la validación general debe rechazar las piezas propias.
-
-`PawnMovement` recibe por constructor su dirección (+1 o -1) y su fila inicial. Cuando se implemente, `StandardGame` creará una instancia por color y las piezas de ese color la comparten, porque no tiene estado mutable. La convención de filas es la de los ejemplos de la cátedra: las blancas empiezan en la fila 1 y avanzan hacia filas mayores; las negras empiezan en la fila 6 y avanzan hacia filas menores.
-
-`QueenMovement` recibe las estrategias de torre y alfil por constructor y reutiliza sus reglas mediante composición, tanto para mover como para atacar.
-
-### Game
-
-Estado: constructor, turno inicial y `snapshot()` implementados; `move()` pendiente.
-
-Su responsabilidad prevista es coordinar la partida.
-
-Sus responsabilidades son:
-
-- Mantener el tablero y el turno actual.
-- Recibir solicitudes de movimiento.
-- Consultar al validador.
-- Aplicar las jugadas aceptadas y las capturas.
-- Cambiar el turno después de una jugada válida.
-- Consultar si el siguiente jugador está en jaque.
-- Devolver el resultado de la jugada.
-
-Recibe sus colaboradores por constructor.
-
-### IGameService
-
-Define las operaciones que el núcleo ofrece a la interfaz:
-
-- Solicitar un movimiento.
-- Consultar el turno actual.
-- Obtener una copia del tablero.
-
-`Game` implementa este contrato. La interfaz de usuario lo utiliza sin necesitar conocer los detalles internos de la partida.
-
-### Move
-
-Representa una solicitud de movimiento con dos posiciones:
-
-- Origen.
-- Destino.
-
-Es un objeto de datos. No implementa el patrón Command: no ejecuta ni deshace acciones.
-
-### MoveResult
-
-Representa la respuesta a una solicitud de movimiento.
-
-Puede informar:
-
-- Si la jugada fue aceptada.
-- El motivo de un rechazo, como `RejectionReason` (dato, no texto).
-- La pieza capturada, si hubo alguna.
-- Si la jugada produjo jaque.
-
-Permite que la interfaz muestre resultados sin incorporar reglas del juego.
-
-### MoveValidator
-
-Estado: `validate()` pendiente. Las comprobaciones y su orden indicados a continuación describen el contrato previsto.
-
-Su responsabilidad es comprobar si una jugada completa es válida.
-
-Verifica:
-
-- Que las posiciones estén dentro del tablero.
-- Que haya una pieza en el origen.
-- Que la pieza pertenezca al jugador del turno actual.
-- Que origen y destino sean distintos.
-- Que el destino no contenga una pieza propia.
-- Que la estrategia permita el movimiento.
-- Que no se intente capturar al rey.
-- Que la jugada no deje al propio rey en jaque.
-
-Para comprobar la seguridad del rey, puede simular el movimiento en una copia del tablero y consultar a `CheckDetector`.
-
-`validate` devuelve un `ValidationResult`: indica si la jugada es válida y, si no lo es, el `RejectionReason` que corresponde. Hay un motivo por cada regla de la lista anterior (`OUT_OF_BOUNDS`, `NO_PIECE_AT_ORIGIN`, `NOT_PLAYERS_TURN`, `SAME_SQUARE`, `OWN_PIECE_AT_DESTINATION`, `ILLEGAL_MOVEMENT`, `KING_CAPTURE`, `LEAVES_KING_IN_CHECK`). Las reglas se evalúan en ese orden y se informa la primera que falla.
-
-### CheckDetector
-
-Estado: `isInCheck()` implementado y probado. Consulta las estrategias de ataque sin modificar el tablero. Exige exactamente un rey del color consultado; si falta o hay varios, lanza `IllegalStateException`. Una pieza enemiga clavada sigue amenazando las casillas de su patrón de ataque.
-
-Su responsabilidad es determinar si el rey de un color está amenazado.
-
-Localiza al rey (mediante `Piece.isKing()`) y consulta las estrategias de ataque de las piezas enemigas.
-
-Se mantiene separado de `MoveValidator` para poder probarlo de manera independiente y reutilizarlo tanto en la validación como en la consulta del estado de la partida.
-
-### StandardGame
-
-Estado: `create()` pendiente.
-
-Deberá armar la partida estándar de 8×8.
-
-Crea y conecta:
-
-- Tablero.
-- Piezas.
-- Estrategias.
-- Detector de jaque.
-- Validador.
-- Partida.
-
-Es el punto de composición de la aplicación: concentra la creación de implementaciones concretas y la conexión de dependencias por constructor.
-
-### ConsoleUI
-
-Estado: `run()` pendiente. También falta el método `main` que inicia la aplicación.
-
-Es el adaptador de consola previsto.
-
-Sus responsabilidades son:
-
-- Mostrar el tablero.
-- Leer las jugadas ingresadas.
-- Convertirlas en solicitudes `Move`.
-- Llamar a `IGameService`.
-- Mostrar los resultados, traduciendo cada `RejectionReason` a un mensaje legible.
-
-Recibe un `IGameService` por constructor. Las reglas del ajedrez permanecen en el núcleo.
-
-## Relaciones entre clases
-
-| Relación | Significado |
-|---|---|
-| `Board` contiene `Piece` | El tablero guarda las piezas ubicadas en sus casillas. |
-| `Board` usa `Position` | Las consultas y actualizaciones identifican casillas mediante posiciones. |
-| `Piece` tiene `PieceColor` | Cada pieza pertenece a un color. |
-| `Piece` tiene `IMovementStrategy` | Delega sus reglas particulares en una estrategia. |
-| Las seis estrategias implementan `IMovementStrategy` | Comparten un contrato con comportamientos diferentes. |
-| `QueenMovement` tiene dos estrategias | Reutiliza los movimientos de torre y alfil. |
-| `Game` implementa `IGameService` | Ofrece las operaciones públicas para jugar. |
-| `Game` tiene `Board` | Mantiene el estado de su partida. |
-| `Game` tiene `PieceColor` | Identifica el turno actual. |
-| `Game` usa `MoveValidator` | Valida antes de modificar el estado. |
-| `Game` usa `CheckDetector` | Consulta el jaque. |
-| `Game` recibe `Move` | Recibe la jugada solicitada. |
-| `Game` devuelve `MoveResult` | Comunica el resultado de la jugada. |
-| `Move` tiene dos `Position` | Representa origen y destino. |
-| `MoveResult` puede referenciar `Piece` | Informa la pieza capturada. |
-| `MoveValidator` usa `CheckDetector` | Comprueba que el propio rey quede protegido. |
-| `MoveValidator` devuelve `ValidationResult` | Informa si la jugada es válida y, si no, por qué. |
-| `ValidationResult` y `MoveResult` tienen `RejectionReason` | Comparten el motivo del rechazo como dato. |
-| `CheckDetector` usa las estrategias | Determina qué casillas amenazan las piezas enemigas. |
-| `ConsoleUI` usa `IGameService` | Solicita operaciones al núcleo mediante su contrato. |
-| `StandardGame` crea y conecta los objetos | Centraliza el armado de la partida. |
-
-## Flujo de una jugada
-
-Flujo previsto: todavía no está conectado, porque faltan la consola, el validador y la ejecución de jugadas.
-
-1. `ConsoleUI` recibe el origen y destino ingresados por el jugador.
-2. Construye un `Move` y lo entrega a `IGameService`.
-3. `Game` solicita la validación a `MoveValidator`.
-4. El validador comprueba tablero, turno, destino y estrategia de movimiento.
-5. Simula la jugada y consulta a `CheckDetector` para proteger al propio rey.
-6. Si la jugada es inválida, `Game` devuelve un rechazo y conserva el tablero y el turno.
-7. Si es válida, `Game` aplica el movimiento, realiza la captura y cambia el turno.
-8. Consulta si el siguiente jugador está en jaque.
-9. Devuelve un `MoveResult`.
-10. `ConsoleUI` muestra el resultado.
-
-## Patrones y principios aplicados
-
-### Strategy
-
-**Qué:** cada pieza recibe una implementación de `IMovementStrategy`.
-
-**Por qué:** las piezas tienen diferentes reglas. El contrato permite incorporar movimientos nuevos manteniendo estable la lógica general de la partida.
-
-**Cuándo cambiar esta decisión:** si el dominio tuviera un único comportamiento fijo y separar estrategias no aportara extensibilidad.
-
-Para agregar una pieza nueva se implementa otra estrategia y se incorpora su configuración al armado de la partida.
-
-### Composición sobre herencia
-
-**Qué:** `Piece` tiene una estrategia y `QueenMovement` combina estrategias de torre y alfil.
-
-**Por qué:** permite reutilizar y sustituir comportamientos sin depender de una jerarquía rígida de clases.
-
-**Cuándo cambiar esta decisión:** si existiera una relación de herencia estable y claramente sustituible que aportara una solución más simple.
-
-### Inyección de dependencias por constructor
-
-**Qué:** los objetos reciben sus colaboradores al construirse. `StandardGame` será el encargado de conectar las implementaciones concretas cuando se implemente.
-
-**Por qué:** las dependencias quedan explícitas y los objetos nacen con los colaboradores necesarios.
-
-**Cuándo cambiar esta decisión:** si aparece otra necesidad de configuración. No se agregará un contenedor de dependencias sin una razón concreta.
-
-Crear valores como `Position` o `Move` no requiere una interfaz ni un mecanismo de inyección.
-
-### Separación entre núcleo y adaptadores
-
-**Qué:** las reglas viven en `core`; la consola y el armado de la aplicación viven en `app`.
-
-**Por qué:** permite probar las reglas sin interfaz ni infraestructura y reemplazar la presentación sin modificar el núcleo.
-
-**Cuándo cambiar esta decisión:** en un prototipo descartable donde mantener esa frontera no aporte valor. En este TPO la separación es un requisito.
-
-### Motivo de rechazo como dato
-
-**Qué:** `MoveValidator.validate` devuelve un `ValidationResult` que, si la jugada se rechaza, trae un `RejectionReason` (enum). `MoveResult` propaga ese motivo. El texto que ve el jugador lo arma `ConsoleUI`.
-
-**Por qué:** un `boolean` no dice por qué se rechazó, y un `String` armado en el núcleo mezcla las reglas con la presentación (idioma, formato) y obliga a los tests a comparar texto. Con un enum, los tests verifican el motivo exacto y cada adaptador decide cómo mostrarlo.
-
-**Cuándo cambiar esta decisión:** si una validación exitosa tuviera que transportar información adicional (por ejemplo, qué jugada especial es, como enroque o captura al paso), `ValidationResult` pasaría a llevar más datos o se modelaría con tipos distintos para "válida" y "rechazada".
-
-### Rey identificado con un indicador explícito
-
-**Qué:** `Piece` recibe por constructor un booleano que indica si es el rey y lo expone con `isKing()`. `CheckDetector` y `MoveValidator` usan ese método. El nombre de la pieza queda solo para mostrarla.
-
-**Por qué:** comparar el nombre con `"King"` hace depender una regla central de un texto: un error de tipeo no falla al compilar y rompe en silencio la detección de jaque. Un enum de tipos de pieza evitaría el texto, pero habría que modificarlo cada vez que se agrega una pieza, contra el requisito de sumar clases sin modificar las existentes. Con el indicador, una pieza nueva no obliga a tocar nada.
-
-**Cuándo cambiar esta decisión:** si más reglas necesitaran saber de qué pieza se trata (por ejemplo enroque o promoción), un booleano por cada rol no escala y convendría un concepto propio, como un tipo o una capacidad de la pieza.
-
-### Peón configurado con dirección y fila inicial
-
-**Qué:** `PawnMovement` recibe por constructor su dirección (+1 o -1) y su fila inicial. `StandardGame` deberá armar una instancia para las blancas (dirección +1, fila 1) y otra para las negras (dirección -1, fila 6).
-
-**Por qué:** el peón es la única pieza cuyo movimiento depende de su historia (el doble paso inicial) y de su color (hacia dónde avanza). Como un peón nunca retrocede, estar en su fila inicial equivale a no haberse movido, así que no hace falta un estado `hasMoved`. Un estado mutable dentro de `Piece` requeriría revisar las copias del tablero, que comparten las piezas, para evitar que una simulación altere el tablero real. También podría modelarse de forma inmutable o guardarse por separado; la fila inicial evita ese estado adicional para el alcance actual. Tampoco se escriben las filas 1 y 6 dentro de la estrategia, para que no dependa de un tablero de 8×8.
-
-**Cuándo cambiar esta decisión:** si se agrega la captura al paso, que depende de la última jugada del rival y no de la posición del peón, la estrategia necesitaría acceso al historial de jugadas. También si una variante permitiera que los peones retrocedan o se coloquen en cualquier fila.
-
-### Tablero con dimensiones configurables y piezas inmutables
-
-**Qué:** `Board` recibe sus dimensiones por constructor y guarda las piezas en una matriz. `Position` es un valor inmutable con igualdad por contenido, y `Piece` conserva atributos finales. El contrato exige estrategias inmutables y consultas sin efectos secundarios. `Board.copy()` duplica las casillas pero comparte las piezas.
-
-**Por qué:** las dimensiones no están escritas en el núcleo, así que otro tamaño de tablero se resuelve en `StandardGame` sin tocar las reglas (hay que definir una disposición inicial para ese tamaño). Con piezas inmutables, simular una jugada sobre una copia es barato y no puede alterar el tablero real, que es lo que usa `MoveValidator` para proteger al rey. `Position` con igualdad por contenido permite compararla en los tests y usarla en colecciones. Se eligió una matriz en vez de un `Map<Position, Piece>` por el acceso directo y el recorrido ordenado; con las dimensiones por constructor, el `Map` no aportaba flexibilidad extra.
-
-**Cuándo cambiar esta decisión:** si las piezas necesitaran estado propio (por ejemplo, un contador de movimientos), dejarían de ser inmutables y `copy()` tendría que duplicarlas. Si hubiera tableros muy grandes y casi vacíos, convendría una estructura dispersa como un `Map`.
-
-### Contrato de estrategia sin color y con ataque por defecto
-
-**Qué:** `canMove` y `canAttack` no reciben el color de la pieza: la estrategia lo obtiene de la pieza que está en `from`. `canAttack` tiene una implementación por defecto igual a `canMove`, y `PawnMovement` la sobreescribe por sus ataques diagonales y `QueenMovement` para delegar el ataque en sus dos estrategias. `Piece` expone ambos métodos y delega en su estrategia.
-
-**Por qué:** el color ya está en la pieza del origen, y pasarlo aparte permitía enviar uno que no coincidiera con ella. Cinco de las seis piezas amenazan exactamente las casillas a las que pueden moverse, así que repetir el mismo método en cada una duplicaría código sin aportar nada. El método por defecto evita una clase base abstracta, que sería herencia justo donde se busca composición. A cambio, el contrato tiene una precondición (en `from` está la pieza dueña de la estrategia), que `MoveValidator` garantiza, y los tests de cada estrategia arman un tablero con la pieza colocada. `Piece` delega para que el resto del núcleo no dependa de cómo está implementado el movimiento.
-
-**Cuándo cambiar esta decisión:** si más de una o dos piezas necesitaran sobreescribir `canAttack`, conviene volverlo abstracto y que cada pieza lo declare, para que la diferencia no quede escondida en un valor por defecto. Si alguna estrategia necesitara más contexto que el tablero y las casillas (por ejemplo, el historial de jugadas para la captura al paso), el contrato tendría que recibirlo.
-
-### Movimiento como consulta puntual y no como lista de destinos
-
-**Qué:** cada estrategia responde si un movimiento concreto es posible (`canMove(board, from, to)`) y si amenaza una casilla concreta (`canAttack`). No genera la lista de todos los destinos posibles de la pieza. El ejemplo de la cátedra hace lo contrario: genera los movimientos posibles y verifica si el destino está en esa lista.
-
-**Por qué:** el alcance obligatorio solo necesita validar la jugada que propone el jugador, de a una, y detectar si un rey está amenazado, que también es una pregunta sobre una casilla puntual. Un método que responde sí o no es más simple de implementar y de testear (una pregunta, una respuesta) y evita construir una lista de destinos cuando solo importa uno. El costo es que saber si un jugador tiene alguna jugada legal, o mostrar los movimientos posibles, se resuelve por fuerza bruta: probar cada pieza contra cada casilla. En la partida estándar, un jugador comienza con 16 piezas: probarlas contra 64 casillas supone hasta 1024 candidatos antes de filtrar movimientos. Solo los candidatos que superen las comprobaciones previas necesitan simulación. El rendimiento debe medirse antes de optimizar.
-
-**Cuándo cambiar esta decisión:** si el grupo suma jaque mate, ahogado, oponente con IA o resaltado de movimientos legales, y la fuerza bruta se repite en varios lugares o se vuelve lenta, conviene agregar a `IMovementStrategy` un método que genere los destinos (`possibleMoves`), manteniendo `canMove` como consulta puntual. Se puede agregar como método por defecto basado en `canMove`, de modo que las estrategias existentes no se modifiquen, y cada pieza lo sobreescriba solo si necesita eficiencia.
-
-### Turnos sin State
-
-**Qué:** el turno se representa mediante `PieceColor`.
-
-**Por qué:** existen dos turnos estables. Un patrón State completo agregaría complejidad para el alcance actual.
-
-**Cuándo cambiar esta decisión:** si aparecen fases con distintos comportamientos y transiciones, como preparación, promoción pendiente o fin de partida.
-
-### Patrones que no incorporamos inicialmente
-
-- **Command:** se evaluará si agregamos deshacer/rehacer o un historial de acciones ejecutables.
-- **Observer:** se evaluará si varios componentes necesitan reaccionar a eventos de la partida.
-- **State:** se evaluará si aparecen fases con comportamientos diferentes.
-- **Factory:** se evaluará si la elección y creación de objetos requiere una lógica específica. `StandardGame` funciona inicialmente como punto de composición.
-
-## Aislamiento de la partida
-
-`Game` conserva una copia del tablero recibido en el constructor. Así, modificar el tablero utilizado para crear la partida no cambia su estado interno. `snapshot()` también devuelve una copia. Ambas copias comparten piezas y estrategias, que deben respetar el contrato de inmutabilidad.
+| **S: responsabilidad única** | `Board` guarda estado; las estrategias describen movimientos; `CheckDetector` detecta amenazas; `MoveValidator` valida una jugada; `Game` coordina la partida; los adaptadores presentan y traducen entradas. |
+| **O: abierto/cerrado** | `Piece` trabaja con un contrato de movimiento. Puede recibir otra estrategia sin modificar su código. La composición y los gráficos sí deben configurarse al agregar un tipo nuevo. |
+| **L: sustitución** | Las estrategias cumplen el mismo contrato: responden si pueden mover/atacar sin modificar el tablero. La sustitución se prueba también con una estrategia stub. |
+| **I: segregación de interfaces** | `IMovementStrategy` contiene movimiento y ataque; `ICommand`, ejecutar y deshacer; `IGameService`, operaciones cohesivas de una partida. No mezclan sonido, dibujo ni HTTP. |
+| **D: inversión de dependencias** | WebServer recibe IMatchService y ConsoleUI recibe IGameService. MatchSession recibe los contratos de repositorio e IA. `Piece` recibe `IMovementStrategy`. El núcleo no depende de clases de presentación. Los colaboradores internos estables permanecen concretos. |
+| **Inyección por constructor** | `Game` recibe tablero, turno, validador, detector y fábrica. `StandardGame` hace la conexión explícita. No se usa un framework de DI. |
+| **Composición sobre herencia** | `Piece` **tiene** una estrategia. `QueenMovement` **tiene** los movimientos de torre y alfil. No hay una jerarquía de subclases de piezas. |
+| **Encapsulamiento** | Los campos se mantienen privados. `getBoard()` devuelve una copia y el historial expone `MoveRecord` inmutables, nunca comandos que la UI pueda ejecutar. |
+| **KISS y DRY** | Matriz 8 × 8, colecciones del lenguaje, lógica compartida y compilación con Maven y JDK 21. Sin capas o dependencias para problemas que este proyecto no tiene. |
 
 ## Testing
 
-Los tests actuales se ejecutan sin consola, interfaz gráfica ni servicios externos.
+Ejecutá:
 
-| Unidad | Casos aprobados |
-|---|---:|
-| Torre | 5 |
-| Alfil | 6 |
-| Caballo | 16 |
-| Rey | 16 |
-| Peón | 22 |
-| Reina | 40 |
-| Detector de jaque | 36 |
-| **Total** | **141** |
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -Test
+```
 
-Última verificación: `mvn test` finalizó con `BUILD SUCCESS`, sin fallos, errores ni casos omitidos. Los casos parametrizados se cuentan por cada combinación ejecutada.
+Hay **31 pruebas originales**, más **16 pruebas nuevas de sesión, IA y persistencia**, en ChessTest.java y FeatureTest.java. Usan @Test, @DisplayName y aserciones de JUnit 5; una condición fallida hace fallar la construcción. JUnit 5 ejecuta cada escenario por separado mediante Maven y publica los informes en target/surefire-reports. No necesitan navegador ni servidor.
 
-Se prueban movimientos válidos e inválidos, obstáculos en piezas deslizantes, saltos del caballo, avances y capturas del peón en ambos sentidos, ataques y conservación del tablero durante las consultas.
+Aplicamos **Arrange / Act / Assert**: preparar un tablero, ejecutar una acción y comprobar el resultado. La suite incluye pruebas unitarias de estrategias y pruebas de integración entre los objetos del dominio.
 
-Para caballo, rey y peón se escribieron las pruebas antes de implementar, se comprobó que fallaban por los métodos pendientes y luego se implementaron las reglas. Los tests de la reina se agregaron sobre su implementación existente. Para `CheckDetector` también se siguió prueba que falla → implementación → verificación de toda la suite. Sus pruebas usan estrategias reales para cubrir ataques de las seis piezas, ambos colores, obstáculos, piezas clavadas, posiciones inválidas y conservación del tablero.
+Cobertura principal:
 
-Las siguientes pruebas de integración del núcleo y validación general siguen pendientes:
+- Reglas y obstáculos de las seis piezas, límites y turnos.
+- Ataque diagonal del peón, piezas clavadas, jaque y reyes adyacentes.
+- Capturas, mate y ahogado.
+- Enroque de ambos lados y colores, y sus restricciones.
+- Al paso, vencimiento de ese derecho y un caso donde descubriría jaque.
+- Las cuatro promociones, promoción negra y promoción con captura.
+- Comparación del estado antes y después de ejecutar/deshacer.
+- Historial, rehacer, creación de una nueva rama y copias defensivas.
+- Tablas, contadores y repetición después de deshacer/rehacer.
+- **Perft inicial:** 20, 400 y 8.902 posiciones legales a profundidades 1, 2 y 3.
 
-- Límites del tablero y rechazo de posiciones fuera de él.
-- Capturas aplicadas a través de `Game.move()`.
-- Rechazo de capturas de piezas propias.
-- Alternancia de turnos.
-- Conservación del estado después de una jugada rechazada.
-- Rechazo de jugadas que dejen al propio rey en jaque.
+Un **stub** de `IMovementStrategy` comprueba que `Piece` use el comportamiento inyectado. La sesión agrega un repositorio en memoria, un reloj controlado y una IA sustituible como dobles de prueba.
 
-## Extensibilidad
+También se verificaron en Chrome los flujos de interfaz. El script opcional `tools/verify-ui.cjs` requiere Node.js, Playwright y Chrome; **no son necesarios para jugar ni para ejecutar las pruebas Java**. Las pruebas de UI reinician la partida, así que deben correrse sobre un servidor dedicado a pruebas.
 
-La estructura busca permitir:
+La prueba HTTP opcional se ejecuta con Node.js 18 o superior y el servidor activo: `node tools/verify-api.mjs`. Comprueba el contrato del adaptador, incluyendo rechazos sin mutación y revisiones desactualizadas. También reinicia la partida.
 
-- Agregar estrategias para piezas nuevas.
-- Reemplazar la consola por otra interfaz mediante `IGameService`.
-- Probar las reglas independientemente de los adaptadores.
-- Configurar dimensiones del tablero.
+No se afirma haber seguido TDD estricto, Scrum o pair programming. Tener pruebas no demuestra por sí solo que se escribieron antes de la implementación.
 
-Cambiar las dimensiones también requiere definir una disposición inicial adecuada y revisar las reglas que dependan de ella. `StandardGame` arma específicamente la partida estándar de 8×8.
+## CPU y memoria: unidades 04
 
-## UML y documentación
+### Decisiones aplicadas
 
-El diagrama de clases está en `docs/UML-Ajedrez-TPO.puml` (fuente PlantUML) y `docs/UML-Ajedrez-TPO.pdf` (diagrama renderizado). Documenta la estructura y los contratos de la arquitectura. Las seis estrategias de movimiento ya están implementadas; la validación y la coordinación de la partida siguen pendientes. El archivo PlantUML todavía no incluye `PathClearChecker`: falta actualizar la fuente y regenerar el PDF antes de considerarlo sincronizado con el código actual. Para regenerar el PDF se puede usar el plugin de PlantUML de IntelliJ, o PlantUML con Graphviz.
+- **Acceso directo:** `Piece[8][8]` permite consultar una casilla en O(1).
+- **Especialización:** las estrategias separan los algoritmos de cada pieza.
+- **Corte temprano:** la validación rechaza primero los errores simples, antes de copiar el tablero. La búsqueda de jugadas se detiene en cuanto encuentra una al comprobar si la partida puede continuar.
+- **Caché de gráficos:** los seis personajes, para dos colores, se dibujan una sola vez por página. Se reutilizan hasta 12 imágenes.
+- **Cálculo a demanda:** se piden los destinos legales cuando se selecciona una pieza.
+- **Render por eventos:** el tablero se actualiza al interactuar, sin un bucle permanente de animación.
+- **Compartir datos inmutables:** las copias de tablero comparten `Piece` y las estrategias sin modificarlas.
+- **Liberación de referencias:** una nueva partida reemplaza el estado anterior; una rama nueva vacía la pila de rehacer. Los nodos de sonido se desconectan al terminar.
 
-Durante el desarrollo el UML deberá seguir actualizándose para representar las clases y relaciones realmente implementadas.
+### Costos y límites
 
-Cada cambio relevante deberá incluir:
+Si llamamos **n** a la cantidad de casillas, buscar el rey y recorrer atacantes es O(n), más el recorrido de un rayo de ataque. La búsqueda simple de jugadas puede examinar hasta n × n pares origen/destino, cada uno con su validación. Con un tablero fijo de 64 casillas es un costo acotado, aunque no sería un motor competitivo para tableros enormes.
 
-- Código correspondiente.
-- Pruebas de su comportamiento.
-- Actualización del UML.
-- Justificación de la decisión en formato **qué / por qué / cuándo cambiarla**.
+Cada comando guarda O(n) referencias de tablero y el historial consume O(m × n), con **m** movimientos conservados. No se describe como memoria constante. Las imágenes permanecen en la caché hasta cerrar la página y Java administra sus objetos mediante el garbage collector.
+
+Las pruebas reportan el tiempo observado de la suite; eso **no reemplaza un profiler** ni garantiza rendimiento en todas las máquinas. Para investigar un problema se usarían VisualVM/JFR para Java y Performance/Memory de DevTools para la interfaz. No se fuerza el GC ni se agregó pooling sin mediciones.
+
+## Otros temas de clase
+
+- **Requisitos funcionales y no funcionales:** definidos en [docs/requisitos.md](docs/requisitos.md).
+- **Diagramas y relaciones entre clases:** [docs/arquitectura.md](docs/arquitectura.md).
+- **Ágil:** se incluye un backlog sencillo por funcionalidades verificables. Es una guía para continuar el TPO, no evidencia de ceremonias de Scrum realizadas.
+- **BPO y SLA:** no contratamos un proveedor ni consumimos un servicio externo. La relación útil es la idea de contrato: `IGameService` establece qué operaciones ofrece la partida. Los objetivos de calidad locales no se presentan como un SLA contractual.
+- **Material consultado:** [docs/material-de-clase.md](docs/material-de-clase.md) relaciona las nueve presentaciones con decisiones concretas del código.
+
+## Estructura
+
+```text
+src/main/java/ar/edu/ajedrez/
+  core/
+    board/        Board y Position
+    pieces/       Piece, PieceType, PieceColor y PieceFactory
+    movement/     IMovementStrategy y seis implementaciones
+    validation/   MoveValidator y CheckDetector
+    game/         IGameService, Game, Move, MoveResult,
+                  ICommand, MoveCommand y MoveRecord
+  core/ai/        IChessAi, MinimaxAi, Difficulty
+  core/session/   IMatchService, MatchSession, IGameRepository, SavedMatch
+  app/            StandardGame, WebServer y ConsoleUI
+  app/persistence/ FileGameRepository
+src/test/java/ar/edu/ajedrez/
+                  ChessTest y FeatureTest
+web/              index.html, styles.css, app.js, pieces.js y favicon.svg
+docs/             arquitectura, requisitos y relación con las clases
+tools/            comprobación opcional de interfaz
+run.ps1           compilación, ejecución y pruebas
+Jugar.bat         entrada para Windows
+```
+
+### Para explicar el trabajo en una defensa
+
+1. Mostrar `Piece` y cambiar conceptualmente su estrategia: **Strategy y composición**.
+2. Seguir `StandardGame.create()`: **inyección por constructor y Factory**.
+3. Mover, capturar, deshacer y rehacer: **Command**.
+4. Ejecutar las pruebas sin abrir la web: **núcleo independiente**.
+5. Mostrar `ConsoleUI`: el mismo contrato sirve para otra presentación.
+6. Justificar por qué no se agregaron State, Observer ni un contenedor de DI.
+
+
+
+
+La prueba opcional node tools/verify-restart.mjs inicia y cierra un servidor propio de prueba en 8083 para comprobar recuperación real. No usa el guardado personal.
+
+## Maven y JUnit 5
+
+Requisitos: JDK 21 y Maven. El script run.ps1 utiliza Maven del PATH o una distribución local previamente descargada por el IDE.
+
+Desde la raíz del proyecto:
+
+```powershell
+mvn test
+mvn package
+```
+
+La configuración está en pom.xml. Las pruebas se ejecutan con Surefire; los informes están en target/surefire-reports. El test del repositorio real utiliza @TempDir para aislar sus archivos.
+
+Para jugar se puede usar Jugar.bat o run.ps1. El script primero ejecuta mvn compile y luego inicia Java con target/classes. La carpeta web debe permanecer junto al proyecto: el JAR no es un paquete autónomo con la interfaz embebida.
+
+Esta integración mantiene el historial del repositorio original. Los tests antiguos ligados a su API fueron sustituidos por los 47 escenarios de la versión web, ahora ejecutados individualmente por JUnit 5. Las pruebas manuales y de navegador continúan siendo complementarias.
+
+Pendientes de la entrega: UML de clases actualizado y presentación PPTX. La versión web conserva por ahora el tamaño fijo 8x8 y la fábrica basada en PieceType; la extensión a otras dimensiones o nuevos tipos requiere refactorización.

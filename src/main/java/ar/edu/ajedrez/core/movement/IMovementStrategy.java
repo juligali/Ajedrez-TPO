@@ -1,25 +1,11 @@
 package ar.edu.ajedrez.core.movement;
 
-import ar.edu.ajedrez.core.board.Board;
-import ar.edu.ajedrez.core.board.Position;
+import ar.edu.ajedrez.core.board.*;
+import ar.edu.ajedrez.core.pieces.PieceColor;
 
-
-/**
- * Las implementaciones deben ser inmutables. Las consultas no deben modificar
- * el tablero, las piezas ni el estado de la estrategia. Board.copy comparte piezas
- * y estrategias, por lo que esta condición es necesaria para simular sin efectos laterales.
- * Precondición: from está dentro del tablero y contiene la pieza consultada.
- */
 public interface IMovementStrategy {
-    /** La pieza puede realizar este movimiento según sus reglas. */
-    boolean canMove(Board board, Position from, Position to);
-
-    /**
-     * La pieza amenaza la casilla, esté ocupada o no.
-     * Por defecto amenaza las casillas a las que puede moverse; el peón la sobreescribe
-     * porque avanza hacia adelante pero ataca en diagonal.
-     */
-    default boolean canAttack(Board board, Position from, Position target) {
-        return canMove(board, from, target);
+    boolean canMove(Board board, Position from, Position to, PieceColor color);
+    default boolean canAttack(Board board, Position from, Position to, PieceColor color) {
+        return canMove(board, from, to, color);
     }
 }

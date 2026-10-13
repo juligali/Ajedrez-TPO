@@ -1,16 +1,15 @@
 package ar.edu.ajedrez.core.game;
 
-import java.util.Objects;
-
 import ar.edu.ajedrez.core.board.Position;
+import ar.edu.ajedrez.core.pieces.PieceType;
 
-/**
- * Solicitud de movimiento: de qué casilla a cuál.
- * Es un objeto de datos; no ejecuta ni deshace acciones, así que no es el patrón Command.
- */
-public record Move(Position from, Position to) {
-    public Move {
-        Objects.requireNonNull(from, "from");
-        Objects.requireNonNull(to, "to");
-    }
+public final class Move {
+    private final Position from;
+    private final Position to;
+    private final PieceType promotion;
+    public Move(Position from, Position to) { this(from, to, PieceType.QUEEN); }
+    public Move(Position from, Position to, PieceType promotion) { this.from = from; this.to = to; this.promotion = promotion; }
+    public Position getFrom() { return from; }
+    public Position getTo() { return to; }
+    public PieceType getPromotion() { return promotion; }
 }

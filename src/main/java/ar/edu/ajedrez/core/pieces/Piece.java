@@ -1,49 +1,24 @@
 package ar.edu.ajedrez.core.pieces;
 
-import java.util.Objects;
-
-import ar.edu.ajedrez.core.board.Board;
-import ar.edu.ajedrez.core.board.Position;
 import ar.edu.ajedrez.core.movement.IMovementStrategy;
+import ar.edu.ajedrez.core.board.*;
 
-/**
- * Una pieza concreta de la partida. Sus colaboradores entran por constructor.
- * Es inmutable (siempre que su estrategia también lo sea): por eso las copias
- * del tablero pueden compartir piezas sin riesgo. Su igualdad es por identidad.
- * Delega las reglas de movimiento y ataque en su estrategia, sin exponerla.
- */
+/** Una pieza tiene un comportamiento. No necesitamos seis subclases de Piece. */
 public final class Piece {
-    private final String name;              // solo para mostrar la pieza: ninguna regla depende de él
+    private final PieceType type;
     private final PieceColor color;
     private final IMovementStrategy movement;
-    private final boolean king;             // identifica al rey para detectar jaque
-
-    public Piece(String name, PieceColor color, IMovementStrategy movement, boolean king) {
-        this.name = Objects.requireNonNull(name, "name");
-        this.color = Objects.requireNonNull(color, "color");
-        this.movement = Objects.requireNonNull(movement, "movement");
-        this.king = king;
+    private final boolean moved;
+    public Piece(PieceType type, PieceColor color, IMovementStrategy movement) {
+        this(type, color, movement, false);
     }
-
-    public String name() {
-        return name;
+    private Piece(PieceType type, PieceColor color, IMovementStrategy movement, boolean moved) {
+        this.type = type; this.color = color; this.movement = movement; this.moved = moved;
     }
-
-    public PieceColor color() {
-        return color;
-    }
-
-    public boolean isKing() {
-        return king;
-    }
-
-    /** Ver IMovementStrategy.canMove: esta pieza debe estar en "from". */
-    public boolean canMove(Board board, Position from, Position to) {
-        return movement.canMove(board, from, to);
-    }
-
-    /** Ver IMovementStrategy.canAttack: esta pieza debe estar en "from". */
-    public boolean canAttack(Board board, Position from, Position target) {
-        return movement.canAttack(board, from, target);
-    }
+    public PieceType getType() { return type; }
+    public PieceColor getColor() { return color; }
+    public boolean hasMoved() { return moved; }
+    public Piece movedCopy() { return new Piece(type, color, movement, true); }
+    public boolean canMove(Board board, Position from, Position to) { return movement.canMove(board, from, to, color); }
+    public boolean canAttack(Board board, Position from, Position to) { return movement.canAttack(board, from, to, color); }
 }

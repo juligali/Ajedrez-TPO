@@ -1,20 +1,24 @@
 package ar.edu.ajedrez.core.game;
 
-import java.util.Objects;
+import java.util.List;
+import ar.edu.ajedrez.core.board.*;
+import ar.edu.ajedrez.core.pieces.*;
 
-import ar.edu.ajedrez.core.board.Board;
-import ar.edu.ajedrez.core.pieces.PieceColor;
-
-/**
- * Operaciones que el núcleo ofrece a la interfaz de usuario (puerto).
- * Los adaptadores dependen de este contrato y no de los detalles de la partida.
- */
 public interface IGameService {
-    /** Solicita una jugada. Si se rechaza, el tablero y el turno no cambian. */
     MoveResult move(Move move);
-
-    PieceColor currentTurn();
-
-    /** Copia del tablero actual: modificarla no afecta a la partida. */
-    Board snapshot();
+    MoveResult undo();
+    MoveResult redo();
+    Board getBoard();
+    PieceColor getTurn();
+    List<Position> legalMoves(Position from);
+    List<MoveRecord> getHistory();
+    String getStatus();
+    boolean isInCheck();
+    boolean isFinished();
+    boolean canRedo();
+    int getCapturedPoints(PieceColor player);
+    PieceColor getWinner();
+    List<Move> getTimeline();
 }
+
+

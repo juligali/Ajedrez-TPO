@@ -1,18 +1,9 @@
 package ar.edu.ajedrez.core.movement;
 
-import ar.edu.ajedrez.core.board.Board;
-import ar.edu.ajedrez.core.board.Position;
-
-/**
- * Movimiento del rey de una casilla en cualquier dirección.
- */
+import ar.edu.ajedrez.core.board.*;
+import ar.edu.ajedrez.core.pieces.PieceColor;
 public class KingMovement implements IMovementStrategy {
-    @Override
-    public boolean canMove(Board board, Position from, Position to) {
-        int rowDifference = Math.abs(to.row() - from.row());
-        int columnDifference = Math.abs(to.column() - from.column());
-        // La seguridad del rey y el destino con pieza propia los valida MoveValidator.
-        return Math.max(rowDifference, columnDifference) == 1;
+    public boolean canMove(Board b, Position f, Position t, PieceColor color) {
+        return !f.equals(t) && Math.abs(f.getRow() - t.getRow()) <= 1 && Math.abs(f.getCol() - t.getCol()) <= 1;
     }
-
 }

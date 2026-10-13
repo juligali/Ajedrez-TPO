@@ -15,6 +15,7 @@ public class MoveCommand implements ICommand {
         this.board = board; this.before = board.copy(); this.move = move; this.factory = factory;
         this.piece = board.get(move.getFrom());
     }
+    @Override
     public void execute() {
         Position f = move.getFrom(), t = move.getTo();
         captured = board.get(t);
@@ -38,6 +39,7 @@ public class MoveCommand implements ICommand {
             board.setEnPassant(new Position((f.getRow() + t.getRow()) / 2, f.getCol()));
         board.setHalfMoveClock(piece.getType() == PieceType.PAWN || captured != null ? 0 : board.getHalfMoveClock() + 1);
     }
+    @Override
     public void undo() { board.restore(before); }
     public Move getMove() { return move; }
     public Piece getCaptured() { return captured; }

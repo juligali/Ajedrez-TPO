@@ -1,6 +1,5 @@
 package ar.edu.ajedrez;
 
-import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -133,9 +132,7 @@ class ChessTest {
     @Test
     @DisplayName("Strategy se sustituye mediante una interfaz (stub)")
     void scenario9() {
-            IMovementStrategy stub = new IMovementStrategy() {
-                public boolean canMove(Board b, Position from, Position to, PieceColor color) { return true; }
-            };
+            IMovementStrategy stub = (board, from, to, color) -> true;
             Piece piece = new Piece(ROOK,WHITE,stub);
             expect(piece.canMove(new Board(),p("a1"),p("b3")), "Piece delega en la estrategia inyectada");
     }

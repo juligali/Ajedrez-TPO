@@ -22,6 +22,7 @@ public class Game implements IGameService {
         repetitions.put(positionKey(), 1);
         updateStatus();
     }
+    @Override
     public MoveResult move(Move move) {
         if (isFinished()) return new MoveResult(false, "La partida terminó. Podés iniciar otra o deshacer.");
         String error = validator.validate(board, move, turn);
@@ -35,6 +36,7 @@ public class Game implements IGameService {
         updateStatus();
         return new MoveResult(true, command.getLabel());
     }
+    @Override
     public MoveResult undo() {
         if (history.isEmpty()) return new MoveResult(false, "Todavía no hay movimientos para deshacer.");
         String key = positionKey();
@@ -46,6 +48,7 @@ public class Game implements IGameService {
         updateStatus();
         return new MoveResult(true, "Movimiento deshecho.");
     }
+    @Override
     public MoveResult redo() {
         if (future.isEmpty()) return new MoveResult(false, "No hay movimientos para rehacer.");
         MoveCommand command = future.pop();
@@ -56,14 +59,18 @@ public class Game implements IGameService {
         updateStatus();
         return new MoveResult(true, "Movimiento rehecho.");
     }
+    @Override
     public Board getBoard() { return board.copy(); }
+    @Override
     public PieceColor getTurn() { return turn; }
+    @Override
     public List<MoveRecord> getHistory() {
         List<MoveRecord> records = new ArrayList<>();
         for (MoveCommand command : history)
             records.add(new MoveRecord(command.getMove(), command.getCaptured(), command.getLabel()));
         return Collections.unmodifiableList(records);
     }
+    @Override
     public int getCapturedPoints(PieceColor player) {
         int total = 0;
         for (MoveCommand command : history) {
@@ -73,18 +80,25 @@ public class Game implements IGameService {
         }
         return total;
     }
+    @Override
     public PieceColor getWinner() { return status.equals("CHECKMATE") ? turn.opposite() : null; }
     /** Jugadas realizadas y futuras, en orden; sólo datos, nunca comandos mutables. */
+    @Override
     public List<Move> getTimeline() {
         List<Move> moves = new ArrayList<>();
         for (MoveCommand command : history) moves.add(command.getMove());
         for (MoveCommand command : future) moves.add(command.getMove());
         return Collections.unmodifiableList(moves);
     }
+    @Override
     public boolean canRedo() { return !future.isEmpty(); }
+    @Override
     public String getStatus() { return status; }
+    @Override
     public boolean isInCheck() { return check.isInCheck(board, turn); }
+    @Override
     public boolean isFinished() { return !status.equals("PLAYING") && !status.equals("CHECK"); }
+    @Override
     public List<Position> legalMoves(Position from) {
         List<Position> result = new ArrayList<>();
         if (isFinished() || !board.contains(from)) return result;
@@ -161,5 +175,3 @@ public class Game implements IGameService {
         return key.toString();
     }
 }
-
-

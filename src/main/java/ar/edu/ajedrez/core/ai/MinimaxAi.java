@@ -19,11 +19,12 @@ public class MinimaxAi implements IChessAi {
     private int nodes, nodeLimit;
     private long deadline;
     private static final int MATE = 100000;
-    private static class SearchLimit extends RuntimeException { }
+    private static class SearchLimit extends RuntimeException { private static final long serialVersionUID = 1L; }
 
     public MinimaxAi(MoveValidator validator, CheckDetector detector, PieceFactory factory, Random random) {
         this.validator=validator; this.detector=detector; this.factory=factory; this.random=random;
     }
+    @Override
     public synchronized Move chooseMove(Board board, PieceColor color, Difficulty difficulty) {
         List<Move> moves = legalMoves(board, color);
         if (moves.isEmpty()) return null;

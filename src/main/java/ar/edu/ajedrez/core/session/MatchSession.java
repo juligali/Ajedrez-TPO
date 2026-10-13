@@ -44,6 +44,7 @@ public class MatchSession implements IMatchService {
             return new MoveResult(false,"No se pudo guardar. No se aplicó el cambio. Revisá permisos o espacio en disco.");
         }
     }
+    @Override
     public MoveResult newGame(GameMode mode, Difficulty difficulty) {
         if(mode==null || difficulty==null) throw new IllegalArgumentException("Elegí modo y nivel.");
         SavedMatch before=snapshot();
@@ -51,12 +52,14 @@ public class MatchSession implements IMatchService {
         configured=true; startedAt=clock.millis(); endedAt=0;
         return persist(before,new MoveResult(true,"Partida creada y guardada."));
     }
+    @Override
     public MoveResult move(Move move) {
         if(!configured) return new MoveResult(false,"Elegí el modo de partida antes de empezar.");
         if(isAiTurn()) return new MoveResult(false,"Ahora le toca a la IA.");
         SavedMatch before=snapshot();
         return persist(before,game.move(move));
     }
+    @Override
     public MoveResult playAi() {
         if(!isAiTurn()) return new MoveResult(false,"No es el turno de la IA.");
         Move move=ai.chooseMove(game.getBoard(),game.getTurn(),difficulty);
@@ -64,6 +67,7 @@ public class MatchSession implements IMatchService {
         SavedMatch before=snapshot();
         return persist(before,game.move(move));
     }
+    @Override
     public MoveResult undo() {
         SavedMatch before=snapshot();
         MoveResult result=game.undo();
@@ -71,20 +75,28 @@ public class MatchSession implements IMatchService {
         if(result.isAccepted() && mode==GameMode.SOLO && game.getTurn()==PieceColor.BLACK && !game.getHistory().isEmpty()) game.undo();
         return persist(before,result);
     }
+    @Override
     public MoveResult redo() {
         SavedMatch before=snapshot();
         MoveResult result=game.redo();
         if(result.isAccepted() && mode==GameMode.SOLO && game.getTurn()==PieceColor.BLACK && game.canRedo()) game.redo();
         return persist(before,result);
     }
+    @Override
     public MoveResult save() {
         try { repository.save(snapshot()); return new MoveResult(true,"Partida guardada en este equipo."); }
         catch(PersistenceException error) { return new MoveResult(false,"No se pudo guardar. Revisá permisos o espacio en disco."); }
     }
+    @Override
     public IGameService getGame() { return game; }
+    @Override
     public boolean isAiTurn() { return configured && mode==GameMode.SOLO && game.getTurn()==PieceColor.BLACK && !game.isFinished(); }
+    @Override
     public boolean isConfigured() { return configured; }
+    @Override
     public GameMode getMode() { return mode; }
+    @Override
     public Difficulty getDifficulty() { return difficulty; }
+    @Override
     public long getElapsedMillis() { return startedAt==0 ? 0 : Math.max(0,(endedAt==0 ? clock.millis() : endedAt)-startedAt); }
 }

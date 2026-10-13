@@ -13,6 +13,7 @@ import ar.edu.ajedrez.core.pieces.PieceType;
 public class FileGameRepository implements IGameRepository {
     private final Path file;
     public FileGameRepository(Path file) { this.file=file.toAbsolutePath(); }
+    @Override
     public Optional<SavedMatch> load() {
         if(!Files.exists(file)) return Optional.empty();
         try(InputStream input=Files.newInputStream(file)) {
@@ -34,6 +35,7 @@ public class FileGameRepository implements IGameRepository {
             throw new PersistenceException("No se pudo leer "+file+". Conservá ese archivo antes de intentar recuperarlo.",error);
         }
     }
+    @Override
     public void save(SavedMatch match) {
         Path temp=file.resolveSibling(file.getFileName()+".tmp");
         try {

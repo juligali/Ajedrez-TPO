@@ -8,27 +8,27 @@ public class MoveValidator {
     private final CheckDetector check;
     private final PieceFactory factory;
     public MoveValidator(CheckDetector check, PieceFactory factory) { this.check = check; this.factory = factory; }
-    /** Devuelve null si es legal, o el motivo del rechazo. No modifica el tablero. */
-    public String validate(Board board, Move move, PieceColor turn) {
-        if (move == null || !board.contains(move.getFrom()) || !board.contains(move.getTo())) return "Casilla fuera del tablero.";
+    /** Resultado semántico, sin texto de presentación ni mutación del tablero. */
+    public ValidationResult validate(Board board, Move move, PieceColor turn) {
+        if (move == null || !board.contains(move.getFrom()) || !board.contains(move.getTo())) return ValidationResult.OUTSIDE_BOARD;
         Position f = move.getFrom(), t = move.getTo();
         Piece piece = board.get(f), target = board.get(t);
-        if (piece == null) return "No hay una pieza en esa casilla.";
-        if (piece.getColor() != turn) return "Es el turno de las " + turn.label().toLowerCase() + ".";
-        if (f.equals(t)) return "Elegí una casilla de destino diferente.";
-        if (target != null && target.getColor() == turn) return "Esa casilla tiene una pieza de tu equipo.";
-        if (target != null && target.getType() == PieceType.KING) return "El rey no se captura: se gana con jaque mate.";
+        if (piece == null) return ValidationResult.EMPTY_ORIGIN;
+        if (piece.getColor() != turn) return ValidationResult.WRONG_TURN;
+        if (f.equals(t)) return ValidationResult.SAME_SQUARE;
+        if (target != null && target.getColor() == turn) return ValidationResult.FRIENDLY_DESTINATION;
+        if (target != null && target.getType() == PieceType.KING) return ValidationResult.KING_CAPTURE;
         boolean castle = piece.getType() == PieceType.KING && Math.abs(t.getCol() - f.getCol()) == 2;
-        if (castle ? !canCastle(board, f, t, piece) : !piece.canMove(board, f, t)) return "Esa pieza no puede moverse allí.";
+        if (castle ? !canCastle(board, f, t, piece) : !piece.canMove(board, f, t)) return ValidationResult.ILLEGAL_MOVEMENT;
         if (piece.getType() == PieceType.PAWN && (t.getRow() == 0 || t.getRow() == 7)) {
             PieceType promotion = move.getPromotion();
             if (promotion != PieceType.QUEEN && promotion != PieceType.ROOK && promotion != PieceType.BISHOP && promotion != PieceType.KNIGHT)
-                return "Elegí reina, torre, alfil o caballo para promocionar.";
+                return ValidationResult.INVALID_PROMOTION;
         }
         Board simulation = board.copy();
         new MoveCommand(simulation, move, factory).execute();
-        if (check.isInCheck(simulation, turn)) return "Ese movimiento deja a tu rey en jaque.";
-        return null;
+        if (check.isInCheck(simulation, turn)) return ValidationResult.KING_EXPOSED;
+        return ValidationResult.VALID;
     }
     private boolean canCastle(Board b, Position f, Position t, Piece king) {
         if (king.hasMoved() || f.getRow() != king.getColor().homeRow() || f.getCol() != 4 || t.getRow() != f.getRow()

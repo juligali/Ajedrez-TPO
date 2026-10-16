@@ -60,3 +60,19 @@ Para trabajar en equipo: elegir una tarea, definir su criterio de aceptación, m
 - Informe Word de núcleo, puertos de entrada/salida y adaptadores.
 
 Todo lo anterior quedó implementado y cubierto por pruebas de Java y comprobaciones del navegador. La IA es didáctica, no un motor profesional.
+
+
+## Criterios de la revisión final
+
+Se conserva el alcance de ajedrez estándar, de acuerdo con la aclaración del docente. No se exige un tablero arbitrario ni agregar piezas sin tocar configuración central. La defensa debe explicar los puntos de cambio y justificar KISS, Strategy y composición.
+
+| ID | Criterio | Evidencia |
+|---|---|---|
+| RF11 | Rechazo de jugada mediante motivo semántico, sin excepción normal | ValidationResult, MoveValidator y ValidationTest |
+| RF12 | Web y consola muestran una traducción del rechazo | MoveMessages y adaptación de ambos puntos de presentación |
+| RNF01 | Estabilidad de reglas y sesión | 47 pruebas originales conservadas; 53 totales tras la revisión |
+| RNF02 | Trayectorias inválidas terminan sin recorrer indefinidamente | BoardPathTest |
+| DOC01 | UML coincide con los tipos y API pública actuales | Seis vistas PlantUML/PDF, 37 tipos públicos de producción |
+| DOC02 | Decisiones justificadas y límites explícitos | arquitectura.md, informe y presentación final |
+
+Fuera de alcance: motor genérico de variantes, carga dinámica de plugins, internacionalización completa, actualización estética de la UI y UML inferido de documentación antigua. La nueva validación tipada se limita a legalidad de movimientos; los resultados de sesión conservan sus mensajes existentes.

@@ -49,7 +49,7 @@ class ChessTest {
             if (piece == null || piece.getColor() != turn) continue;
             for (int tr = 0; tr < 8; tr++) for (int tc = 0; tc < 8; tc++) {
                 Move m = new Move(from,new Position(tr,tc));
-                if (validator.validate(b,m,turn) != null) continue;
+                if (!validator.validate(b,m,turn).isValid()) continue;
                 Board child = b.copy(); new MoveCommand(child,m,factory).execute();
                 nodes += perft(child,turn.opposite(),depth-1);
             }
@@ -182,8 +182,8 @@ class ChessTest {
     void scenario14() {
             Board b=kings("e1","a8");put(b,"e2",ROOK,WHITE);put(b,"e8",ROOK,BLACK);
             expect(!check.isInCheck(b,WHITE),"Bloqueo");
-            expect(validator.validate(b,move("e2","d2"),WHITE)!=null,"No descubre al rey");
-            expect(validator.validate(b,move("e2","e8"),WHITE)==null,"Puede capturar atacante");
+            expect(!validator.validate(b,move("e2","d2"),WHITE).isValid(),"No descubre al rey");
+            expect(validator.validate(b,move("e2","e8"),WHITE).isValid(),"Puede capturar atacante");
             b.set(p("e2"),null);expect(check.isInCheck(b,WHITE),"Jaque de torre");
     }
 
@@ -191,8 +191,8 @@ class ChessTest {
     @DisplayName("Reyes no adyacentes y prohibición de capturar rey")
     void scenario15() {
             Board b=kings("e1","e3");
-            expect(validator.validate(b,move("e1","e2"),WHITE)!=null,"Reyes adyacentes");
-            put(b,"a3",ROOK,WHITE);expect(validator.validate(b,move("a3","e3"),WHITE)!=null,"No captura rey");
+            expect(!validator.validate(b,move("e1","e2"),WHITE).isValid(),"Reyes adyacentes");
+            put(b,"a3",ROOK,WHITE);expect(!validator.validate(b,move("a3","e3"),WHITE).isValid(),"No captura rey");
     }
 
     @Test
@@ -230,7 +230,7 @@ class ChessTest {
     void scenario19() {
             for(String rookSquare:new String[]{"e8","f8","g8"}){
                 Board b=kings("e1","a8");put(b,"h1",ROOK,WHITE);put(b,rookSquare,ROOK,BLACK);
-                expect(validator.validate(b,move("e1","g1"),WHITE)!=null,"Ataque desde "+rookSquare);
+                expect(!validator.validate(b,move("e1","g1"),WHITE).isValid(),"Ataque desde "+rookSquare);
             }
     }
 
@@ -238,13 +238,13 @@ class ChessTest {
     @DisplayName("No enroca con rey o torre movidos, ausentes u obstáculo")
     void scenario20() {
             Board b=kings("e1","a8");put(b,"h1",ROOK,WHITE);b.set(p("h1"),b.get(p("h1")).movedCopy());
-            expect(validator.validate(b,move("e1","g1"),WHITE)!=null,"Torre movida");
+            expect(!validator.validate(b,move("e1","g1"),WHITE).isValid(),"Torre movida");
             put(b,"h1",ROOK,WHITE);b.set(p("e1"),b.get(p("e1")).movedCopy());
-            expect(validator.validate(b,move("e1","g1"),WHITE)!=null,"Rey movido");
+            expect(!validator.validate(b,move("e1","g1"),WHITE).isValid(),"Rey movido");
             put(b,"e1",KING,WHITE);put(b,"f1",BISHOP,WHITE);
-            expect(validator.validate(b,move("e1","g1"),WHITE)!=null,"Camino ocupado");
+            expect(!validator.validate(b,move("e1","g1"),WHITE).isValid(),"Camino ocupado");
             b.set(p("f1"),null);b.set(p("h1"),null);
-            expect(validator.validate(b,move("e1","g1"),WHITE)!=null,"Torre ausente");
+            expect(!validator.validate(b,move("e1","g1"),WHITE).isValid(),"Torre ausente");
     }
 
     @Test
@@ -270,7 +270,7 @@ class ChessTest {
     @DisplayName("Al paso no puede descubrir un jaque horizontal")
     void scenario23() {
             Board b=kings("h5","a8");put(b,"a5",ROOK,BLACK);put(b,"g5",PAWN,WHITE);put(b,"f5",PAWN,BLACK);b.setEnPassant(p("f6"));
-            expect(validator.validate(b,move("g5","f6"),WHITE)!=null,"Rey expuesto");
+            expect(!validator.validate(b,move("g5","f6"),WHITE).isValid(),"Rey expuesto");
     }
 
     @Test

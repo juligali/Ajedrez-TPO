@@ -83,11 +83,11 @@ public class MinimaxAi implements IChessAi {
                 if(piece.getType()==PieceType.PAWN && (tr==0 || tr==7)) {
                     for(PieceType type:new PieceType[]{PieceType.QUEEN,PieceType.ROOK,PieceType.BISHOP,PieceType.KNIGHT}) {
                         Move move=new Move(from,to,type);
-                        if(validator.validate(board,move,turn)==null) result.add(move);
+                        if(validator.validate(board,move,turn).isValid()) result.add(move);
                     }
                 } else {
                     Move move=new Move(from,to);
-                    if(validator.validate(board,move,turn)==null) result.add(move);
+                    if(validator.validate(board,move,turn).isValid()) result.add(move);
                 }
             }
         }

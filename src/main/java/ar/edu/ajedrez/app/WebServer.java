@@ -74,7 +74,7 @@ public class WebServer {
                 default: send(exchange, 404, "application/json", "{\"error\":\"Ruta inexistente\"}"); return;
             }
             if (result.isAccepted()) revision++;
-            send(exchange, 200, "application/json", "{\"accepted\":" + result.isAccepted() + ",\"message\":" + quote(result.getMessage()) + ",\"state\":" + stateJson() + "}");
+            send(exchange, 200, "application/json", "{\"accepted\":" + result.isAccepted() + ",\"message\":" + quote(MoveMessages.message(result)) + ",\"state\":" + stateJson() + "}");
         } catch (IllegalArgumentException ex) {
             send(exchange, 400, "application/json", "{\"error\":\"Solicitud inválida: verificá las casillas y la promoción.\"}");
         } catch (Exception ex) {

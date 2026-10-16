@@ -100,7 +100,7 @@ class FeatureTest {
             Board b=StandardGame.create().getBoard();String before=board(b);
             for(Difficulty d:Difficulty.values()){
                 long start=System.nanoTime();Move m=ai().chooseMove(b,WHITE,d);
-                expect(m!=null&&validator.validate(b,m,WHITE)==null,"Legal "+d);
+                expect(m!=null&&validator.validate(b,m,WHITE).isValid(),"Legal "+d);
                 expect(board(b).equals(before),"No modifica "+d);
                 System.out.printf("    %s %.0f ms%n",d,(System.nanoTime()-start)/1e6);
             }

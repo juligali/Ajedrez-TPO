@@ -60,7 +60,7 @@ public class ConsoleUI {
                                             : PieceType.QUEEN));
                         }
                     };
-                    System.out.println(result.getMessage());
+                    System.out.println(MoveMessages.message(result));
                 } catch (IllegalArgumentException exception) {
                     System.out.println(exception.getMessage());
                 }

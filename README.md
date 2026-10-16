@@ -68,9 +68,9 @@ La persistencia ahora justifica una interfaz de salida real y dobles de prueba. 
 
 ### Pruebas de la actualización
 
-**47 pruebas con JUnit 5**: 31 escenarios en `ChessTest` y 16 en `FeatureTest`. Se agregaron puntaje, corona, mate con un atacante, cinco niveles legales, separación de modos, repositorio de archivo, recuperación, al paso tras carga, reloj y reversión ante fallos de guardado.
+**53 pruebas con JUnit 5**: los 47 escenarios existentes más 4 de validación tipada y 2 de trayectorias inválidas. Se agregaron puntaje, corona, mate con un atacante, cinco niveles legales, separación de modos, repositorio de archivo, recuperación, al paso tras carga, reloj y reversión ante fallos de guardado.
 
-El repositorio en memoria, el reloj controlado y la IA sustituible permiten probar sin infraestructura. Una prueba utiliza el repositorio de archivo real con una carpeta temporal aislada mediante `@TempDir`. Tanto `mvn test` como `run.ps1 -Test` ejecutan ambas suites.
+El repositorio en memoria, el reloj controlado y la IA sustituible permiten probar sin infraestructura. Una prueba utiliza el repositorio de archivo real con una carpeta temporal aislada mediante `@TempDir`. Tanto `mvn test` como `run.ps1 -Test` ejecutan todas las suites.
 
 La comprobación opcional **tools/verify-features.cjs** usa Node.js, Playwright y Chrome. Prueba tutorial, puntos, corona, cronómetro, recarga, cinco niveles, deshacer/rehacer y ancho de 390 px. **Reinicia la partida**, así que debe usarse con un servidor de prueba, por ejemplo:
 
@@ -269,7 +269,7 @@ Ejecutá:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -Test
 ```
 
-Hay **47 escenarios de prueba**: 31 en `ChessTest.java` y 16 de sesión, IA y persistencia en `FeatureTest.java`. Usan @Test, @DisplayName y aserciones de JUnit 5; una condición fallida hace fallar la construcción. JUnit 5 ejecuta cada escenario por separado mediante Maven y publica los informes en target/surefire-reports. No necesitan navegador ni servidor.
+Hay **53 escenarios de prueba**: 31 en `ChessTest.java`, 16 en `FeatureTest.java`, 4 en `ValidationTest.java` y 2 en `BoardPathTest.java`. Usan @Test, @DisplayName y aserciones de JUnit 5; una condición fallida hace fallar la construcción. JUnit 5 ejecuta cada escenario por separado mediante Maven y publica los informes en target/surefire-reports. No necesitan navegador ni servidor.
 
 Aplicamos **Arrange / Act / Assert**: preparar un tablero, ejecutar una acción y comprobar el resultado. La suite incluye pruebas unitarias de estrategias y pruebas de integración entre los objetos del dominio.
 
@@ -382,4 +382,22 @@ Para jugar se puede usar Jugar.bat o run.ps1. El script primero ejecuta mvn comp
 
 Esta integración mantiene el historial del repositorio original. Los tests antiguos ligados a su API fueron sustituidos por los 47 escenarios de la versión web, ahora ejecutados individualmente por JUnit 5. Las pruebas manuales y de navegador continúan siendo complementarias.
 
-Pendientes de la entrega: UML de clases actualizado y presentación PPTX. La versión web conserva por ahora el tamaño fijo 8x8 y la fábrica basada en PieceType; la extensión a otras dimensiones o nuevos tipos requiere refactorización.
+## Revisión final del 16 de octubre de 2026
+
+Se conserva el tablero estándar 8×8 y el catálogo `PieceType`, según el alcance acordado con el docente. No se implementaron variantes ni un registro dinámico de piezas. La extensión se explica en [arquitectura](docs/arquitectura.md).
+
+`MoveValidator.validate` devuelve el enum `ValidationResult`: `VALID` o un motivo semántico. `Game` propaga el rechazo en `MoveResult.getValidationResult()` y `MoveMessages`, en `app`, lo traduce para web y consola. Los mensajes de otras operaciones de sesión y las etiquetas del historial conservan su contrato previo; no se afirma haber internacionalizado todo el núcleo.
+
+`Board.pathClear` rechaza extremos inválidos y trayectorias que no son rectas ni diagonales. Esto evita un bucle infinito ante una llamada incorrecta. Las estrategias estándar ya filtraban esas trayectorias, por lo que las reglas de juego se conservan.
+
+La verificación final con Maven mantiene los 47 escenarios originales y agrega 6. El estado inicial limpio fue 47/47; una primera ejecución sin `clean` detectó clases compiladas obsoletas en `target`, no tests fuente actuales. No se ejecutó una nueva revisión de navegador en esta tarea.
+
+Entregables coherentes con el código:
+
+- [UML editable en PlantUML](docs/UML-Ajedrez-TPO.puml) y [PDF del UML](docs/UML-Ajedrez-TPO.pdf), divididos en seis vistas.
+- [Arquitectura y decisiones para la defensa](docs/arquitectura.md).
+- [Requisitos y aceptación](docs/requisitos.md).
+- [Informe de arquitectura](docs/Informe%20arquitectura%20Ajedrez%20Minecraft.docx).
+- [Presentación final](docs/BLOCKMATE-final.pptx).
+
+El UML muestra los 37 tipos públicos de producción, su API pública declarada y las relaciones principales. Omite métodos privados y miembros heredados o generados por Java. `Move` y `Position` son clases finales, `ValidationResult` es un enum, y sólo `PawnMovement` redefine `canAttack`.

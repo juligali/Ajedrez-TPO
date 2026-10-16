@@ -25,8 +25,8 @@ public class Game implements IGameService {
     @Override
     public MoveResult move(Move move) {
         if (isFinished()) return new MoveResult(false, "La partida terminó. Podés iniciar otra o deshacer.");
-        String error = validator.validate(board, move, turn);
-        if (error != null) return new MoveResult(false, error);
+        ValidationResult validation = validator.validate(board, move, turn);
+        if (!validation.isValid()) return new MoveResult(validation);
         MoveCommand command = new MoveCommand(board, move, factory);
         command.execute();
         history.add(command);
@@ -106,7 +106,7 @@ public class Game implements IGameService {
         if (p == null || p.getColor() != turn) return result;
         for (int r = 0; r < 8; r++) for (int c = 0; c < 8; c++) {
             Position to = new Position(r, c);
-            if (validator.validate(board, new Move(from, to), turn) == null) result.add(to);
+            if (validator.validate(board, new Move(from, to), turn).isValid()) result.add(to);
         }
         return result;
     }
@@ -116,7 +116,7 @@ public class Game implements IGameService {
             Piece p = board.get(from);
             if (p == null || p.getColor() != turn) continue;
             for (int tr = 0; tr < 8; tr++) for (int tc = 0; tc < 8; tc++)
-                if (validator.validate(board, new Move(from, new Position(tr, tc)), turn) == null) return true;
+                if (validator.validate(board, new Move(from, new Position(tr, tc)), turn).isValid()) return true;
         }
         return false;
     }
@@ -168,7 +168,7 @@ public class Game implements IGameService {
             Position from = new Position(ep.getRow() - turn.direction(), ep.getCol() + dc);
             Piece p = board.get(from);
             if (p != null && p.getType() == PieceType.PAWN && p.getColor() == turn
-                    && validator.validate(board, new Move(from, ep), turn) == null) {
+                    && validator.validate(board, new Move(from, ep), turn).isValid()) {
                 key.append(ep); break;
             }
         }

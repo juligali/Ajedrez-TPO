@@ -21,6 +21,10 @@ public class Board {
     public int getHalfMoveClock() { return halfMoveClock; }
     public void setHalfMoveClock(int value) { halfMoveClock = value; }
     public boolean pathClear(Position from, Position to) {
+        if (!contains(from) || !contains(to) || from.equals(to)) return false;
+        int rowDistance = Math.abs(to.getRow() - from.getRow());
+        int colDistance = Math.abs(to.getCol() - from.getCol());
+        if (rowDistance != 0 && colDistance != 0 && rowDistance != colDistance) return false;
         int dr = Integer.signum(to.getRow() - from.getRow());
         int dc = Integer.signum(to.getCol() - from.getCol());
         int r = from.getRow() + dr, c = from.getCol() + dc;

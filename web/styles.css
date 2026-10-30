@@ -110,6 +110,7 @@ main{padding-bottom:8px}
 .match-panel{height:100%}
 
 .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+#sound-button{width:150px;flex-shrink:0;white-space:nowrap}
 @media(max-width:650px){
   .topbar{gap:8px}.header-actions{gap:6px}
   #sound-button{font-size:0;width:30px;height:32px;padding:0}

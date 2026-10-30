@@ -117,3 +117,5 @@ main{padding-bottom:8px}
   #sound-button:before{content:'♫';font-size:16px}
   #sound-button[aria-pressed="true"]{color:var(--green);border-color:var(--green)}
 }
+
+#new-button,#save-button{width:100%;height:44px;flex:0 0 44px}

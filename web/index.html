@@ -13,7 +13,7 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="Ajedrez de bloques, inicio"><span class="brand-cube" aria-hidden="true">♟</span><span>BLOCK<span class="brand-accent">MATE</span><small>UN MUNDO. 64 CASILLAS.</small></span></a>
     <div class="nav-context"><span class="live-dot"></span> <span id="mode-label">PARTIDA LOCAL</span></div>
-    <button class="quiet-button" id="help-button"><span aria-hidden="true">?</span> Cómo jugar</button>
+    <div class="header-actions"><button class="quiet-button" id="sound-button" aria-label="Sonido" aria-pressed="false">♫ Sonido apagado</button><button class="quiet-button" id="help-button"><span aria-hidden="true">?</span> Cómo jugar</button></div>
   </header>
   <main>
     <section class="intro">
@@ -56,7 +56,6 @@
       <button class="secondary-button" id="open-match" aria-haspopup="dialog">Partida e historial</button>
       <button class="secondary-button" id="open-legend" aria-haspopup="dialog">Piezas</button>
     </nav>
-    <footer><span>CONSTRUÍ TU ESTRATEGIA.</span><span>1 o 2 jugadores · Reglas clásicas · Guardado local</span><button class="text-button" id="sound-button" aria-pressed="false">♫ Sonido apagado</button></footer>
   </main>
   <dialog id="match-details" aria-label="Partida e historial"><button class="dialog-close" data-close="match-details" aria-label="Cerrar partida e historial">×</button><div id="match-details-content"></div></dialog>
   <dialog id="piece-details" aria-label="Guía de piezas"><button class="dialog-close" data-close="piece-details" aria-label="Cerrar guía de piezas">×</button><div id="piece-details-content"></div></dialog>

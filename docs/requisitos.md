@@ -50,7 +50,7 @@ Para trabajar en equipo: elegir una tarea, definir su criterio de aceptación, m
 
 - Puntaje por capturas 1/3/3/5/9, con rey sin valor y restauración al deshacer.
 - Corona del ganador únicamente en mate.
-- Cronómetro persistente desde la creación, sin límite y detenido al terminar.
+- Cronómetro persistente de tiempo activo, sin límite: pausa al cerrar u ocultar el juego, continúa al volver y se detiene al terminar. Varias pestañas no duplican el tiempo.
 - Guardado de tablero, historial, turno, modos y posibilidad de rehacer al cerrar Java.
 - Tutorial interactivo antes de crear la partida.
 - Modo de un jugador con IA negra, o dos humanos sin IA.

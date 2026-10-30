@@ -165,15 +165,18 @@ class FeatureTest {
     }
 
     @Test
-    @DisplayName("Cronómetro persiste, incluye cierre y se detiene con mate")
+    @DisplayName("Cronómetro persiste, pausa al cerrar y se detiene con mate")
     void scenario13() {
             MemoryRepository repo=new MemoryRepository();TestClock clock=new TestClock();MatchSession s=session(repo,clock);
-            s.newGame(GameMode.TWO_PLAYERS,Difficulty.MEDIUM);clock.now+=12000;s=session(repo,clock);
+            s.newGame(GameMode.TWO_PLAYERS,Difficulty.MEDIUM);s.presence("test",true);
+            clock.now+=12000;s.presence("test",false);clock.now+=60000;s=session(repo,clock);
             expect(s.getElapsedMillis()==12000,"Continúa tras reabrir");
+            s.presence("test",true);
             for(String[] m:new String[][]{{"f2","f3"},{"e7","e5"},{"g2","g4"},{"d8","h4"}})s.move(move(m[0],m[1]));
             clock.now+=5000;expect(s.getElapsedMillis()==12000,"Detenido en mate");
             s=session(repo,clock);expect(s.getElapsedMillis()==12000,"Mate persistido");
-            s.undo();expect(s.getElapsedMillis()==17000,"Reanuda al deshacer");
+            s.undo();s.presence("test",true);clock.now+=3000;
+            expect(s.getElapsedMillis()==15000,"Reanuda al deshacer sin sumar el tiempo detenido");
     }
 
     @Test

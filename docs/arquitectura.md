@@ -36,7 +36,7 @@ SavedMatch guarda la secuencia de movimientos y el cursor. MatchSession reconstr
 
 FileGameRepository escribe un archivo temporal y reemplaza el guardado. Se utiliza reemplazo atómico cuando el sistema de archivos lo admite. Si falla, la sesión revierte la operación. No se coordinan varios procesos sobre el mismo archivo.
 
-El cronómetro cuenta desde la creación hasta el fin, también durante cierres. Clock se inyecta para poder probar el tiempo sin esperas.
+El cronómetro acumula tiempo sólo cuando existe al menos una vista visible. WebServer recibe POST /api/presence con clientId y active, sin modificar la revisión del tablero. MatchSession contabiliza intervalos con Clock inyectado y actividad que vence a los 15 segundos; varias vistas no duplican el tiempo. La vista renueva su actividad cada 5 segundos y avisa al ocultarse o salir. El tiempo se guarda como elapsedMillis (formato 2) y se restaura en pausa, sin añadir el tiempo con Java cerrado. Los archivos de formato 1 se migran tomando su última escritura como referencia para las partidas no terminadas.
 
 ## Separación de responsabilidades
 

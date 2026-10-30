@@ -44,7 +44,9 @@ La partida se guarda automáticamente después de crearla, mover, responder la I
 
 El archivo es **data/current-match.properties**, dentro de esta carpeta. Conserva movimientos, cursor del historial, modo, dificultad y marcas de tiempo. Al cargar se reconstruyen tablero, capturas, puntaje, turnos, al paso, derechos de enroque, repetición y posibilidad de rehacer. Si la IA quedó pendiente, responde al volver a abrir la web.
 
-El cronómetro mide el tiempo desde que se crea la partida, **incluyendo el tiempo con el juego cerrado**. Se detiene al terminar y se reanuda al deshacer el final, sin retroceder. Una partida nueva reemplaza el único guardado y reinicia reloj y puntos, después de la confirmación.
+El cronómetro acumula únicamente el tiempo con el juego **abierto y visible**. Se pausa al cerrar, minimizar o cambiar de pestaña y continúa desde el tiempo guardado al volver, sin sumar las horas con el juego cerrado. Si hay varias pestañas, basta una visible y el tiempo no se duplica. Se detiene al terminar y se reanuda al deshacer el final. Una partida nueva reinicia reloj y puntos, después de la confirmación.
+
+La vista informa actividad cada 5 segundos y avisa al salir. El servidor guarda el tiempo acumulado y, al reiniciar, siempre espera una vista activa. Si el navegador desaparece sin avisar, su actividad vence en 15 segundos. Ante un corte abrupto se conserva el último guardado y pueden perderse los últimos segundos. Los guardados antiguos se migran conservando el tiempo hasta su última escritura, porque no registraban las pausas; no es posible reconstruir las pausas anteriores a esta actualización.
 
 Si falla la escritura, se revierte la operación y se informa el error. Un archivo corrupto se rechaza sin sobrescribirlo silenciosamente. El adaptador escribe primero un temporal y usa reemplazo atómico cuando el sistema lo permite. Usá un solo servidor por archivo de guardado.
 
@@ -401,3 +403,7 @@ Entregables coherentes con el código:
 - [Presentación final](docs/BLOCKMATE-final.pptx).
 
 El UML muestra los 37 tipos públicos de producción, su API pública declarada y las relaciones principales. Omite métodos privados y miembros heredados o generados por Java. `Move` y `Position` son clases finales, `ValidationResult` es un enum, y sólo `PawnMovement` redefine `canAttack`.
+
+### Actualización del cronómetro de tiempo activo
+
+Verificación de esta actualización: 62 pruebas Java aprobadas (las 53 existentes, con el escenario de reloj actualizado, más 9 casos de actividad). Cubren pausa y reanudación, varias vistas, vencimiento de actividad, reinicio, reinicio del tiempo, recuperación ante fallos de guardado y migración del formato anterior. Una prueba de navegador con partida aislada verificó salida y regreso a la página, pausa tras reiniciar Java y rechazo de solicitudes de actividad de otro origen. Los informes históricos de otras secciones corresponden a sus respectivas revisiones.

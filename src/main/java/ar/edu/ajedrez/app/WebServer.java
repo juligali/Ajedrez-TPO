@@ -29,6 +29,9 @@ public class WebServer {
         server.createContext("/api/", this::api);
         server.createContext("/", this::staticFile);
         server.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            synchronized(WebServer.this) { session.save(); }
+        },"guardar-tiempo-al-cerrar"));
         System.out.println("\nAjedrez de bloques listo: http://127.0.0.1:" + port);
         System.out.println("Abrí esa dirección en tu navegador. Para cerrar el servidor: Ctrl+C.");
     }
@@ -54,6 +57,13 @@ public class WebServer {
             byte[] bytes = exchange.getRequestBody().readNBytes(2049);
             if (bytes.length > 2048) { send(exchange, 413, "application/json", "{\"error\":\"Solicitud demasiado grande\"}"); return; }
             Map<String, String> params = parse(new String(bytes, StandardCharsets.UTF_8));
+            if(path.equals("/api/presence")) {
+                String active=params.get("active");
+                if(!"true".equals(active) && !"false".equals(active)) throw new IllegalArgumentException("Actividad inválida.");
+                MoveResult activity=session.presence(params.get("clientId"),Boolean.parseBoolean(active));
+                send(exchange,200,"application/json","{\"accepted\":"+activity.isAccepted()+",\"elapsedMillis\":"+session.getElapsedMillis()+",\"clockRunning\":"+session.isClockRunning()+"}");
+                return;
+            }
             if (!Integer.toString(revision).equals(params.get("revision"))) {
                 send(exchange, 409, "application/json", "{\"error\":\"La partida cambió. Actualizá el tablero.\"}"); return;
             }
@@ -105,6 +115,7 @@ public class WebServer {
                 + ",\"mode\":" + quote(session.getMode().name()) + ",\"difficulty\":" + quote(session.getDifficulty().name())
                 + ",\"configured\":" + session.isConfigured() + ",\"aiTurn\":" + session.isAiTurn()
                 + ",\"elapsedMillis\":" + session.getElapsedMillis()
+                + ",\"clockRunning\":" + session.isClockRunning()
                 + ",\"board\":" + squares + ",\"history\":" + history + ",\"captures\":" + captures + "}";
     }
     private void staticFile(HttpExchange exchange) throws IOException {

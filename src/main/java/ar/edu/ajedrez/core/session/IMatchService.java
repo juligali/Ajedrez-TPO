@@ -15,4 +15,6 @@ public interface IMatchService {
     GameMode getMode();
     Difficulty getDifficulty();
     long getElapsedMillis();
+    MoveResult presence(String clientId, boolean active);
+    boolean isClockRunning();
 }

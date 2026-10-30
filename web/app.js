@@ -1,4 +1,5 @@
 import './layout.js';
+import {startActivityTracking} from './activity.js';
 import {sprite, pieces} from './pieces.js';
 import {createTutorial} from './tutorial.js';
 
@@ -16,7 +17,7 @@ function openSetup(){
 const tutorial=createTutorial(openSetup);
 function tickClock(){
   if(!state)return;
-  let ms=state.elapsedMillis+(state.configured&&!state.finished?performance.now()-stateReceivedAt:0);
+  let ms=state.elapsedMillis+(state.clockRunning&&!document.hidden?performance.now()-stateReceivedAt:0);
   let seconds=Math.floor(ms/1000),hours=Math.floor(seconds/3600),minutes=Math.floor(seconds%3600/60);
   $('elapsed-time').textContent=(hours?String(hours).padStart(2,'0')+':':'')+String(minutes).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');
 }
@@ -264,3 +265,10 @@ document.addEventListener('visibilitychange',async()=>{
 });
 buildBoard();
 try{acceptState(await request('state'));render();if(!state.configured)tutorial.open(true);else maybeAi();}catch(error){showDisconnected();notify('No se pudo conectar con Java. Ejecutá Jugar.bat y recargá la página.',true);}
+startActivityTracking(activity=>{
+  if(!state)return;
+  state.elapsedMillis=activity.elapsedMillis;state.clockRunning=activity.clockRunning;
+  stateReceivedAt=performance.now();tickClock();
+  $('elapsed-time').title=activity.clockRunning?'Contando mientras el juego está visible':'En pausa';
+  if(!activity.accepted)notify('No se pudo guardar el tiempo. Revisá permisos o espacio en disco.',true);
+});

@@ -1,3 +1,4 @@
+import './layout.js';
 import {sprite, pieces} from './pieces.js';
 import {createTutorial} from './tutorial.js';
 

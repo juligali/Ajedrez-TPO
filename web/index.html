@@ -21,7 +21,7 @@
       <div class="intro-tag"><span aria-hidden="true">✦</span><div>INSPIRADO EN MINECRAFT<small>Hecho para pensar. Listo para jugar.</small></div></div>
     </section>
     <div class="game-layout">
-      <aside class="legend-panel">
+      <aside class="legend-panel" id="legend-panel">
         <div class="section-heading"><span>01</span><h2>Tu equipo</h2></div>
         <p class="panel-subtitle">Seis piezas. Seis personajes.</p>
         <div id="legend"></div>
@@ -31,15 +31,15 @@
       </aside>
       <section class="arena" aria-label="Partida de ajedrez">
         <div class="player-strip" id="top-player"></div>
-        <div class="board-surround">
+        <div class="board-stage"><div class="board-surround">
           <div id="ranks" class="ranks" aria-hidden="true"></div>
           <div id="board" class="board" role="group" aria-label="Tablero de ajedrez. Elegí una pieza y después su destino."></div>
           <div id="files" class="files" aria-hidden="true"></div>
         </div>
-        <div class="player-strip bottom-player" id="bottom-player"></div>
+        </div><div class="player-strip bottom-player" id="bottom-player"></div>
         <div class="board-toolbar"><span><i class="hint-dot"></i> Movimiento posible <i class="hint-ring"></i> Captura</span><button class="text-button" id="flip-button" title="Ver el tablero desde el otro lado">⇅ <span>Girar tablero</span></button></div>
       </section>
-      <aside class="match-panel">
+      <aside class="match-panel" id="match-panel">
         <div class="section-heading"><span>02</span><h2>La partida</h2><span class="match-tag">LOCAL</span></div>
         <div class="status-card" id="status-card" role="status" aria-live="polite"><span class="status-kicker">PREPARANDO EL MUNDO</span><h3 id="status-title">Cargando tablero…</h3><p id="status-description">Conectando con la partida.</p><div class="turn-line"><span id="turn-marker"></span><span id="turn-label">Java + bloques</span><span id="move-number"></span></div></div>
         <div class="match-clock"><div><span>TIEMPO DE PARTIDA</span><strong id="elapsed-time" role="timer" aria-label="Tiempo transcurrido">00:00</strong></div><span aria-hidden="true">◷</span></div><p class="save-state" id="save-state">Guardado automático en este equipo</p><button id="retry-ai" class="secondary-button" hidden>Reintentar jugada de IA</button><div class="history-heading"><h3>Movimientos</h3><span id="history-count">0 JUGADAS</span></div>
@@ -50,8 +50,16 @@
         <button id="save-button" class="secondary-button save-button">▣ Guardar partida</button><div class="session-note"><span class="live-dot"></span> Sin límite de tiempo. A tu ritmo.</div>
       </aside>
     </div>
+    <nav class="compact-controls" aria-label="Controles de partida">
+      <div id="compact-clock"></div><div id="compact-undo"></div>
+      <button class="secondary-button" id="compact-new">Nueva partida</button>
+      <button class="secondary-button" id="open-match" aria-haspopup="dialog">Partida e historial</button>
+      <button class="secondary-button" id="open-legend" aria-haspopup="dialog">Piezas</button>
+    </nav>
     <footer><span>CONSTRUÍ TU ESTRATEGIA.</span><span>1 o 2 jugadores · Reglas clásicas · Guardado local</span><button class="text-button" id="sound-button" aria-pressed="false">♫ Sonido apagado</button></footer>
   </main>
+  <dialog id="match-details" aria-label="Partida e historial"><button class="dialog-close" data-close="match-details" aria-label="Cerrar partida e historial">×</button><div id="match-details-content"></div></dialog>
+  <dialog id="piece-details" aria-label="Guía de piezas"><button class="dialog-close" data-close="piece-details" aria-label="Cerrar guía de piezas">×</button><div id="piece-details-content"></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
   <dialog id="tutorial-dialog" aria-labelledby="tutorial-heading">

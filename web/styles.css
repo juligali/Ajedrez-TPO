@@ -41,3 +41,70 @@ select{background:#253920;border:1px solid #718a53;color:var(--text);font:inheri
 .tutorial-actions{display:flex;gap:10px;margin-top:22px}.tutorial-actions .primary-button{width:auto;flex:1}.tutorial-actions .secondary-button{flex:initial}
 #retry-ai{width:100%;margin-bottom:12px}
 @media(max-width:650px){.player-name{font-size:11px}.player-score{font-size:13px;padding:5px}.player-captures img{width:16px}.tutorial-layout{grid-template-columns:1fr;gap:14px}.tutorial-board{max-width:300px;width:100%;justify-self:center}.tutorial-description h3{font-size:22px;margin:8px 0}.tutorial-tabs{grid-template-columns:repeat(3,1fr)}#tutorial-dialog{padding:24px 18px}.tutorial-actions{flex-wrap:wrap}.tutorial-actions .primary-button{flex-basis:100%}.tutorial-actions .secondary-button{flex:1}.tutorial-description .demo-hint{min-height:0}.history{height:135px}}
+/* La pantalla de juego reparte el espacio disponible; los detalles se consultan aparte. */
+html{height:100%}
+body{min-width:0;height:100vh;height:100dvh;display:grid;grid-template-rows:64px minmax(0,1fr)}
+.topbar{height:auto;padding:0 24px;gap:16px}
+main{width:100%;max-width:1600px;min-height:0;margin:0 auto;height:100%;padding:16px 24px 8px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px}
+.intro{margin:0}.intro h1{font-size:30px;margin:5px 0}.intro p{font-size:11px}.intro .eyebrow{font-size:8px}
+.game-layout{min-height:0;grid-template-rows:minmax(0,1fr);grid-template-columns:190px minmax(0,1fr) 250px;gap:24px}
+.game-layout>*{min-width:0;min-height:0}
+.arena{height:100%;display:grid;grid-template-rows:38px minmax(0,1fr) 38px 28px;gap:6px}
+.player-strip,.bottom-player{height:38px;margin:0}.avatar{height:32px;width:32px}.player-score{padding:4px 7px}
+.player-strip.winner{min-height:0;height:38px;padding:2px 5px}.player-name{flex-wrap:wrap;gap:4px}
+.board-stage{min-height:0;min-width:0;container-type:size;display:flex;justify-content:center;align-items:center}
+.board-surround{width:min(100cqw,100cqh);padding:10px 10px 24px 24px;flex:none;box-shadow:0 3px 0 #283121,0 5px 0 #55613f,inset 0 0 0 4px #313d2e}
+.ranks{width:24px;top:12px;bottom:26px}.files{left:26px;right:12px;bottom:5px}
+.board-toolbar{padding:4px 0 0;gap:4px;flex-wrap:wrap}.board-toolbar>span{font-size:8px}.board-toolbar .text-button{font-size:10px}
+.legend-panel{overflow:auto;scrollbar-width:thin}.legend-row{min-height:52px;gap:5px}.legend-row img{width:42px;height:49px}.legend-row strong{font-size:11px}.legend-row small{font-size:9px}.legend-row .piece-role{margin-bottom:2px}.legend-panel .world-label{display:none}.tip-card{padding:8px}.tip-card p{font-size:10px}.team-key{margin:10px 0}.section-heading{height:30px;margin-bottom:8px;padding-bottom:8px}
+.match-panel{display:flex;flex-direction:column;gap:8px}.match-panel>*{flex-shrink:0}.match-panel .section-heading{margin:0}
+.status-card{margin:0;padding:12px 12px 0}.status-card h3{font-size:21px;margin:6px 0}.status-card p{font-size:10px;min-height:0;margin-bottom:8px}.turn-line{padding:8px 0}.match-clock{padding:8px 12px;margin:0}.match-clock strong{font-size:23px;margin-top:2px}.match-clock>span{font-size:26px}
+.save-state{margin:0;font-size:9px}.history-table-head{padding:5px 10px}.history{height:auto;min-height:36px;flex:1;overflow:auto;margin:0}.history-row{padding:7px 10px}.history-empty{gap:3px}.history-empty>span{font-size:24px}.undo-controls{margin:0}.secondary-button{padding:9px}.primary-button{padding:10px 12px}.save-button{margin:0}.session-note{margin:0}
+footer{margin:0;padding:6px 0;gap:10px}.compact-controls{display:none}
+dialog{max-height:calc(100dvh - 24px)}
+@media(max-height:780px){
+  main{padding-top:10px;gap:8px}.intro .eyebrow,.intro p,.intro-tag{display:none}.intro h1{font-size:26px;margin:0}
+  .legend-panel .tip-card{display:none}.status-card p{margin-bottom:4px}.status-kicker{display:none}.status-card{padding-top:8px}.match-panel{gap:6px}.match-panel .session-note{display:none}
+}
+/* En ventanas pequeñas, el tablero ocupa la vista y los paneles pasan a diálogos. */
+@media(max-width:1050px),(max-height:620px){
+  body{grid-template-rows:52px minmax(0,1fr)}
+  .topbar{padding:0 12px}.brand{font-size:18px;gap:9px}.brand-cube{width:30px;height:30px;font-size:24px}.brand small{font-size:6px}.nav-context{display:none}.quiet-button{padding:8px;font-size:11px}
+  main{padding:8px 12px 0;grid-template-rows:minmax(0,1fr) auto auto;gap:7px}
+  .intro{display:none}.game-layout{grid-template-columns:minmax(0,1fr);gap:0}
+  .arena{grid-column:1;grid-row:1;grid-template-rows:34px minmax(0,1fr) 34px 24px;gap:4px;max-width:100%;width:100%}
+  .player-strip,.bottom-player,.player-strip.winner{height:34px}.player-detail{margin-top:2px}.player-name{font-size:11px}.player-score{font-size:13px}.avatar{height:28px;width:28px}
+  .compact-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:stretch}
+  #compact-clock{grid-column:1}.compact-controls .match-clock{height:100%;padding:5px 8px}.compact-controls .match-clock strong{font-size:19px;letter-spacing:0}.compact-controls .match-clock>span{display:none}.compact-controls .match-clock div>span{font-size:7px;letter-spacing:0}
+  #compact-undo{grid-column:2 / 4}.compact-controls .undo-controls{height:100%}.compact-controls button{font-size:11px;margin:0;min-width:0}
+  footer{padding:3px 0;justify-content:center;flex-wrap:nowrap}footer>span{display:none}footer .text-button{font-size:10px}
+  #match-details,#piece-details{width:min(480px,calc(100% - 24px));padding:38px 18px 18px}
+  #match-details .match-panel{height:auto;min-height:0;overflow:visible}
+  #match-details .history{height:150px;flex:none}#match-details .session-note{display:flex}
+  #piece-details .legend-panel{display:block;overflow:visible}
+  #piece-details #legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  #piece-details .legend-row{display:flex;flex-direction:column;text-align:center;gap:0;min-height:0;padding-bottom:8px}
+  #piece-details .legend-row img{width:55px;height:62px}#piece-details .legend-row small{display:block}
+  #piece-details .tip-card{display:flex;margin-top:12px}#piece-details .team-key{justify-content:center}#piece-details .section-heading{margin-top:0}
+}
+@media(max-height:450px) and (min-width:600px),(max-height:620px) and (min-width:900px){
+  body{grid-template-rows:44px minmax(0,1fr)}
+  main{grid-template-columns:minmax(0,1fr) 190px;grid-template-rows:minmax(0,1fr) auto;column-gap:12px}
+  .game-layout{grid-row:1 / 3}.compact-controls{grid-template-columns:1fr;align-content:center;grid-column:2;grid-row:1}
+  #compact-clock,#compact-undo{grid-column:1}.compact-controls .match-clock{justify-content:center}
+  footer{grid-column:2;grid-row:2}.arena{grid-template-rows:28px minmax(0,1fr) 28px 22px;gap:2px}
+  .player-strip,.bottom-player,.player-strip.winner{height:28px}.player-detail{display:none}.avatar{height:25px;width:25px}
+}
+
+
+
+
+main{padding-bottom:8px}
+
+.compact-status{display:none}
+@media(max-width:1050px),(max-height:620px){
+  .board-toolbar>.compact-status{display:flex}
+  .board-toolbar>span:not(.compact-status){display:none}
+  .board-toolbar .compact-status{font-size:10px;color:var(--green)}
+}
+.match-panel{height:100%}

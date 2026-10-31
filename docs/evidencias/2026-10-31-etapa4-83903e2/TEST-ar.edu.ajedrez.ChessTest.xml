@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="ar.edu.ajedrez.ChessTest" time="0.158" tests="31" errors="0" skipped="0" failures="0">
+  <testcase name="scenario1" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario2" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario3" classname="ar.edu.ajedrez.ChessTest" time="0.004" />
+  <testcase name="scenario4" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario5" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario6" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario7" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario8" classname="ar.edu.ajedrez.ChessTest" time="0.002" />
+  <testcase name="scenario9" classname="ar.edu.ajedrez.ChessTest" time="0.004" />
+  <testcase name="scenario10" classname="ar.edu.ajedrez.ChessTest" time="0.002" />
+  <testcase name="scenario11" classname="ar.edu.ajedrez.ChessTest" time="0.005" />
+  <testcase name="scenario12" classname="ar.edu.ajedrez.ChessTest" time="0.007" />
+  <testcase name="scenario13" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario14" classname="ar.edu.ajedrez.ChessTest" time="0.0" />
+  <testcase name="scenario15" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario16" classname="ar.edu.ajedrez.ChessTest" time="0.003" />
+  <testcase name="scenario17" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario18" classname="ar.edu.ajedrez.ChessTest" time="0.007" />
+  <testcase name="scenario19" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario20" classname="ar.edu.ajedrez.ChessTest" time="0.0" />
+  <testcase name="scenario21" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario22" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario23" classname="ar.edu.ajedrez.ChessTest" time="0.0" />
+  <testcase name="scenario24" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario25" classname="ar.edu.ajedrez.ChessTest" time="0.0" />
+  <testcase name="scenario26" classname="ar.edu.ajedrez.ChessTest" time="0.0" />
+  <testcase name="scenario27" classname="ar.edu.ajedrez.ChessTest" time="0.0" />
+  <testcase name="scenario28" classname="ar.edu.ajedrez.ChessTest" time="0.002" />
+  <testcase name="scenario29" classname="ar.edu.ajedrez.ChessTest" time="0.001" />
+  <testcase name="scenario30" classname="ar.edu.ajedrez.ChessTest" time="0.0" />
+  <testcase name="scenario31" classname="ar.edu.ajedrez.ChessTest" time="0.081" />
+</testsuite>

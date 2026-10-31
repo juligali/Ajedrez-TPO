@@ -1,0 +1,364 @@
+{
+  "environment": {
+    "startedAt": "2026-10-31T12:18:43.2381565-03:00",
+    "timezone": "America/Buenos_Aires",
+    "os": "Microsoft Windows NT 10.0.26200.0",
+    "architecture": "AMD64",
+    "command": "mvn -B -ntp clean test",
+    "commit": "83903e22eec288bd0823b7172d951b78610d9fdc"
+  },
+  "result": {
+    "exitCode": 0,
+    "finishedAt": "2026-10-31T12:19:01.7378965-03:00"
+  },
+  "java": "Oracle JDK 21.0.6",
+  "maven": "3.9.16",
+  "junit": "5.11.4",
+  "surefire": "3.5.2",
+  "suites": [
+    {
+      "name": "ar.edu.ajedrez.ActivityClockTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": "0.18",
+      "passed": 9
+    },
+    {
+      "name": "ar.edu.ajedrez.BoardPathTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": "0.012",
+      "passed": 2
+    },
+    {
+      "name": "ar.edu.ajedrez.ChessTest",
+      "tests": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": "0.158",
+      "passed": 31
+    },
+    {
+      "name": "ar.edu.ajedrez.FeatureTest",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": "1.879",
+      "passed": 16
+    },
+    {
+      "name": "ar.edu.ajedrez.ValidationTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": "0.007",
+      "passed": 4
+    }
+  ],
+  "totals": {
+    "tests": 62,
+    "passed": 62,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "executed": 62
+  },
+  "rules": {
+    "approved": 13,
+    "committed_catalog": 13
+  },
+  "recovery": {
+    "passed": 10,
+    "executed": 10,
+    "selected": 10
+  },
+  "cases": {
+    "ActivityClockTest#newGameResetsTimeAndKeepsTheVisibleView": {
+      "status": "passed",
+      "seconds": 0.028
+    },
+    "ActivityClockTest#lostClientExpiresAndCannotAddAnOfflineGap": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ActivityClockTest#migratesLegacySaveOnlyUntilItsLastWrite": {
+      "status": "passed",
+      "seconds": 0.072
+    },
+    "ActivityClockTest#fileFormatPreservesAccumulatedTime": {
+      "status": "passed",
+      "seconds": 0.008
+    },
+    "ActivityClockTest#doesNotCountUntilAViewIsActive": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ActivityClockTest#closeAndReopenExcludeOfflineTime": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ActivityClockTest#severalViewsCountOnceAndLastClosePauses": {
+      "status": "passed",
+      "seconds": 0.0
+    },
+    "ActivityClockTest#checkpointSurvivesAbruptRestartWithoutAClosingEvent": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ActivityClockTest#failedMovePreservesClockAndPresence": {
+      "status": "passed",
+      "seconds": 0.011
+    },
+    "BoardPathTest#invalidRayReturnsFalseInsteadOfLooping": {
+      "status": "passed",
+      "seconds": 0.008
+    },
+    "BoardPathTest#pathRejectsMissingOutOfBoundsAndIdenticalEndpoints": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario1": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario2": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario3": {
+      "status": "passed",
+      "seconds": 0.004
+    },
+    "ChessTest#scenario4": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario5": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario6": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario7": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario8": {
+      "status": "passed",
+      "seconds": 0.002
+    },
+    "ChessTest#scenario9": {
+      "status": "passed",
+      "seconds": 0.004
+    },
+    "ChessTest#scenario10": {
+      "status": "passed",
+      "seconds": 0.002
+    },
+    "ChessTest#scenario11": {
+      "status": "passed",
+      "seconds": 0.005
+    },
+    "ChessTest#scenario12": {
+      "status": "passed",
+      "seconds": 0.007
+    },
+    "ChessTest#scenario13": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario14": {
+      "status": "passed",
+      "seconds": 0.0
+    },
+    "ChessTest#scenario15": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario16": {
+      "status": "passed",
+      "seconds": 0.003
+    },
+    "ChessTest#scenario17": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario18": {
+      "status": "passed",
+      "seconds": 0.007
+    },
+    "ChessTest#scenario19": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario20": {
+      "status": "passed",
+      "seconds": 0.0
+    },
+    "ChessTest#scenario21": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario22": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario23": {
+      "status": "passed",
+      "seconds": 0.0
+    },
+    "ChessTest#scenario24": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario25": {
+      "status": "passed",
+      "seconds": 0.0
+    },
+    "ChessTest#scenario26": {
+      "status": "passed",
+      "seconds": 0.0
+    },
+    "ChessTest#scenario27": {
+      "status": "passed",
+      "seconds": 0.0
+    },
+    "ChessTest#scenario28": {
+      "status": "passed",
+      "seconds": 0.002
+    },
+    "ChessTest#scenario29": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ChessTest#scenario30": {
+      "status": "passed",
+      "seconds": 0.0
+    },
+    "ChessTest#scenario31": {
+      "status": "passed",
+      "seconds": 0.081
+    },
+    "FeatureTest#scenario1": {
+      "status": "passed",
+      "seconds": 0.006
+    },
+    "FeatureTest#scenario2": {
+      "status": "passed",
+      "seconds": 0.006
+    },
+    "FeatureTest#scenario3": {
+      "status": "passed",
+      "seconds": 0.003
+    },
+    "FeatureTest#scenario4": {
+      "status": "passed",
+      "seconds": 0.003
+    },
+    "FeatureTest#scenario5": {
+      "status": "passed",
+      "seconds": 0.002
+    },
+    "FeatureTest#scenario6": {
+      "status": "passed",
+      "seconds": 1.807
+    },
+    "FeatureTest#scenario7": {
+      "status": "passed",
+      "seconds": 0.003
+    },
+    "FeatureTest#scenario8": {
+      "status": "passed",
+      "seconds": 0.003
+    },
+    "FeatureTest#scenario9": {
+      "status": "passed",
+      "seconds": 0.005
+    },
+    "FeatureTest#scenario10": {
+      "status": "passed",
+      "seconds": 0.006
+    },
+    "FeatureTest#scenario11": {
+      "status": "passed",
+      "seconds": 0.004
+    },
+    "FeatureTest#scenario12": {
+      "status": "passed",
+      "seconds": 0.002
+    },
+    "FeatureTest#scenario13": {
+      "status": "passed",
+      "seconds": 0.004
+    },
+    "FeatureTest#scenario14": {
+      "status": "passed",
+      "seconds": 0.004
+    },
+    "FeatureTest#scenario15": {
+      "status": "passed",
+      "seconds": 0.002
+    },
+    "FeatureTest#scenario16": {
+      "status": "passed",
+      "seconds": 0.01
+    },
+    "ValidationTest#gamePropagatesReasonWithoutChangingHistoryTurnOrRedo": {
+      "status": "passed",
+      "seconds": 0.002
+    },
+    "ValidationTest#kingSafetyCaptureAndPromotionHaveDistinctReasons": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ValidationTest#basicRejectionsHaveSemanticReasons": {
+      "status": "passed",
+      "seconds": 0.001
+    },
+    "ValidationTest#adaptersTranslateEveryReasonAndKeepExistingSuccessMessages": {
+      "status": "passed",
+      "seconds": 0.003
+    }
+  },
+  "reports": [
+    {
+      "file": "TEST-ar.edu.ajedrez.ActivityClockTest.xml",
+      "original_sha256": "f0967bcfed376904a93a02c9b8124b63162b525bb0efb37869632aacd7f791c5",
+      "published_sha256": "6092745a0ef4340f0318d99393ce9208e017f140921e45eea9cf51432fcf8983",
+      "sanitization": "Removed properties block with local paths and machine/user identifiers; test cases, outcomes, counters and durations retained."
+    },
+    {
+      "file": "TEST-ar.edu.ajedrez.BoardPathTest.xml",
+      "original_sha256": "8dbb4867754064a2d2db4f751465d24a4afbc52513a22eae84406ff091e6a279",
+      "published_sha256": "0e5824b8598d3da7ac6f3fe21932f2cbd36fe23f3edc2f86f6427c9141bbb287",
+      "sanitization": "Removed properties block with local paths and machine/user identifiers; test cases, outcomes, counters and durations retained."
+    },
+    {
+      "file": "TEST-ar.edu.ajedrez.ChessTest.xml",
+      "original_sha256": "da260e3d78a6693bd936e9d55b3aa7da7a7b242ea7138f1d8ee320e12a0505ed",
+      "published_sha256": "9bb9344d675283ab013c7e7eacc2a9b31753d54710284f6c8dc81fd499ca20d4",
+      "sanitization": "Removed properties block with local paths and machine/user identifiers; test cases, outcomes, counters and durations retained."
+    },
+    {
+      "file": "TEST-ar.edu.ajedrez.FeatureTest.xml",
+      "original_sha256": "a65b6e4fe397017d1d9eae1b79f8a48b3e13f5394e60bd92dde9469b057d8595",
+      "published_sha256": "86331ef0bfdc55157653c8d75eece0be59db8725b752aa145caab52fd04777d3",
+      "sanitization": "Removed properties block with local paths and machine/user identifiers; test cases, outcomes, counters and durations retained."
+    },
+    {
+      "file": "TEST-ar.edu.ajedrez.ValidationTest.xml",
+      "original_sha256": "2021a5bc19e0a2e5965d6967158af077699f309aff757ac2f811a0346b8b791f",
+      "published_sha256": "a388cf8ffaedecb459bfee29a64a056bbd5229e166da563411408f02bff90640",
+      "sanitization": "Removed properties block with local paths and machine/user identifiers; test cases, outcomes, counters and durations retained."
+    }
+  ]
+}

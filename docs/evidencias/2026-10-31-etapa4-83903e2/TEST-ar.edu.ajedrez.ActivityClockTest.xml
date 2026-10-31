@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="ar.edu.ajedrez.ActivityClockTest" time="0.18" tests="9" errors="0" skipped="0" failures="0">
+  <testcase name="newGameResetsTimeAndKeepsTheVisibleView" classname="ar.edu.ajedrez.ActivityClockTest" time="0.028" />
+  <testcase name="lostClientExpiresAndCannotAddAnOfflineGap" classname="ar.edu.ajedrez.ActivityClockTest" time="0.001" />
+  <testcase name="migratesLegacySaveOnlyUntilItsLastWrite(Path)" classname="ar.edu.ajedrez.ActivityClockTest" time="0.072" />
+  <testcase name="fileFormatPreservesAccumulatedTime(Path)" classname="ar.edu.ajedrez.ActivityClockTest" time="0.008" />
+  <testcase name="doesNotCountUntilAViewIsActive" classname="ar.edu.ajedrez.ActivityClockTest" time="0.001" />
+  <testcase name="closeAndReopenExcludeOfflineTime" classname="ar.edu.ajedrez.ActivityClockTest" time="0.001" />
+  <testcase name="severalViewsCountOnceAndLastClosePauses" classname="ar.edu.ajedrez.ActivityClockTest" time="0.0" />
+  <testcase name="checkpointSurvivesAbruptRestartWithoutAClosingEvent" classname="ar.edu.ajedrez.ActivityClockTest" time="0.001" />
+  <testcase name="failedMovePreservesClockAndPresence" classname="ar.edu.ajedrez.ActivityClockTest" time="0.011" />
+</testsuite>

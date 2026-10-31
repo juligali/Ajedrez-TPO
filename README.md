@@ -419,3 +419,14 @@ Avance documental en `RAMA-VICTORIA`, con base de código `d90061e81c85b010f1a69
 El UML editable y su PDF incorporan `presence`, `isClockRunning`, `elapsedMillis` y el constructor vigente de SavedMatch. Se contrastaron los 37 tipos públicos con su API compilada y se revisaron las seis vistas del PDF. [Registro de verificación](docs/evidencias/2026-10-31-revision-uml.md).
 
 Estos cambios no modifican el juego ni agregan patrones. Las políticas, responsables, fechas internas y riesgos son propuestas para revisar con el grupo; la presentación del 6 de noviembre y el requisito de correspondencia de los diagramas fueron informados por Victoria. No se ejecutó una nueva suite Maven ni una nueva medición de rendimiento en este avance.
+
+## Etapa 4 medida el 31 de octubre de 2026
+
+Se ejecutó `mvn -B -ntp clean test` sobre `83903e22eec288bd0823b7172d951b78610d9fdc`: **62 pruebas aprobadas, 0 fallos, 0 errores y 0 omitidas**, en Windows 11, JDK 21.0.6 y Maven 3.9.16.
+
+- [Calidad y métricas](docs/calidad-y-metricas.md): fórmulas, fuentes, metas propuestas y resultados.
+- [Matriz de requisitos y pruebas](docs/matriz-requisitos-pruebas.md): catálogo de 13 grupos de reglas y diez escenarios de recuperación automatizada, todos aprobados; requisitos parciales o no ejecutados visibles.
+- [Evidencia de la ejecución](docs/evidencias/2026-10-31-etapa4-83903e2/README.md): informes Surefire, salida Maven, entorno, commit y manifiesto de fuentes.
+- [Registro de incidencias y pendientes](docs/registro-incidencias.md): 0 críticos registrados en esta campaña; verificaciones de UI, respaldo manual y presentación todavía pendientes.
+
+Esta medición Java no constituye una aprobación integral de la entrega ni una medición de rendimiento. No se cambió código ni se eliminaron pruebas. Los registros de las etapas anteriores conservan su contexto histórico.

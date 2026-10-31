@@ -1,0 +1,159 @@
+{
+  "rules": [
+    {
+      "id": "L01",
+      "rule": "Disposición inicial estándar",
+      "requirement": "RF01",
+      "tests": [
+        "ChessTest#scenario10",
+        "ChessTest#scenario31"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L02",
+      "rule": "Movimientos, ataques y obstáculos de las seis piezas",
+      "requirement": "RF02",
+      "tests": [
+        "ChessTest#scenario2",
+        "ChessTest#scenario3",
+        "ChessTest#scenario4",
+        "ChessTest#scenario5",
+        "ChessTest#scenario6",
+        "ChessTest#scenario7",
+        "ChessTest#scenario8"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L03",
+      "rule": "Capturas, turnos y rechazo sin mutación",
+      "requirement": "RF02 / RF11",
+      "tests": [
+        "ChessTest#scenario11",
+        "ChessTest#scenario12",
+        "ValidationTest#basicRejectionsHaveSemanticReasons",
+        "ValidationTest#gamePropagatesReasonWithoutChangingHistoryTurnOrRedo"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L04",
+      "rule": "Seguridad del rey, jaque y prohibición de capturarlo",
+      "requirement": "RF03",
+      "tests": [
+        "ChessTest#scenario14",
+        "ChessTest#scenario15",
+        "ValidationTest#kingSafetyCaptureAndPromotionHaveDistinctReasons"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L05",
+      "rule": "Jaque mate y ganador",
+      "requirement": "RF04",
+      "tests": [
+        "ChessTest#scenario16",
+        "FeatureTest#scenario3",
+        "FeatureTest#scenario4"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L06",
+      "rule": "Ahogado distinto de mate",
+      "requirement": "RF04",
+      "tests": [
+        "ChessTest#scenario17"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L07",
+      "rule": "Enroque y sus restricciones",
+      "requirement": "RF05",
+      "tests": [
+        "ChessTest#scenario18",
+        "ChessTest#scenario19",
+        "ChessTest#scenario20"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L08",
+      "rule": "Captura al paso, vencimiento y seguridad del rey",
+      "requirement": "RF05",
+      "tests": [
+        "ChessTest#scenario21",
+        "ChessTest#scenario22",
+        "ChessTest#scenario23"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L09",
+      "rule": "Cuatro promociones y promoción con captura",
+      "requirement": "RF05",
+      "tests": [
+        "ChessTest#scenario24",
+        "ChessTest#scenario25"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L10",
+      "rule": "Deshacer, rehacer y eliminación de la rama futura",
+      "requirement": "RF06",
+      "tests": [
+        "ChessTest#scenario21",
+        "ChessTest#scenario24",
+        "ChessTest#scenario26",
+        "ChessTest#scenario27",
+        "FeatureTest#scenario2",
+        "FeatureTest#scenario9"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L11",
+      "rule": "Triple repetición automática",
+      "requirement": "RF04",
+      "tests": [
+        "ChessTest#scenario28"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L12",
+      "rule": "Material insuficiente en los casos comprometidos",
+      "requirement": "RF04",
+      "tests": [
+        "ChessTest#scenario29",
+        "FeatureTest#scenario5"
+      ],
+      "passed": true
+    },
+    {
+      "id": "L13",
+      "rule": "Tablas por 50 movimientos y reinicio del contador",
+      "requirement": "RF04",
+      "tests": [
+        "ChessTest#scenario30"
+      ],
+      "passed": true
+    }
+  ],
+  "recovery": [
+    "FeatureTest#scenario10",
+    "FeatureTest#scenario11",
+    "FeatureTest#scenario12",
+    "FeatureTest#scenario14",
+    "FeatureTest#scenario16",
+    "ActivityClockTest#closeAndReopenExcludeOfflineTime",
+    "ActivityClockTest#checkpointSurvivesAbruptRestartWithoutAClosingEvent",
+    "ActivityClockTest#failedMovePreservesClockAndPresence",
+    "ActivityClockTest#fileFormatPreservesAccumulatedTime",
+    "ActivityClockTest#migratesLegacySaveOnlyUntilItsLastWrite"
+  ],
+  "notes": "Catálogo operativo propuesto v1 para esta medición; su aprobación grupal está pendiente. No se afirma que cubra todos los requisitos, todas las posiciones de ajedrez ni pruebas del navegador."
+}

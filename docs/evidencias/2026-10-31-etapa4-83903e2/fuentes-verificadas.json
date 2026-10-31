@@ -1,0 +1,177 @@
+{
+  "commit": "83903e22eec288bd0823b7172d951b78610d9fdc",
+  "files": [
+    {
+      "path": "pom.xml",
+      "git_blob_sha": "46c0e5aae8be8221e292964de4c59bca25e3162d"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/app/ConsoleUI.java",
+      "git_blob_sha": "1b0f2c2f11a2518316d9a3a56a186160aad0d311"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/app/MoveMessages.java",
+      "git_blob_sha": "f41aeedf2d4a550c5c00205d6c3f1d23e58e2bc4"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/app/StandardGame.java",
+      "git_blob_sha": "150b6fee4e4be75b861d00d41f886476a945f6cd"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/app/WebServer.java",
+      "git_blob_sha": "44a645388516ed98a411ac7224e46a644a0b0c25"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/app/persistence/FileGameRepository.java",
+      "git_blob_sha": "2bfe9c575391c486a0d5b04208510dac3fcb353a"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/ai/Difficulty.java",
+      "git_blob_sha": "c5c403d47f551e61c9abaa063edc9742b76a4f4d"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/ai/IChessAi.java",
+      "git_blob_sha": "2309472e1238ea9bf2ce65c298574738c84eef9d"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/ai/MinimaxAi.java",
+      "git_blob_sha": "429ed28c5603eaa450013604efd849b246b8c3ad"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/board/Board.java",
+      "git_blob_sha": "566427b159d686b8151e1d58ca384bae817fab5a"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/board/Position.java",
+      "git_blob_sha": "403088fd85d7cfe250b998bf76376b86b3ebff68"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/game/Game.java",
+      "git_blob_sha": "47c79e73bf1bb6a54b1951e480b2c9d20510bdb0"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/game/ICommand.java",
+      "git_blob_sha": "938a8699578202f3539e9caf29292cb34b74c17c"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/game/IGameService.java",
+      "git_blob_sha": "20f4b444b92336824258812348cdb3c13a328d0f"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/game/Move.java",
+      "git_blob_sha": "33d4e71d8d1c2bae4f33677fb5451591bdb201a1"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/game/MoveCommand.java",
+      "git_blob_sha": "2dc233fb69e94963dfea6b47410cc995a0050d49"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/game/MoveRecord.java",
+      "git_blob_sha": "29a48f30e62ad26a4197f57ef04e13f7eff2d97e"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/game/MoveResult.java",
+      "git_blob_sha": "b9f21db4c031ab8f143c3a0dbeb7e590b2168b9b"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/movement/BishopMovement.java",
+      "git_blob_sha": "e24da99f4781ce5aa29d1acb51d53fe35478d6cf"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/movement/IMovementStrategy.java",
+      "git_blob_sha": "3f51eacbd367b4330153cec8a5c85ddfcd83f9be"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/movement/KingMovement.java",
+      "git_blob_sha": "636d5727858a7c5fe42c6621284bdf5e153362d2"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/movement/KnightMovement.java",
+      "git_blob_sha": "6e233fe52a15b404998f3eed4b55365f4ee05bb4"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/movement/PawnMovement.java",
+      "git_blob_sha": "d541825ed58449cb0e5eff89c1b92d46c6558ec1"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/movement/QueenMovement.java",
+      "git_blob_sha": "0f137ca4dc0499a5e0754cf459c8ddf9e2b19519"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/movement/RookMovement.java",
+      "git_blob_sha": "b0ec93575375d89359457db4128edf1b8fa9244f"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/pieces/Piece.java",
+      "git_blob_sha": "e7c11dd1864ea22a45d11f4b030873a8048b4355"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/pieces/PieceColor.java",
+      "git_blob_sha": "2d7d053a7e859fa7bf98da943f19a478bab45b83"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/pieces/PieceFactory.java",
+      "git_blob_sha": "fd9c50b96dbe3ccaa86f008f61562e3376f7bc00"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/pieces/PieceType.java",
+      "git_blob_sha": "6194758c4ace60bff5c9d3887fb06235ea3e76da"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/session/GameMode.java",
+      "git_blob_sha": "ee5d4500f3137ddf1e53edd999fb7d63f6a9e9ed"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/session/IGameRepository.java",
+      "git_blob_sha": "fb3db8232ef5605548fcf09d690697d04cf58a8d"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/session/IMatchService.java",
+      "git_blob_sha": "83eb9450464c3590a2bc6ca9dc894d03257e7ff2"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/session/MatchSession.java",
+      "git_blob_sha": "e45a176daf4d1420398aa08f73cd3b54727e85ac"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/session/PersistenceException.java",
+      "git_blob_sha": "045614184193c2aae096dc9335fbd0bfa1784fea"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/session/SavedMatch.java",
+      "git_blob_sha": "f1c0c3cc42ce619a6285c63b32d6bfa4b82a7d7a"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/validation/CheckDetector.java",
+      "git_blob_sha": "cb4763d45d5a8abc0e0748ee6b05ddbb520c3b0f"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/validation/MoveValidator.java",
+      "git_blob_sha": "bfbc93bdcf25d07a4f6a7076d878a725f6029c49"
+    },
+    {
+      "path": "src/main/java/ar/edu/ajedrez/core/validation/ValidationResult.java",
+      "git_blob_sha": "4d785da77562acda7e488ba3043e6d24d4175f80"
+    },
+    {
+      "path": "src/test/java/ar/edu/ajedrez/ActivityClockTest.java",
+      "git_blob_sha": "5c350fd7b4c8e6dedcfc544f6011e45ff78acfe9"
+    },
+    {
+      "path": "src/test/java/ar/edu/ajedrez/BoardPathTest.java",
+      "git_blob_sha": "264b8b3c03b9e292ac815c2765667681f9f67d5e"
+    },
+    {
+      "path": "src/test/java/ar/edu/ajedrez/ChessTest.java",
+      "git_blob_sha": "a7ebc9557bbc93f9c818fa78e12031086eff666b"
+    },
+    {
+      "path": "src/test/java/ar/edu/ajedrez/FeatureTest.java",
+      "git_blob_sha": "3750be4bf5fcb27159ca1d7447eb9873c6b7ff7e"
+    },
+    {
+      "path": "src/test/java/ar/edu/ajedrez/ValidationTest.java",
+      "git_blob_sha": "4c9dd453061590c396801ae465d322c1f28fb7ff"
+    }
+  ]
+}

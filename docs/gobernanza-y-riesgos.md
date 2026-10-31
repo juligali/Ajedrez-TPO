@@ -100,7 +100,7 @@ Todos los responsables son roles propuestos con integrante por asignar. Las just
 | ID | Riesgo | Inicial P/I/total | Residual actual P/I/total | Objetivo posterior P/I/total | Responsable propuesto | Estado |
 |---|---|---|---|---|---|---|
 | R01 | Pérdida o corrupción de guardado | 2/3/6 alta | 2/3/6 alta | 1/3/3 media | Persistencia y respaldo | Abierto; falta simulacro |
-| R02 | Movimiento ilegal o estado inconsistente | 2/3/6 alta | 1/3/3 media | 1/3/3 media | Núcleo y pruebas | Control parcial; falta ejecución actual |
+| R02 | Movimiento ilegal o estado inconsistente | 2/3/6 alta | 1/3/3 media | 1/3/3 media | Núcleo y pruebas | Suite Java aprobada en etapa 4; revisión integral pendiente |
 | R03 | Regresión de interfaz | 2/2/4 media | 2/2/4 media | 1/2/2 baja | Interfaz | Abierto; falta revisión actual |
 | R04 | No poder iniciar en el equipo de presentación | 2/3/6 alta | 2/3/6 alta | 1/3/3 media | Entorno y rendimiento | Abierto; falta ensayo en el equipo |
 | R05 | Demora de respuesta de la IA | 3/2/6 alta | 2/2/4 media | 1/2/2 baja | Entorno y rendimiento | Control parcial; faltan mediciones |
@@ -197,3 +197,16 @@ Revisar este registro ante un cambio relevante, después de cada comprobación y
 | R01 a R08 | Pendiente por cada riesgo | Conservar la estimación provisional hasta aportar evidencia | Sin aceptación grupal registrada | A asignar | Según los seguimientos propuestos |
 
 La etapa documental queda preparada. Para adoptarla y cerrarla como trabajo del grupo faltan: asignar personas a los roles, acordar políticas y escala, revisar estimaciones y registrar aprobación. La ejecución de pruebas, mediciones y revisión final corresponde a las etapas 4, 5 y 6; no se presenta como realizada aquí.
+
+
+## Seguimiento posterior de la etapa 4
+
+El 31/10/2026 se ejecutó la suite Java del commit `83903e22eec288bd0823b7172d951b78610d9fdc`: 62 pruebas aprobadas, sin fallos, errores u omisiones. Ver [calidad y métricas](calidad-y-metricas.md), [matriz](matriz-requisitos-pruebas.md) y [registro de incidencias](registro-incidencias.md).
+
+- **R01:** diez escenarios automatizados de persistencia, restauración, migración o reversión aprobados; el respaldo manual y su simulacro continúan pendientes. Se mantiene residual 2/3/6.
+- **R02:** los escenarios actuales de reglas e invariantes fueron ejecutados y aprobados. Se mantiene residual 1/3/3 por posibles casos no cubiertos; no se cierra el riesgo ni se registra aceptación grupal.
+- **R03 y R04:** no se ejecutó una revisión nueva del navegador, consola interactiva ni del equipo de presentación. Se mantienen sus estimaciones.
+- **R05:** los tiempos impresos por los tests no reemplazan el profiler. No se reduce su residual.
+- **R06, R07 y R08:** revisión documental integral, adopción del flujo y revisión humana siguen pendientes.
+
+No se usó el porcentaje de tests aprobados para disminuir automáticamente todos los riesgos. Los responsables personales y la aceptación de riesgos siguen a cargo del grupo. Las notas anteriores de “sin ejecución” describen la situación de la etapa 3; este apartado registra la comprobación posterior.

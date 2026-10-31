@@ -76,3 +76,9 @@ Se conserva el alcance de ajedrez estándar, de acuerdo con la aclaración del d
 | DOC02 | Decisiones justificadas y límites explícitos | arquitectura.md, informe y presentación final |
 
 Fuera de alcance: motor genérico de variantes, carga dinámica de plugins, internacionalización completa, actualización estética de la UI y UML inferido de documentación antigua. La nueva validación tipada se limita a legalidad de movimientos; los resultados de sesión conservan sus mensajes existentes.
+
+## Trazabilidad de la medición del 31 de octubre de 2026
+
+La ejecución de la etapa 4 sobre `83903e22eec288bd0823b7172d951b78610d9fdc` aprobó **62 pruebas Java**. Las cifras 47/53 de secciones anteriores describen revisiones históricas.
+
+La [matriz de requisitos y pruebas](matriz-requisitos-pruebas.md) distingue evidencia del núcleo, requisitos parcialmente comprobados y verificaciones no ejecutadas. El navegador, la consola interactiva, el respaldo manual y la revisión integral de documentos no se consideran aprobados por esta ejecución. Las [métricas y sus límites](calidad-y-metricas.md) se respaldan con informes fechados y asociados al commit probado.

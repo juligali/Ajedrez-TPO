@@ -43,7 +43,7 @@ Solo la presentación del 6 de noviembre está confirmada. Las fechas intermedia
 | 5 de noviembre | Etapa 6 | Revisión cruzada, documentación coherente y ensayo |
 | 6 de noviembre | Presentación | Defensa de la versión acordada |
 
-La documentación de la etapa 3 está preparada en [gobernanza y riesgos](gobernanza-y-riesgos.md), pendiente de adopción grupal. Las etapas 4 a 6 quedan planificadas, no realizadas por este avance. La medición de pruebas y rendimiento no debe inferirse de esta revisión documental.
+La documentación de la etapa 3 está preparada en [gobernanza y riesgos](gobernanza-y-riesgos.md), pendiente de adopción grupal. La [etapa 4](calidad-y-metricas.md) ya tiene ejecución de la suite Java y métricas trazables del 31/10/2026. Las verificaciones de UI y respaldo manual siguen pendientes; las etapas 5 y 6 quedan planificadas. Los resultados de pruebas se consultan en su evidencia identificada por commit; el rendimiento todavía no se midió mediante una metodología reproducible.
 
 ## Lista de tareas
 
@@ -56,7 +56,8 @@ La documentación de la etapa 3 está preparada en [gobernanza y riesgos](gobern
 - [ ] Confirmar el alcance propuesto con el grupo y contrastarlo con la consigna completa.
 - [ ] Acordar responsables y fechas internas.
 - [ ] Obtener revisión de otro integrante antes de integrar en `main`.
-- [ ] Ejecutar la etapa de calidad y conservar evidencia con fecha, entorno y commit.
+- [x] Ejecutar la suite Java de la etapa 4 y conservar informes, métricas y matriz con fecha, entorno y commit.
+- [ ] Completar las verificaciones de interfaz y el simulacro manual de respaldo registrados como pendientes de calidad.
 - [ ] Antes de presentar, revisar también los diagramas que aparezcan en Word o en las diapositivas.
 
 ## Cierre de las etapas 1 y 2

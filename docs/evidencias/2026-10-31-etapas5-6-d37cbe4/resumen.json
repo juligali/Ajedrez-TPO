@@ -1,0 +1,150 @@
+{
+  "commit": "d37cbe4c39bd434915e2f822d06195bae3e95a69",
+  "date": "2026-10-31",
+  "timezone": "America/Argentina/Buenos_Aires",
+  "cpu": "12th Gen Intel Core i7-1255U",
+  "cores": 10,
+  "logical_processors": 12,
+  "physical_ram_bytes": 16832090112,
+  "os": "Windows 11 build 26200 AMD64",
+  "java": "Oracle JDK 21.0.6",
+  "java_flags": [
+    "-Xms128m",
+    "-Xmx512m",
+    "-Djava.awt.headless=true"
+  ],
+  "jfr": "profile configuration; recording enabled throughout Java scenarios",
+  "node": "24.22.1",
+  "playwright": "1.62.1",
+  "chrome": "155.0.8059.86",
+  "statistics_ms": {
+    "legalMoves_b5": {
+      "wall_ms": {
+        "n": 1000,
+        "min": 0.013299,
+        "median": 0.0221,
+        "mean": 0.024398118,
+        "p95_nearest_rank": 0.042599,
+        "max": 0.1358
+      },
+      "thread_cpu_ms": {
+        "n": 1000,
+        "min": 0.0,
+        "median": 0.0,
+        "mean": 0.015625,
+        "p95_nearest_rank": 0.0,
+        "max": 15.625
+      }
+    },
+    "AI_EXTREME": {
+      "wall_ms": {
+        "n": 10,
+        "min": 1255.0549,
+        "median": 1374.7860999999998,
+        "mean": 1408.48624,
+        "p95_nearest_rank": 1610.630501,
+        "max": 1610.630501
+      },
+      "thread_cpu_ms": {
+        "n": 10,
+        "min": 1218.75,
+        "median": 1343.75,
+        "mean": 1364.0625,
+        "p95_nearest_rank": 1562.5,
+        "max": 1562.5
+      }
+    },
+    "browser_legal_e2": {
+      "wall_ms": {
+        "n": 30,
+        "min": 62.729599999999664,
+        "median": 82.87635,
+        "mean": 92.81018999999998,
+        "p95_nearest_rank": 154.8737999999994,
+        "max": 184.28859999999986
+      },
+      "browser_task_ms": {
+        "n": 30,
+        "min": 11.561999999999962,
+        "median": 14.950500000000034,
+        "mean": 15.703233333333333,
+        "p95_nearest_rank": 19.917999999999992,
+        "max": 32.02499999999997
+      }
+    }
+  },
+  "java_memory": [
+    {
+      "completed_games": "0",
+      "heap_used_after_gc_bytes": "3376184",
+      "old_games_alive": "0",
+      "old_games_observed": "0"
+    },
+    {
+      "completed_games": "100",
+      "heap_used_after_gc_bytes": "3381360",
+      "old_games_alive": "0",
+      "old_games_observed": "100"
+    },
+    {
+      "completed_games": "200",
+      "heap_used_after_gc_bytes": "3386592",
+      "old_games_alive": "0",
+      "old_games_observed": "200"
+    },
+    {
+      "completed_games": "300",
+      "heap_used_after_gc_bytes": "3390280",
+      "old_games_alive": "0",
+      "old_games_observed": "300"
+    },
+    {
+      "completed_games": "400",
+      "heap_used_after_gc_bytes": "3394216",
+      "old_games_alive": "0",
+      "old_games_observed": "400"
+    },
+    {
+      "completed_games": "500",
+      "heap_used_after_gc_bytes": "3397416",
+      "old_games_alive": "0",
+      "old_games_observed": "500"
+    }
+  ],
+  "browser_memory": [
+    {
+      "completed_cycles": 0,
+      "JSHeapUsedSize": 2390340,
+      "JSHeapTotalSize": 3784704,
+      "documents": 1,
+      "nodes": 1118,
+      "jsEventListeners": 256
+    },
+    {
+      "completed_cycles": 5,
+      "JSHeapUsedSize": 2433036,
+      "JSHeapTotalSize": 3260416,
+      "documents": 1,
+      "nodes": 1118,
+      "jsEventListeners": 256
+    },
+    {
+      "completed_cycles": 10,
+      "JSHeapUsedSize": 2467996,
+      "JSHeapTotalSize": 3260416,
+      "documents": 1,
+      "nodes": 1118,
+      "jsEventListeners": 256
+    },
+    {
+      "completed_cycles": 15,
+      "JSHeapUsedSize": 2494620,
+      "JSHeapTotalSize": 3260416,
+      "documents": 1,
+      "nodes": 1118,
+      "jsEventListeners": 256
+    }
+  ],
+  "browser_cycle_task_ms": 4400.657,
+  "no_source_optimization": true
+}

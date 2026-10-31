@@ -1,5 +1,7 @@
 # Gobernanza y riesgos de BLOCKMATE
 
+> Actualización de seguimiento: las etapas 5 y 6 ya incorporan mediciones, pruebas de UI/consola/HTTP, un simulacro automatizado de respaldo y documentos revisados. Los pendientes descritos en la campaña original se conservan como registro histórico; consultar el [estado vigente de incidencias](registro-incidencias.md) y el [cierre técnico](integridad-y-cierre.md). La revisión humana y el ensayo del grupo siguen pendientes.
+
 Etapa 3. Preparado el 31 de octubre de 2026 para la presentación del **6 de noviembre de 2026**. Rama de trabajo: `RAMA-VICTORIA`. Base de código revisada: `d90061e81c85b010f1a691bd7797cd20f55fc16d`.
 
 Este documento propone cómo organizar cambios, revisar entregas y tratar los riesgos del juego. Distingue controles observados en el código de procedimientos todavía pendientes de adoptar o ejecutar. Publicarlo no significa que el grupo haya aprobado las políticas ni que los riesgos estén resueltos.
@@ -210,3 +212,4 @@ El 31/10/2026 se ejecutó la suite Java del commit `83903e22eec288bd0823b7172d95
 - **R06, R07 y R08:** revisión documental integral, adopción del flujo y revisión humana siguen pendientes.
 
 No se usó el porcentaje de tests aprobados para disminuir automáticamente todos los riesgos. Los responsables personales y la aceptación de riesgos siguen a cargo del grupo. Las notas anteriores de “sin ejecución” describen la situación de la etapa 3; este apartado registra la comprobación posterior.
+

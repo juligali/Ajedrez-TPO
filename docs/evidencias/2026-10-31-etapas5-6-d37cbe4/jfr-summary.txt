@@ -1,0 +1,32 @@
+jdk.ExecutionSample events=143; first chess frame per sampled stack (not exact CPU time):
+41 ar.edu.ajedrez.core.ai.MinimaxAi.legalMoves
+38 ar.edu.ajedrez.core.pieces.Piece.canAttack
+28 ar.edu.ajedrez.core.pieces.Piece.canMove
+11 ar.edu.ajedrez.core.validation.MoveValidator.validate
+6 ar.edu.ajedrez.core.board.Board.<init>
+3 ar.edu.ajedrez.core.game.MoveCommand.execute
+3 ar.edu.ajedrez.core.movement.PawnMovement.canMove
+2 ar.edu.ajedrez.core.board.Board.pathClear
+2 ar.edu.ajedrez.core.movement.KnightMovement.canMove
+1 ar.edu.ajedrez.core.game.Game.positionKey
+1 ar.edu.ajedrez.core.game.MoveCommand.getLabel
+1 ar.edu.ajedrez.core.game.MoveResult.isAccepted
+1 ar.edu.ajedrez.core.movement.BishopMovement.canMove
+1 ar.edu.ajedrez.core.movement.IMovementStrategy.canAttack
+1 ar.edu.ajedrez.core.validation.CheckDetector.isInCheck
+jdk.ObjectAllocationSample events=5806; estimated allocation weight bytes (not retained heap):
+15267011504 ar.edu.ajedrez.core.board.Position
+6566204384 ar.edu.ajedrez.core.game.Move
+6216974648 [Lar.edu.ajedrez.core.pieces.Piece;
+779869936 [[Lar.edu.ajedrez.core.pieces.Piece;
+668690960 [Lar.edu.ajedrez.core.pieces.PieceType;
+454839048 ar.edu.ajedrez.core.game.MoveCommand
+187096488 ar.edu.ajedrez.core.board.Board
+92351264 ar.edu.ajedrez.core.pieces.Piece
+36994408 [Ljava.lang.Object;
+19873280 jdk.internal.org.objectweb.asm.SymbolTable$Entry
+16232328 [B
+12562608 [I
+12040760 java.util.ArrayList
+9890344 [Z
+3160440 jdk.internal.event.ThreadSleepEvent

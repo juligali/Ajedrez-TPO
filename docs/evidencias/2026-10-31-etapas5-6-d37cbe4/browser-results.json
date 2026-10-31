@@ -1,0 +1,201 @@
+{
+  "browser": "155.0.8059.86",
+  "viewport": {
+    "width": 1440,
+    "height": 1100
+  },
+  "warmup_queries": 10,
+  "warmup_cycles": 5,
+  "legal_query_samples": [
+    {
+      "sample": 1,
+      "wall_ms": 65.59760000000006,
+      "browser_task_ms": 14.400999999999996
+    },
+    {
+      "sample": 2,
+      "wall_ms": 76.24829999999974,
+      "browser_task_ms": 11.67499999999999
+    },
+    {
+      "sample": 3,
+      "wall_ms": 80.71129999999994,
+      "browser_task_ms": 19.637000000000015
+    },
+    {
+      "sample": 4,
+      "wall_ms": 78.42650000000003,
+      "browser_task_ms": 16.625
+    },
+    {
+      "sample": 5,
+      "wall_ms": 82.45499999999993,
+      "browser_task_ms": 14.985000000000026
+    },
+    {
+      "sample": 6,
+      "wall_ms": 83.29770000000008,
+      "browser_task_ms": 13.892000000000015
+    },
+    {
+      "sample": 7,
+      "wall_ms": 84.45409999999993,
+      "browser_task_ms": 17.120000000000026
+    },
+    {
+      "sample": 8,
+      "wall_ms": 101.52850000000035,
+      "browser_task_ms": 17.63300000000001
+    },
+    {
+      "sample": 9,
+      "wall_ms": 101.36500000000024,
+      "browser_task_ms": 15.152999999999972
+    },
+    {
+      "sample": 10,
+      "wall_ms": 184.28859999999986,
+      "browser_task_ms": 19.917999999999992
+    },
+    {
+      "sample": 11,
+      "wall_ms": 62.729599999999664,
+      "browser_task_ms": 14.91600000000004
+    },
+    {
+      "sample": 12,
+      "wall_ms": 87.4408999999996,
+      "browser_task_ms": 12.570000000000082
+    },
+    {
+      "sample": 13,
+      "wall_ms": 88.41870000000017,
+      "browser_task_ms": 13.502000000000013
+    },
+    {
+      "sample": 14,
+      "wall_ms": 69.7464,
+      "browser_task_ms": 11.561999999999962
+    },
+    {
+      "sample": 15,
+      "wall_ms": 110.01879999999983,
+      "browser_task_ms": 14.53199999999999
+    },
+    {
+      "sample": 16,
+      "wall_ms": 75.0006999999996,
+      "browser_task_ms": 12.491999999999948
+    },
+    {
+      "sample": 17,
+      "wall_ms": 85.0659999999998,
+      "browser_task_ms": 12.357000000000063
+    },
+    {
+      "sample": 18,
+      "wall_ms": 97.02739999999994,
+      "browser_task_ms": 32.02499999999997
+    },
+    {
+      "sample": 19,
+      "wall_ms": 73.81900000000041,
+      "browser_task_ms": 12.948999999999987
+    },
+    {
+      "sample": 20,
+      "wall_ms": 124.77440000000024,
+      "browser_task_ms": 18.197000000000017
+    },
+    {
+      "sample": 21,
+      "wall_ms": 121.01800000000003,
+      "browser_task_ms": 16.374
+    },
+    {
+      "sample": 22,
+      "wall_ms": 66.29129999999986,
+      "browser_task_ms": 14.395999999999965
+    },
+    {
+      "sample": 23,
+      "wall_ms": 76.48529999999937,
+      "browser_task_ms": 13.38600000000001
+    },
+    {
+      "sample": 24,
+      "wall_ms": 154.8737999999994,
+      "browser_task_ms": 17.208000000000002
+    },
+    {
+      "sample": 25,
+      "wall_ms": 72.6899999999996,
+      "browser_task_ms": 13.379999999999947
+    },
+    {
+      "sample": 26,
+      "wall_ms": 65.22059999999965,
+      "browser_task_ms": 15.749000000000013
+    },
+    {
+      "sample": 27,
+      "wall_ms": 80.02310000000034,
+      "browser_task_ms": 15.728999999999992
+    },
+    {
+      "sample": 28,
+      "wall_ms": 113.8753000000006,
+      "browser_task_ms": 15.510000000000023
+    },
+    {
+      "sample": 29,
+      "wall_ms": 148.25930000000062,
+      "browser_task_ms": 19.03900000000003
+    },
+    {
+      "sample": 30,
+      "wall_ms": 73.15450000000055,
+      "browser_task_ms": 14.184999999999892
+    }
+  ],
+  "memory": [
+    {
+      "completed_cycles": 0,
+      "JSHeapUsedSize": 2390340,
+      "JSHeapTotalSize": 3784704,
+      "documents": 1,
+      "nodes": 1118,
+      "jsEventListeners": 256
+    },
+    {
+      "completed_cycles": 5,
+      "JSHeapUsedSize": 2433036,
+      "JSHeapTotalSize": 3260416,
+      "documents": 1,
+      "nodes": 1118,
+      "jsEventListeners": 256
+    },
+    {
+      "completed_cycles": 10,
+      "JSHeapUsedSize": 2467996,
+      "JSHeapTotalSize": 3260416,
+      "documents": 1,
+      "nodes": 1118,
+      "jsEventListeners": 256
+    },
+    {
+      "completed_cycles": 15,
+      "JSHeapUsedSize": 2494620,
+      "JSHeapTotalSize": 3260416,
+      "documents": 1,
+      "nodes": 1118,
+      "jsEventListeners": 256
+    }
+  ],
+  "measured_cycles": 15,
+  "cycle_browser_task_ms": 4400.657,
+  "keyboard_enter_passed": true,
+  "mobile_no_horizontal_overflow": true,
+  "errors": [],
+  "limitations": "Wall time includes Playwright scheduling, HTTP and rendering. Browser TaskDuration excludes Java CPU. Forced GC is diagnostic. No network throttling or CPU throttling. Not a heap retainers audit."
+}

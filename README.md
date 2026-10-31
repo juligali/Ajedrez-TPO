@@ -1,5 +1,7 @@
 # BLOCKMATE · Ajedrez de Minecraft
 
+**Revisión del 31/10/2026 en RAMA-VICTORIA:** 62 pruebas Java aprobadas; etapas 5 y 6 con mediciones, recuperación y documentación actualizadas. [Rendimiento](docs/rendimiento.md) · [Integridad y pendientes del grupo](docs/integridad-y-cierre.md). Presentación: **6/11/2026**.
+
 Ajedrez local para **una persona contra IA o dos personas en la misma computadora**, con reglas implementadas en Java y una interfaz de personajes hechos con bloques.
 
 [Ver una captura de la interfaz](docs/vista-previa.png).
@@ -317,7 +319,7 @@ Si llamamos **n** a la cantidad de casillas, buscar el rey y recorrer atacantes 
 
 Cada comando guarda O(n) referencias de tablero y el historial consume O(m × n), con **m** movimientos conservados. No se describe como memoria constante. Las imágenes permanecen en la caché hasta cerrar la página y Java administra sus objetos mediante el garbage collector.
 
-Las pruebas reportan el tiempo observado de la suite; eso **no reemplaza un profiler** ni garantiza rendimiento en todas las máquinas. Para investigar un problema se usarían VisualVM/JFR para Java y Performance/Memory de DevTools para la interfaz. No se fuerza el GC ni se agregó pooling sin mediciones.
+Las pruebas reportan el tiempo observado de la suite; eso **no reemplaza un profiler** ni garantiza rendimiento en todas las máquinas. La etapa 5 incorpora mediciones con JFR para Java y DevTools para la interfaz; ver rendimiento.md. El juego no fuerza el GC ni utiliza pooling nuevo. Los instrumentos diagnósticos sí solicitan GC para comparar cortes de memoria equivalentes.
 
 ## Otros temas de clase
 
@@ -427,6 +429,19 @@ Se ejecutó `mvn -B -ntp clean test` sobre `83903e22eec288bd0823b7172d951b78610d
 - [Calidad y métricas](docs/calidad-y-metricas.md): fórmulas, fuentes, metas propuestas y resultados.
 - [Matriz de requisitos y pruebas](docs/matriz-requisitos-pruebas.md): catálogo de 13 grupos de reglas y diez escenarios de recuperación automatizada, todos aprobados; requisitos parciales o no ejecutados visibles.
 - [Evidencia de la ejecución](docs/evidencias/2026-10-31-etapa4-83903e2/README.md): informes Surefire, salida Maven, entorno, commit y manifiesto de fuentes.
-- [Registro de incidencias y pendientes](docs/registro-incidencias.md): 0 críticos registrados en esta campaña; verificaciones de UI, respaldo manual y presentación todavía pendientes.
+- [Registro de incidencias y pendientes](docs/registro-incidencias.md): 0 críticos registrados en esta campaña; el registro incorpora el avance posterior de UI, respaldo y documentos y mantiene pendientes humanos.
 
 Esta medición Java no constituye una aprobación integral de la entrega ni una medición de rendimiento. No se cambió código ni se eliminaron pruebas. Los registros de las etapas anteriores conservan su contexto histórico.
+
+## Etapas 5 y 6 verificadas el 31 de octubre de 2026
+
+- [Rendimiento y memoria](docs/rendimiento.md): 1.000 consultas Java, 10 búsquedas de IA máxima y mediciones separadas del navegador. Mediana de IA: **1,375 s**, máximo **1,611 s** en la posición y equipo registrados. Sin optimizaciones del motor ni promesas de latencia general.
+- [Integridad y cierre](docs/integridad-y-cierre.md): declaración de asistencia generativa, revisión técnica, respaldo comprobado y lista de cierre humano.
+- [Dependencias y recursos](docs/dependencias-y-recursos.md): aplicación, pruebas, herramientas y atribuciones, con decisiones pendientes explícitas.
+- [Evidencia reproducible](docs/evidencias/2026-10-31-etapas5-6-d37cbe4/README.md): CSV, resumen JFR, DevTools, capturas, consola y restauración.
+
+Pasaron los flujos de `verify-features.cjs` después de corregir su selector del botón móvil. También se verificó mover con Enter, la consola básica, restaurar una copia de prueba y rechazar peticiones de otro origen o con revisión antigua. Estas comprobaciones no se cuentan como pruebas JUnit adicionales.
+
+El Word y la presentación fueron actualizados y revisados visualmente: **62 pruebas y cronómetro de tiempo activo**. Los 37 tipos y las firmas del UML siguen correspondiendo a las clases; no se modificó producción. `tools/create_report.py` es un generador histórico y escribe en `build/` para no reemplazar el informe vigente.
+
+**Pendiente del grupo:** revisión por otro integrante, aceptación de roles, reparto de exposición y ensayo en el equipo final. Las etapas técnicas no implican aprobación humana ni integración automática en main.

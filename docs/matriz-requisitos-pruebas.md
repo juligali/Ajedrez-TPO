@@ -1,5 +1,7 @@
 # Matriz de requisitos y pruebas
 
+> Actualización de seguimiento: las etapas 5 y 6 ya incorporan mediciones, pruebas de UI/consola/HTTP, un simulacro automatizado de respaldo y documentos revisados. Los pendientes descritos en la campaña original se conservan como registro histórico; consultar el [estado vigente de incidencias](registro-incidencias.md) y el [cierre técnico](integridad-y-cierre.md). La revisión humana y el ensayo del grupo siguen pendientes.
+
 Medición del 31/10/2026 sobre `83903e22eec288bd0823b7172d951b78610d9fdc`. Fuente de requisitos: [requisitos.md](requisitos.md). Resultados: [evidencia de la etapa 4](evidencias/2026-10-31-etapa4-83903e2/README.md).
 
 **Aprobado en el alcance** significa que los escenarios nombrados pasaron; no demuestra todos los comportamientos posibles. **Parcial** indica que hay una comprobación Java pero falta verificar otra parte del requisito. **No ejecutado** no significa fallo.
@@ -77,3 +79,4 @@ Los identificadores A01–A10 son auxiliares de esta matriz, no nuevos requisito
 | ActivityClockTest#migratesLegacySaveOnlyUntilItsLastWrite | Migración del formato anterior y nuevo guardado | Archivo en @TempDir | Aprobado |
 
 El catálogo tiene 10 métodos distintos. No son diez recuperaciones de una partida personal ni diez ensayos de backup. Un mismo método puede respaldar varios requisitos, pero se cuenta una sola vez dentro de este KPI.
+

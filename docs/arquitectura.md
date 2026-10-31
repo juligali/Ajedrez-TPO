@@ -1,5 +1,7 @@
 # Arquitectura actual
 
+Actualización documental del 31/10/2026: cronómetro activo, 62 pruebas y campañas de rendimiento y recuperación. Las secciones de revisión anteriores conservan su contexto; [cierre vigente](integridad-y-cierre.md).
+
 El núcleo de reglas se mantiene separado de HTTP, gráficos y archivos.
 
 ## Entrada y salida
@@ -25,6 +27,7 @@ Game contiene Board y usa MoveValidator, CheckDetector y MoveCommand. Piece dele
 | POST | /api/undo | revision |
 | POST | /api/redo | revision |
 | POST | /api/save | revision |
+| POST | /api/presence | clientId, active; no usa revision |
 
 El estado incluye tablero, turno, historial, capturas, puntos, ganador o null, modo, dificultad, turno de IA y tiempo transcurrido.
 
@@ -91,7 +94,7 @@ También deben revisarse las filas de peones, promoción, enroque y derechos de 
 
 ## Verificación y límites
 
-`mvn clean test`: 53 pruebas, sin fallos ni errores. Se conservan los 47 escenarios existentes, incluido perft 20/400/8902. ValidationTest cubre todos los motivos, propagación, invariantes y traducción; BoardPathTest cubre el caso que podía no terminar y extremos inválidos. La única integración de archivos conserva @TempDir; los tests nuevos no usan archivos, red ni navegador.
+`mvn clean test`: 53 pruebas, sin fallos ni errores. Se conservan los 47 escenarios existentes, incluido perft 20/400/8902. ValidationTest cubre todos los motivos, propagación, invariantes y traducción; BoardPathTest cubre el caso que podía no terminar y extremos inválidos. En esa revisión se conservaba una integración de archivos con @TempDir. La campaña actual incluye también los casos de ActivityClockTest; ver el cierre del 31/10.
 
 La separación de dependencias es real: core no importa app, HTTP, UI ni archivos. Permanece texto en Game/MatchSession, etiquetas de tipos y notación descriptiva del historial. Se acepta ese límite de presentación para evitar una migración de todos los contratos: la separación tipada se acota a MoveValidator. La IA es didáctica y sus presupuestos no constituyen una garantía de tiempo máximo de respuesta.
 
@@ -119,3 +122,9 @@ Documentación y entrega:
 - Nueva `.gitattributes`: marca PDF, DOCX y PPTX como binarios para evitar conversiones de fin de línea en Git.
 
 No se modificaron la UI web, pom.xml, el catálogo de piezas ni Position. Los experimentos de dimensiones y PieceKind se retiraron después de evaluar la aclaración del docente. La carpeta .idea ya existía sin seguimiento y no forma parte de esta revisión.
+
+## Evidencia vigente al cierre técnico
+
+La ejecución limpia de etapa 4 aprobó 62 pruebas (31 ChessTest, 16 FeatureTest, 4 ValidationTest, 2 BoardPathTest y 9 ActivityClockTest). Las cifras de 47/53 en la revisión del 16/10 son históricas. El código de producción se conserva; las etapas 5 y 6 agregan instrumentos y documentación, no modificaciones de reglas ni de arquitectura.
+
+La etapa 5 midió JFR y memoria, y la etapa 6 comprobó interfaz y restauración sobre archivos aislados. Word y PowerPoint reflejan el reloj activo y las mismas clases. La revisión por otro integrante y la defensa continúan pendientes: [registro de cierre](integridad-y-cierre.md).

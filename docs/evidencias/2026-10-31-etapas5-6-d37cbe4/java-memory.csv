@@ -1,0 +1,7 @@
+completed_games,heap_used_after_gc_bytes,old_games_alive,old_games_observed
+0,3376184,0,0
+100,3381360,0,100
+200,3386592,0,200
+300,3390280,0,300
+400,3394216,0,400
+500,3397416,0,500

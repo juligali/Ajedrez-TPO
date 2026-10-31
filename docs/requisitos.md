@@ -70,7 +70,7 @@ Se conserva el alcance de ajedrez estándar, de acuerdo con la aclaración del d
 |---|---|---|
 | RF11 | Rechazo de jugada mediante motivo semántico, sin excepción normal | ValidationResult, MoveValidator y ValidationTest |
 | RF12 | Web y consola muestran una traducción del rechazo | MoveMessages y adaptación de ambos puntos de presentación |
-| RNF01 | Estabilidad de reglas y sesión | 47 pruebas originales conservadas; 53 totales tras la revisión |
+| RNF01 | Estabilidad de reglas y sesión | 62 pruebas aprobadas el 31/10/2026: 53 de reglas/sesión y 9 de actividad |
 | RNF02 | Trayectorias inválidas terminan sin recorrer indefinidamente | BoardPathTest |
 | DOC01 | UML coincide con los tipos y API pública actuales | Seis vistas PlantUML/PDF, 37 tipos públicos de producción |
 | DOC02 | Decisiones justificadas y límites explícitos | arquitectura.md, informe y presentación final |
@@ -82,3 +82,18 @@ Fuera de alcance: motor genérico de variantes, carga dinámica de plugins, inte
 La ejecución de la etapa 4 sobre `83903e22eec288bd0823b7172d951b78610d9fdc` aprobó **62 pruebas Java**. Las cifras 47/53 de secciones anteriores describen revisiones históricas.
 
 La [matriz de requisitos y pruebas](matriz-requisitos-pruebas.md) distingue evidencia del núcleo, requisitos parcialmente comprobados y verificaciones no ejecutadas. El navegador, la consola interactiva, el respaldo manual y la revisión integral de documentos no se consideran aprobados por esta ejecución. Las [métricas y sus límites](calidad-y-metricas.md) se respaldan con informes fechados y asociados al commit probado.
+
+## Actualización de etapas 5 y 6
+
+La evidencia posterior complementa la campaña Java, sin modificar sus resultados históricos:
+
+| Criterio | Resultado adicional | Límite |
+|---|---|---|
+| Destinos, tutorial y modos | Flujos de `verify-features.cjs` aprobados, cinco niveles y 390 px | Automatización de escenarios, no cobertura visual exhaustiva |
+| Uso con teclado y consola | Enter para e2/e4; consola mover/deshacer/rehacer/salir | No se declara accesibilidad integral |
+| Recuperación | Copia en frío restaurada; estado y redo comprobados | Simulacro automatizado con archivos de prueba |
+| Rendimiento | Java, JFR y DevTools; mediana IA máxima 1,375 s | Un equipo y posición; memoria JS requiere seguimiento si crece |
+| DOC01 | 37 tipos y API pública UML conservados | Producción sin cambios desde la verificación |
+| DOC02 | Word y presentación actualizados y revisados visualmente | Revisión humana y ensayo final pendientes |
+
+Ver [rendimiento](rendimiento.md), [integridad y cierre](integridad-y-cierre.md) y [evidencia](evidencias/2026-10-31-etapas5-6-d37cbe4/README.md). No se añadieron variantes ni patrones sin una necesidad medida.

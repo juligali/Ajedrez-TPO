@@ -21,7 +21,8 @@ const assert=require('node:assert/strict');
    await page.waitForSelector('#new-dialog',{state:'hidden'});
   }
   const newGame=async(mode='TWO_PLAYERS',difficulty='MEDIUM')=>{
-   await page.locator('#new-button').click();await page.locator('#tutorial-done').click();
+   const newButton=await page.locator('#compact-new').isVisible()?'#compact-new':'#new-button';
+   await page.locator(newButton).click();await page.locator('#tutorial-done').click();
    await page.locator('input[value="'+mode+'"]').check();
    if(mode==='SOLO')await page.locator('#difficulty').selectOption(difficulty);
    await page.locator('#confirm-new').click();

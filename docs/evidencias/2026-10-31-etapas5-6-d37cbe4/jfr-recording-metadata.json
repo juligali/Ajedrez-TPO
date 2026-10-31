@@ -1,0 +1,7 @@
+{
+  "file": "java-profile.jfr",
+  "bytes": 4019606,
+  "sha256": "07d8248991c5a35e6395535b4f3ed11ed952d953f427a4ef17964bec2ad10c05",
+  "published": false,
+  "reason": "Raw local diagnostic may contain environment metadata; aggregated summary and reproducible instrument are published."
+}

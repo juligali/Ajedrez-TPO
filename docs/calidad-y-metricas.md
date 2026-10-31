@@ -1,5 +1,7 @@
 # Calidad y métricas de BLOCKMATE
 
+> Actualización de seguimiento: las etapas 5 y 6 ya incorporan mediciones, pruebas de UI/consola/HTTP, un simulacro automatizado de respaldo y documentos revisados. Los pendientes descritos en la campaña original se conservan como registro histórico; consultar el [estado vigente de incidencias](registro-incidencias.md) y el [cierre técnico](integridad-y-cierre.md). La revisión humana y el ensayo del grupo siguen pendientes.
+
 Etapa 4, ejecutada el **31 de octubre de 2026** sobre el commit `83903e22eec288bd0823b7172d951b78610d9fdc` de `RAMA-VICTORIA`.
 
 **Resultado:** `mvn -B -ntp clean test` terminó con **62 pruebas aprobadas, 0 fallos, 0 errores y 0 omitidas**. Las fuentes y el POM utilizados coincidieron con los blobs de ese commit antes y después de ejecutar Maven. No se modificó el programa, las pruebas ni sus aserciones.
@@ -85,3 +87,4 @@ Los tiempos por nivel que imprime FeatureTest son observaciones de una sola ejec
 - Revisión integral de Word, presentación y equipo de demostración.
 
 La etapa 4 aporta ejecución y métricas trazables del alcance Java. Los pendientes están registrados como brechas de verificación, no como pruebas aprobadas ni defectos confirmados.
+

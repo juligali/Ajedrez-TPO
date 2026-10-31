@@ -1,3 +1,9 @@
+"""Generador histórico del informe inicial.
+
+El informe vigente está en docs/Informe arquitectura Ajedrez Minecraft.docx.
+Este script conserva la versión anterior como referencia y genera una salida
+separada en build/. No reproduce las revisiones UML ni las etapas 5 y 6.
+"""
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -157,10 +163,10 @@ p('Los nuevos tests utilizan un repositorio en memoria y un reloj controlado: so
 p('Puede haber mate con una sola pieza atacante si no existe defensa legal. Se verificó una torre con apoyo del rey y un caballo con el rey rival encerrado por sus propias piezas. No se transforma rey y caballo contra rey en un mate imposible.')
 h('Relación con las clases',2)
 p('Se aplican arquitectura de la unidad 00; SOLID, composición, patrones y pruebas de la unidad 01; y caché y búsqueda acotada de la unidad 04. Los contratos son interfaces de código, no un SLA de un proveedor externo.')
-Path('docs').mkdir(exist_ok=True)
+Path('build').mkdir(exist_ok=True)
 for root in [doc.element,doc.styles.element]:
  for border in list(root.iter(qn('w:pBdr'))): border.getparent().remove(border)
-doc.save('docs/Informe arquitectura Ajedrez Minecraft.docx')
-print('Documento creado')
+doc.save('build/Informe-arquitectura-historico.docx')
+print('Informe histórico creado en build/Informe-arquitectura-historico.docx; no reemplaza el informe vigente.')
 
 

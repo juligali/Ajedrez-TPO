@@ -1,0 +1,20 @@
+{
+  "docx": {
+    "file": "docs/Informe arquitectura Ajedrez Minecraft.docx",
+    "sha256": "1b865a5978de4ddbd1e444c793929806fdbeb6e921344ad2fe5cd60adb29f8f7",
+    "pages": 9,
+    "renderer": "Microsoft Word PDF export + Poppler PNG; bundled LibreOffice unavailable",
+    "all_pages_visually_reviewed": true
+  },
+  "pptx": {
+    "file": "docs/BLOCKMATE-final.pptx",
+    "sha256": "9fad97577f8a7753d66af7cf33bba98b5afcaba559b11644e2463495789a4613",
+    "slides": 13,
+    "package_integrity": "pass",
+    "layout_findings": 0,
+    "first_party_reimport": "pass",
+    "renderer": "Artifact Tool",
+    "all_slides_visually_reviewed": true,
+    "native_powerpoint_execution_verified": false
+  }
+}

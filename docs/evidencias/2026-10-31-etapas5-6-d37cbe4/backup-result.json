@@ -1,0 +1,398 @@
+{
+  "result": "PASS",
+  "automated": true,
+  "personal_game_used": false,
+  "backup_sha256": "a531e9bcc9165ef477116156b5de50f16301aee38478321ca958369447f01a04",
+  "checks": [
+    "server stopped during copies",
+    "backup bytes restored exactly",
+    "board, turn, mode, difficulty, history, captures, points, redo, elapsed time and status restored",
+    "redo restores capture and one point",
+    "cross-origin POST rejected 403",
+    "stale revision rejected 409"
+  ],
+  "before": {
+    "revision": 6,
+    "turn": "WHITE",
+    "status": "PLAYING",
+    "check": false,
+    "finished": false,
+    "canRedo": true,
+    "whitePoints": 0,
+    "blackPoints": 0,
+    "winner": null,
+    "mode": "TWO_PLAYERS",
+    "difficulty": "MEDIUM",
+    "configured": true,
+    "aiTurn": false,
+    "elapsedMillis": 0,
+    "clockRunning": false,
+    "board": [
+      {
+        "square": "a8",
+        "type": "ROOK",
+        "color": "BLACK"
+      },
+      {
+        "square": "b8",
+        "type": "KNIGHT",
+        "color": "BLACK"
+      },
+      {
+        "square": "c8",
+        "type": "BISHOP",
+        "color": "BLACK"
+      },
+      {
+        "square": "d8",
+        "type": "QUEEN",
+        "color": "BLACK"
+      },
+      {
+        "square": "e8",
+        "type": "KING",
+        "color": "BLACK"
+      },
+      {
+        "square": "f8",
+        "type": "BISHOP",
+        "color": "BLACK"
+      },
+      {
+        "square": "g8",
+        "type": "KNIGHT",
+        "color": "BLACK"
+      },
+      {
+        "square": "h8",
+        "type": "ROOK",
+        "color": "BLACK"
+      },
+      {
+        "square": "a7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "b7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "c7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "e7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "f7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "g7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "h7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "d5",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "e4",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "a2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "b2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "c2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "d2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "f2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "g2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "h2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "a1",
+        "type": "ROOK",
+        "color": "WHITE"
+      },
+      {
+        "square": "b1",
+        "type": "KNIGHT",
+        "color": "WHITE"
+      },
+      {
+        "square": "c1",
+        "type": "BISHOP",
+        "color": "WHITE"
+      },
+      {
+        "square": "d1",
+        "type": "QUEEN",
+        "color": "WHITE"
+      },
+      {
+        "square": "e1",
+        "type": "KING",
+        "color": "WHITE"
+      },
+      {
+        "square": "f1",
+        "type": "BISHOP",
+        "color": "WHITE"
+      },
+      {
+        "square": "g1",
+        "type": "KNIGHT",
+        "color": "WHITE"
+      },
+      {
+        "square": "h1",
+        "type": "ROOK",
+        "color": "WHITE"
+      }
+    ],
+    "history": [
+      {
+        "from": "e2",
+        "to": "e4",
+        "label": "e2 → e4"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "label": "d7 → d5"
+      }
+    ],
+    "captures": []
+  },
+  "after": {
+    "revision": 0,
+    "turn": "WHITE",
+    "status": "PLAYING",
+    "check": false,
+    "finished": false,
+    "canRedo": true,
+    "whitePoints": 0,
+    "blackPoints": 0,
+    "winner": null,
+    "mode": "TWO_PLAYERS",
+    "difficulty": "MEDIUM",
+    "configured": true,
+    "aiTurn": false,
+    "elapsedMillis": 0,
+    "clockRunning": false,
+    "board": [
+      {
+        "square": "a8",
+        "type": "ROOK",
+        "color": "BLACK"
+      },
+      {
+        "square": "b8",
+        "type": "KNIGHT",
+        "color": "BLACK"
+      },
+      {
+        "square": "c8",
+        "type": "BISHOP",
+        "color": "BLACK"
+      },
+      {
+        "square": "d8",
+        "type": "QUEEN",
+        "color": "BLACK"
+      },
+      {
+        "square": "e8",
+        "type": "KING",
+        "color": "BLACK"
+      },
+      {
+        "square": "f8",
+        "type": "BISHOP",
+        "color": "BLACK"
+      },
+      {
+        "square": "g8",
+        "type": "KNIGHT",
+        "color": "BLACK"
+      },
+      {
+        "square": "h8",
+        "type": "ROOK",
+        "color": "BLACK"
+      },
+      {
+        "square": "a7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "b7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "c7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "e7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "f7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "g7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "h7",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "d5",
+        "type": "PAWN",
+        "color": "BLACK"
+      },
+      {
+        "square": "e4",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "a2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "b2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "c2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "d2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "f2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "g2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "h2",
+        "type": "PAWN",
+        "color": "WHITE"
+      },
+      {
+        "square": "a1",
+        "type": "ROOK",
+        "color": "WHITE"
+      },
+      {
+        "square": "b1",
+        "type": "KNIGHT",
+        "color": "WHITE"
+      },
+      {
+        "square": "c1",
+        "type": "BISHOP",
+        "color": "WHITE"
+      },
+      {
+        "square": "d1",
+        "type": "QUEEN",
+        "color": "WHITE"
+      },
+      {
+        "square": "e1",
+        "type": "KING",
+        "color": "WHITE"
+      },
+      {
+        "square": "f1",
+        "type": "BISHOP",
+        "color": "WHITE"
+      },
+      {
+        "square": "g1",
+        "type": "KNIGHT",
+        "color": "WHITE"
+      },
+      {
+        "square": "h1",
+        "type": "ROOK",
+        "color": "WHITE"
+      }
+    ],
+    "history": [
+      {
+        "from": "e2",
+        "to": "e4",
+        "label": "e2 → e4"
+      },
+      {
+        "from": "d7",
+        "to": "d5",
+        "label": "d7 → d5"
+      }
+    ],
+    "captures": []
+  }
+}

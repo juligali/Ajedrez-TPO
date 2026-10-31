@@ -1,5 +1,10 @@
+' Revision 2026-10-31 - RAMA-VICTORIA
+' API contrastada con javap -public sobre fuentes del commit d90061e81c85b010f1a691bd7797cd20f55fc16d
+' Incluye API publica declarada y constructores implicitos; omite miembros privados, heredados y metodos generados de enums.
+
 @startuml UML-Ajedrez-TPO-1
 !pragma layout smetana
+scale 2
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam defaultFontName Arial
@@ -76,6 +81,7 @@ interface IMovementStrategy
 
 @startuml UML-Ajedrez-TPO-2
 !pragma layout smetana
+scale 2
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam defaultFontName Arial
@@ -85,6 +91,10 @@ skinparam classBackgroundColor #F3F7F3
 skinparam classBorderColor #284C35
 hide empty members
 title BLOCKMATE - Estrategias de movimiento
+legend bottom
+  canAttack tiene implementacion por defecto en IMovementStrategy.
+  Solo PawnMovement la redefine.
+endlegend
 interface IMovementStrategy {
   + boolean canMove(Board, Position, Position, PieceColor)
   + boolean canAttack(Board, Position, Position, PieceColor)
@@ -126,6 +136,7 @@ QueenMovement --> IMovementStrategy : rook y bishop
 
 @startuml UML-Ajedrez-TPO-3
 !pragma layout smetana
+scale 2
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam defaultFontName Arial
@@ -224,6 +235,7 @@ enum ValidationResult
 
 @startuml UML-Ajedrez-TPO-4
 !pragma layout smetana
+scale 2
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam defaultFontName Arial
@@ -276,6 +288,7 @@ class PieceFactory
 
 @startuml UML-Ajedrez-TPO-5
 !pragma layout smetana
+scale 2
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam defaultFontName Arial
@@ -285,6 +298,10 @@ skinparam classBackgroundColor #F3F7F3
 skinparam classBorderColor #284C35
 hide empty members
 title BLOCKMATE - Sesion persistencia e inteligencia artificial
+legend bottom
+  presence registra actividad; isClockRunning informa si corre el reloj.
+  elapsedMillis conserva el tiempo activo acumulado.
+endlegend
 interface IMatchService {
   + IGameService getGame()
   + MoveResult newGame(GameMode, Difficulty)
@@ -298,6 +315,8 @@ interface IMatchService {
   + GameMode getMode()
   + Difficulty getDifficulty()
   + long getElapsedMillis()
+  + MoveResult presence(String, boolean)
+  + boolean isClockRunning()
 }
 class MatchSession {
   + MatchSession(Supplier<IGameService>, IGameRepository, IChessAi, Clock)
@@ -314,6 +333,8 @@ class MatchSession {
   + GameMode getMode()
   + Difficulty getDifficulty()
   + long getElapsedMillis()
+  + boolean isClockRunning()
+  + MoveResult presence(String, boolean)
 }
 interface IGameRepository {
   + Optional<SavedMatch> load()
@@ -326,8 +347,9 @@ class SavedMatch <<final>> {
   + Difficulty difficulty
   + long startedAt
   + long endedAt
+  + long elapsedMillis
   + boolean configured
-  + SavedMatch(List<Move>, int, GameMode, Difficulty, long, long, boolean)
+  + SavedMatch(List<Move>, int, GameMode, Difficulty, long, long, boolean, long)
 }
 class PersistenceException {
   + PersistenceException(String, Throwable)
@@ -382,6 +404,7 @@ abstract class Clock
 
 @startuml UML-Ajedrez-TPO-6
 !pragma layout smetana
+scale 2
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam defaultFontName Arial

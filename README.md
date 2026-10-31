@@ -407,3 +407,15 @@ El UML muestra los 37 tipos públicos de producción, su API pública declarada 
 ### Actualización del cronómetro de tiempo activo
 
 Verificación de esta actualización: 62 pruebas Java aprobadas (las 53 existentes, con el escenario de reloj actualizado, más 9 casos de actividad). Cubren pausa y reanudación, varias vistas, vencimiento de actividad, reinicio, reinicio del tiempo, recuperación ante fallos de guardado y migración del formato anterior. Una prueba de navegador con partida aislada verificó salida y regreso a la página, pausa tras reiniciar Java y rechazo de solicitudes de actividad de otro origen. Los informes históricos de otras secciones corresponden a sus respectivas revisiones.
+
+## Preparación de la presentación del 6 de noviembre de 2026
+
+Avance documental en `RAMA-VICTORIA`, con base de código `d90061e81c85b010f1a691bd7797cd20f55fc16d`:
+
+- [Etapa 1: alcance, calendario propuesto y criterios de entrega](docs/alcance-y-criterios.md).
+- [Etapa 2: revisión de patrones y contraste del UML con el programa](docs/revision-de-patrones.md).
+- [Etapa 3: políticas de trabajo, respaldo, recuperación, IA y registro de riesgos](docs/gobernanza-y-riesgos.md).
+
+El UML editable y su PDF incorporan `presence`, `isClockRunning`, `elapsedMillis` y el constructor vigente de SavedMatch. Se contrastaron los 37 tipos públicos con su API compilada y se revisaron las seis vistas del PDF. [Registro de verificación](docs/evidencias/2026-10-31-revision-uml.md).
+
+Estos cambios no modifican el juego ni agregan patrones. Las políticas, responsables, fechas internas y riesgos son propuestas para revisar con el grupo; la presentación del 6 de noviembre y el requisito de correspondencia de los diagramas fueron informados por Victoria. No se ejecutó una nueva suite Maven ni una nueva medición de rendimiento en este avance.

@@ -8,7 +8,7 @@ Se consultó el texto de las nueve presentaciones proporcionadas. Los ejercicios
 | 0.1- Unidad 00_ Tipos de Arquitectura y Diagramas de Clases.pptx | 3–10 | Dependencias hacia el núcleo y diagrama de clases; se evita ECS para este alcance |
 | 1. Unidad 01_ Ingenieria y Diseno (1).pptx | 3–7, 9–18 | Requisitos, qué/por qué/cuándo cambiar, frontera núcleo/adaptadores y evitar sobreingeniería |
 | 2. Unidad 01_ SOLID, Inyeccion de dependencias y Composicion sobre Herencia (1).pptx | 4–17 | SOLID, DI por constructor, composición, Strategy y Factory; Observer evaluado pero no agregado |
-| 3. Unidad 01_Patrones y Testing (1).pptx | 5–15 | Command, ejecutar/deshacer y comparación del estado; pocos estados sin patrón State |
+| 3. Unidad 01_Patrones y Testing (1).pptx | 5–15 | Command y su colaboración con Memento para ejecutar/deshacer; pocos estados sin patrón State |
 | 4. Unidad 01_ Testing, Metodologías agiles y TPO (1).pptx | 4–16 | Pruebas sin infraestructura, AAA, stub y backlog; no se afirma TDD o Scrum completos |
 | 5. Unidad 03 _BPO y SLA como Contrato (1).pptx | 7–13, 18–19 | Contratos explícitos y modularidad; no se inventa una tercerización ni un SLA |
 | 6. Unidad 04_ Algoritmos y Optimizacion en CPU (1).pptx | 4–18 | Costos de algoritmos, caché, cálculo a demanda, especialización y medir antes de optimizar |

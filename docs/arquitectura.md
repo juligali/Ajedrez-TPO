@@ -1,6 +1,6 @@
 # Arquitectura actual
 
-Actualización documental del 31/10/2026: cronómetro activo, 62 pruebas y campañas de rendimiento y recuperación. Las secciones de revisión anteriores conservan su contexto; [cierre vigente](integridad-y-cierre.md).
+Arquitectura de la copia de trabajo basada en main (`38f2635`), con Memento incorporado el 2/11/2026. Las campañas históricas y el estado de revisión están enlazados desde el [índice](README.md).
 
 El núcleo de reglas se mantiene separado de HTTP, gráficos y archivos.
 
@@ -50,9 +50,9 @@ MinimaxAi usa el mismo MoveValidator. En TWO_PLAYERS la sesión no llama a la IA
 El tutorial es ilustrativo y no modifica la partida. La consola sigue siendo un adaptador básico sin los controles web de sesión. El informe Word documenta las clases y las decisiones con más detalle.
 
 
-## Revisión final y contratos vigentes
+## Contratos del núcleo
 
-Fecha de revisión: 16 de octubre de 2026. La fuente de verdad es `src/main/java`, contrastada con los tests. El UML anterior describía otra API; se reemplazó por seis vistas de los 37 tipos públicos actuales. [Fuente PlantUML](UML-Ajedrez-TPO.puml) y [PDF](UML-Ajedrez-TPO.pdf).
+El [UML editable](UML-Ajedrez-TPO.puml) y su [PDF](UML-Ajedrez-TPO.pdf) muestran seis vistas de 38 tipos públicos (37 tipos superiores y Board.Memento anidado), con 196 miembros públicos declarados.
 
 - `StandardGame.create()` devuelve `Game` y conecta Board, PieceFactory, CheckDetector y MoveValidator.
 - `Game` recibe `(Board, PieceColor, MoveValidator, CheckDetector, PieceFactory)` y copia el tablero recibido.
@@ -63,7 +63,7 @@ Fecha de revisión: 16 de octubre de 2026. La fuente de verdad es `src/main/java
 - `MoveResult.getValidationResult()` devuelve un Optional con el motivo cuando el validador rechaza. `MoveMessages.message` lo traduce en los adaptadores. `getMessage` conserva mensajes de operaciones previas y queda vacío para estos rechazos tipados.
 - `Game.getHistory()` devuelve MoveRecord inmutables. Command reside en MoveCommand, que implementa execute/undo; redo reutiliza execute.
 
-## Decisiones para defender
+## Decisiones de diseño
 
 | Qué | Por qué | Cuándo cambiaría |
 |---|---|---|
@@ -71,7 +71,7 @@ Fecha de revisión: 16 de octubre de 2026. La fuente de verdad es `src/main/java
 | Conservar PieceType y PieceFactory con EnumMap | El catálogo finito permite leer toda la configuración en un lugar. Piece delega el comportamiento a IMovementStrategy. | Se necesita cargar tipos externos en ejecución o mantener muchas variantes. |
 | ValidationResult como enum con isValid | El núcleo comunica el motivo sin imponer texto visible. Los rechazos normales no usan excepciones. | Los errores necesitan datos adicionales, por ejemplo una casilla o parámetros para traducción; entonces podría usarse un resultado con motivo y datos. |
 | MoveMessages compartido por web y consola | Evita duplicar traducciones y mantiene la dependencia desde app hacia core. | Los adaptadores requieren idiomas o estilos distintos. |
-| Copia del tablero en MoveCommand | Hace explícita la restauración de capturas, derechos y contadores para 64 casillas. | Un historial muy grande o tableros mayores justifican, mediante mediciones, almacenar diferencias. |
+| Memento opaco en MoveCommand | Board captura/restaura su estado; el comando no puede leer ni modificar su representación. | Un historial muy grande o tableros mayores justificarían, mediante mediciones, almacenar diferencias. |
 | Puertos en las fronteras e inyección manual | Repositorio, IA y reloj se sustituyen en pruebas; no hay contenedor de DI ni dependencias de infraestructura en core. | Nuevas integraciones o responsabilidades concretas requieren otros puertos. |
 | Guardas en pathClear | Una trayectoria no alineada podía no terminar. La precondición ahora devuelve false y está probada. | Otro algoritmo admite trayectorias diferentes; debe tener su contrato propio. |
 
@@ -84,7 +84,7 @@ No se agregaron State, Observer, herencia de piezas ni plugins. La revisión con
 3. Incorporarla al setup elegido y adaptar su símbolo de consola, personaje web y tutorial si se ofrece al usuario.
 4. Probar su movimiento, ataques, bloqueos y seguridad del rey. La prueba stub existente demuestra la sustitución del comportamiento de Piece.
 
-OCP se aplica al comportamiento variable, no a un catálogo universal sin cambios. La promoción admite explícitamente reina, torre, alfil y caballo en MoveValidator y MinimaxAi; una pieza nueva promocionable requiere cambiar esas reglas y la UI. Los tipos con efectos especiales requieren revisar MoveCommand y la clave de repetición. Una pieza ordinaria desconocida no debe clasificarse automáticamente como material insuficiente. Este límite es más sencillo de explicar que un motor genérico de variantes.
+OCP se aplica al comportamiento variable, no a un catálogo universal sin cambios. La promoción admite explícitamente reina, torre, alfil y caballo en MoveValidator y MinimaxAi; una pieza nueva promocionable requiere cambiar esas reglas y la UI. Los tipos con efectos especiales requieren revisar MoveCommand y la clave de repetición. Una pieza ordinaria desconocida no debe clasificarse automáticamente como material insuficiente. Estos cambios explícitos mantienen el alcance del ajedrez estándar.
 
 ## Adaptar el tablero en una futura variante
 
@@ -92,39 +92,20 @@ Primero se definen el setup y las reglas de esa variante. Después se introducen
 
 También deben revisarse las filas de peones, promoción, enroque y derechos de repetición, material insuficiente y evaluación de IA. StandardGame puede seguir creando únicamente ajedrez estándar. Consola, JSON, web y guardado requieren acordar cómo representar la nueva configuración. El enroque clásico no debe extrapolarse automáticamente a otro tablero. Estas modificaciones quedan documentadas, no implementadas anticipadamente.
 
-## Verificación y límites
+## Command y Memento
 
-`mvn clean test`: 53 pruebas, sin fallos ni errores. Se conservan los 47 escenarios existentes, incluido perft 20/400/8902. ValidationTest cubre todos los motivos, propagación, invariantes y traducción; BoardPathTest cubre el caso que podía no terminar y extremos inválidos. En esa revisión se conservaba una integración de archivos con @TempDir. La campaña actual incluye también los casos de ActivityClockTest; ver el cierre del 31/10.
+Board es el originador: `createMemento()` captura las 64 casillas, la casilla de al paso y el contador de medias jugadas; `restoreMemento(Memento)` los restaura. `Board.Memento` es una clase estática final con constructor y campos privados, sin métodos de lectura ni mutación públicos. Su matriz se copia y solo comparte referencias a Piece y Position, que son inmutables.
 
-La separación de dependencias es real: core no importa app, HTTP, UI ni archivos. Permanece texto en Game/MatchSession, etiquetas de tipos y notación descriptiva del historial. Se acepta ese límite de presentación para evitar una migración de todos los contratos: la separación tipada se acota a MoveValidator. La IA es didáctica y sus presupuestos no constituyen una garantía de tiempo máximo de respuesta.
+MoveCommand es el custodio: conserva el memento anterior en su constructor y lo entrega a Board al deshacer. Command encapsula la acción; Memento encapsula el estado previo. El turno y las pilas siguen bajo responsabilidad de Game; no se trasladan al tablero. Rehacer reutiliza execute. Restaurar no consume el memento ni comparte su matriz con el tablero.
 
+Board.copy()/restore(Board) siguen disponibles para copias mutables de simulación y consultas. El memento es un estado en memoria para undo, no el formato persistente SavedMatch.
 
-## Archivos de esta revisión
+## Costos y rendimiento
 
-Código de producción, dentro de `src/main/java/ar/edu/ajedrez`:
+Board consulta casillas por índice. La validación rechaza errores simples antes de simular la jugada; cada comando conserva O(n) referencias y el historial O(m × n), con n casillas y m jugadas. Las piezas son inmutables y se comparten en las copias. El navegador calcula destinos a demanda y reutiliza gráficos Canvas. Las mediciones y sus límites se mantienen en [rendimiento](rendimiento.md).
 
-- `core/board/Board.java`: guarda de trayectorias inválidas.
-- `core/validation/MoveValidator.java` y nuevo `ValidationResult.java`: contrato semántico.
-- `core/game/Game.java` y `MoveResult.java`: consumo y propagación del motivo.
-- `core/ai/MinimaxAi.java`: consumo del nuevo contrato.
-- `app/ConsoleUI.java`, `WebServer.java` y nuevo `MoveMessages.java`: traducción de presentación.
+## Verificación
 
-Pruebas, dentro de `src/test/java/ar/edu/ajedrez`:
+Las seis suites reúnen 65 pruebas, incluidos perft 20/400/8902, validación tipada, trayectorias y reloj activo. [Calidad](calidad-y-metricas.md) conserva resultados y [la matriz](matriz-requisitos-pruebas.md) relaciona escenarios con requisitos.
 
-- `ChessTest.java` y `FeatureTest.java`: adaptación al contrato, conservando los 47 escenarios.
-- Nuevos `ValidationTest.java` y `BoardPathTest.java`: seis pruebas adicionales.
-
-Documentación y entrega:
-
-- `README.md`, `docs/arquitectura.md`, `docs/requisitos.md`.
-- `docs/UML-Ajedrez-TPO.puml` y `docs/UML-Ajedrez-TPO.pdf`.
-- `docs/Informe arquitectura Ajedrez Minecraft.docx` y nuevo `docs/BLOCKMATE-final.pptx`.
-- Nueva `.gitattributes`: marca PDF, DOCX y PPTX como binarios para evitar conversiones de fin de línea en Git.
-
-No se modificaron la UI web, pom.xml, el catálogo de piezas ni Position. Los experimentos de dimensiones y PieceKind se retiraron después de evaluar la aclaración del docente. La carpeta .idea ya existía sin seguimiento y no forma parte de esta revisión.
-
-## Evidencia vigente al cierre técnico
-
-La ejecución limpia de etapa 4 aprobó 62 pruebas (31 ChessTest, 16 FeatureTest, 4 ValidationTest, 2 BoardPathTest y 9 ActivityClockTest). Las cifras de 47/53 en la revisión del 16/10 son históricas. El código de producción se conserva; las etapas 5 y 6 agregan instrumentos y documentación, no modificaciones de reglas ni de arquitectura.
-
-La etapa 5 midió JFR y memoria, y la etapa 6 comprobó interfaz y restauración sobre archivos aislados. Word y PowerPoint reflejan el reloj activo y las mismas clases. La revisión por otro integrante y la defensa continúan pendientes: [registro de cierre](integridad-y-cierre.md).
+El núcleo no importa app, HTTP, UI ni archivos. Permanece texto en Game/MatchSession, etiquetas de tipos y notación del historial: la separación tipada se limita a MoveValidator y no implica internacionalización completa. La revisión independiente pendiente figura en [integridad](integridad-y-cierre.md).

@@ -6,13 +6,13 @@ import ar.edu.ajedrez.core.pieces.*;
 /** Ejecuta una jugada ya validada y conserva lo necesario para deshacerla. */
 public class MoveCommand implements ICommand {
     private final Board board;
-    private final Board before;
+    private final Board.Memento before;
     private final Move move;
     private final PieceFactory factory;
     private final Piece piece;
     private Piece captured;
     public MoveCommand(Board board, Move move, PieceFactory factory) {
-        this.board = board; this.before = board.copy(); this.move = move; this.factory = factory;
+        this.board = board; this.before = board.createMemento(); this.move = move; this.factory = factory;
         this.piece = board.get(move.getFrom());
     }
     @Override
@@ -40,7 +40,7 @@ public class MoveCommand implements ICommand {
         board.setHalfMoveClock(piece.getType() == PieceType.PAWN || captured != null ? 0 : board.getHalfMoveClock() + 1);
     }
     @Override
-    public void undo() { board.restore(before); }
+    public void undo() { board.restoreMemento(before); }
     public Move getMove() { return move; }
     public Piece getCaptured() { return captured; }
     public String getLabel() {

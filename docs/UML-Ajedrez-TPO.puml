@@ -1,5 +1,5 @@
-' Revision 2026-10-31 - RAMA-VICTORIA
-' API contrastada con javap -public sobre fuentes del commit d90061e81c85b010f1a691bd7797cd20f55fc16d
+' Revision 2026-11-02 - Memento
+' API contrastada con javap -public; evidencia docs/evidencias/2026-11-02-memento/
 ' Incluye API publica declarada y constructores implicitos; omite miembros privados, heredados y metodos generados de enums.
 
 @startuml UML-Ajedrez-TPO-1
@@ -26,9 +26,19 @@ class Board {
   + int getHalfMoveClock()
   + void setHalfMoveClock(int)
   + boolean pathClear(Position, Position)
+  + Memento createMemento()
+  + void restoreMemento(Memento)
   + Board copy()
   + void restore(Board)
 }
+class "Board.Memento" as BoardMemento <<final>>
+note right of BoardMemento
+  Tipo estatico anidado; estado opaco.
+  Constructor y campos privados.
+  Sin API publica para leer o mutar.
+end note
+Board +-- BoardMemento : tipo anidado
+Board ..> BoardMemento : crea / restaura
 class Position <<final>> {
   + Position(int, int)
   + int getRow()
@@ -219,7 +229,9 @@ Game --> PieceFactory
 Game *-- "0..*" MoveCommand : history y future
 MoveCommand ..|> ICommand
 MoveCommand --> Board : board
-MoveCommand *-- Board : before
+class "Board.Memento" as BoardMemento <<final>>
+MoveCommand *-- BoardMemento : before
+Board ..> BoardMemento : crea / restaura
 MoveCommand --> Move
 MoveCommand --> PieceFactory
 MoveResult --> "0..1" ValidationResult

@@ -1,5 +1,7 @@
 # Etapa 5 — Rendimiento y memoria
 
+Estas mediciones son históricas: corresponden a la implementación anterior a Memento. El cambio del 2/11/2026 conserva copias de 64 casillas, pero no se midió otra vez CPU o memoria; no se atribuye mejora ni equivalencia de tiempos al patrón nuevo.
+
 Medición del **31/10/2026**, rama `RAMA-VICTORIA`, commit de aplicación `d37cbe4c39bd434915e2f822d06195bae3e95a69`. La aplicación no recibió optimizaciones en esta etapa. Los instrumentos se incorporan con este informe.
 
 ## Entorno y alcance

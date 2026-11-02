@@ -34,6 +34,31 @@ public class Board {
         }
         return true;
     }
+    /** Captura el estado del tablero sin exponerlo al historial de comandos. */
+    public Memento createMemento() { return new Memento(this); }
+
+    /** Restaura una captura sin consumirla ni compartir su matriz mutable. */
+    public void restoreMemento(Memento memento) {
+        java.util.Objects.requireNonNull(memento, "El memento no puede ser null.");
+        for (int r = 0; r < SIZE; r++) System.arraycopy(memento.squares[r], 0, squares[r], 0, SIZE);
+        enPassant = memento.enPassant;
+        halfMoveClock = memento.halfMoveClock;
+    }
+
+    /** Estado opaco e inmutable: solo Board puede crearlo e interpretar su contenido. */
+    public static final class Memento {
+        private final Piece[][] squares = new Piece[SIZE][SIZE];
+        private final Position enPassant;
+        private final int halfMoveClock;
+
+        private Memento(Board board) {
+            // Piece y Position son inmutables; la matriz sí necesita una copia propia.
+            for (int r = 0; r < SIZE; r++) System.arraycopy(board.squares[r], 0, squares[r], 0, SIZE);
+            enPassant = board.enPassant;
+            halfMoveClock = board.halfMoveClock;
+        }
+    }
+
     public Board copy() { Board copy = new Board(); copy.restore(this); return copy; }
     public void restore(Board other) {
         // Piece y Position son inmutables: es seguro compartir sus referencias.

@@ -1,0 +1,357 @@
+Compiled from "ConsoleUI.java"
+public class ar.edu.ajedrez.app.ConsoleUI {
+  public ar.edu.ajedrez.app.ConsoleUI(ar.edu.ajedrez.core.game.IGameService);
+  public void run();
+  public static void main(java.lang.String[]);
+}
+
+Compiled from "MoveMessages.java"
+public final class ar.edu.ajedrez.app.MoveMessages {
+  public static java.lang.String message(ar.edu.ajedrez.core.game.MoveResult);
+  public static java.lang.String validationMessage(ar.edu.ajedrez.core.validation.ValidationResult);
+}
+
+Compiled from "FileGameRepository.java"
+public class ar.edu.ajedrez.app.persistence.FileGameRepository implements ar.edu.ajedrez.core.session.IGameRepository {
+  public ar.edu.ajedrez.app.persistence.FileGameRepository(java.nio.file.Path);
+  public java.util.Optional<ar.edu.ajedrez.core.session.SavedMatch> load();
+  public void save(ar.edu.ajedrez.core.session.SavedMatch);
+}
+
+Compiled from "StandardGame.java"
+public class ar.edu.ajedrez.app.StandardGame {
+  public ar.edu.ajedrez.app.StandardGame();
+  public static ar.edu.ajedrez.core.game.Game create();
+}
+
+Compiled from "WebServer.java"
+public class ar.edu.ajedrez.app.WebServer {
+  public ar.edu.ajedrez.app.WebServer(ar.edu.ajedrez.core.session.IMatchService, java.nio.file.Path);
+  public void start(int) throws java.io.IOException;
+  public static void main(java.lang.String[]) throws java.io.IOException;
+}
+
+Compiled from "Difficulty.java"
+public final class ar.edu.ajedrez.core.ai.Difficulty extends java.lang.Enum<ar.edu.ajedrez.core.ai.Difficulty> {
+  public static final ar.edu.ajedrez.core.ai.Difficulty SUPER_EASY;
+  public static final ar.edu.ajedrez.core.ai.Difficulty EASY;
+  public static final ar.edu.ajedrez.core.ai.Difficulty MEDIUM;
+  public static final ar.edu.ajedrez.core.ai.Difficulty HARD;
+  public static final ar.edu.ajedrez.core.ai.Difficulty EXTREME;
+  public static ar.edu.ajedrez.core.ai.Difficulty[] values();
+  public static ar.edu.ajedrez.core.ai.Difficulty valueOf(java.lang.String);
+  public int getDepth();
+  public int getNodes();
+  public int getMilliseconds();
+}
+
+Compiled from "IChessAi.java"
+public interface ar.edu.ajedrez.core.ai.IChessAi {
+  public abstract ar.edu.ajedrez.core.game.Move chooseMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.pieces.PieceColor, ar.edu.ajedrez.core.ai.Difficulty);
+}
+
+Compiled from "MinimaxAi.java"
+public class ar.edu.ajedrez.core.ai.MinimaxAi implements ar.edu.ajedrez.core.ai.IChessAi {
+  public ar.edu.ajedrez.core.ai.MinimaxAi(ar.edu.ajedrez.core.validation.MoveValidator, ar.edu.ajedrez.core.validation.CheckDetector, ar.edu.ajedrez.core.pieces.PieceFactory, java.util.Random);
+  public synchronized ar.edu.ajedrez.core.game.Move chooseMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.pieces.PieceColor, ar.edu.ajedrez.core.ai.Difficulty);
+  public java.util.List<ar.edu.ajedrez.core.game.Move> legalMoves(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "Board.java"
+public final class ar.edu.ajedrez.core.board.Board$Memento {
+}
+
+Compiled from "Board.java"
+public class ar.edu.ajedrez.core.board.Board {
+  public static final int SIZE;
+  public ar.edu.ajedrez.core.board.Board();
+  public boolean contains(ar.edu.ajedrez.core.board.Position);
+  public ar.edu.ajedrez.core.pieces.Piece get(ar.edu.ajedrez.core.board.Position);
+  public ar.edu.ajedrez.core.pieces.Piece get(int, int);
+  public void set(ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.Piece);
+  public ar.edu.ajedrez.core.board.Position getEnPassant();
+  public void setEnPassant(ar.edu.ajedrez.core.board.Position);
+  public int getHalfMoveClock();
+  public void setHalfMoveClock(int);
+  public boolean pathClear(ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position);
+  public ar.edu.ajedrez.core.board.Board$Memento createMemento();
+  public void restoreMemento(ar.edu.ajedrez.core.board.Board$Memento);
+  public ar.edu.ajedrez.core.board.Board copy();
+  public void restore(ar.edu.ajedrez.core.board.Board);
+}
+
+Compiled from "Position.java"
+public final class ar.edu.ajedrez.core.board.Position {
+  public ar.edu.ajedrez.core.board.Position(int, int);
+  public int getRow();
+  public int getCol();
+  public static ar.edu.ajedrez.core.board.Position from(java.lang.String);
+  public java.lang.String toString();
+  public boolean equals(java.lang.Object);
+  public int hashCode();
+}
+
+Compiled from "Game.java"
+public class ar.edu.ajedrez.core.game.Game implements ar.edu.ajedrez.core.game.IGameService {
+  public ar.edu.ajedrez.core.game.Game(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.pieces.PieceColor, ar.edu.ajedrez.core.validation.MoveValidator, ar.edu.ajedrez.core.validation.CheckDetector, ar.edu.ajedrez.core.pieces.PieceFactory);
+  public ar.edu.ajedrez.core.game.MoveResult move(ar.edu.ajedrez.core.game.Move);
+  public ar.edu.ajedrez.core.game.MoveResult undo();
+  public ar.edu.ajedrez.core.game.MoveResult redo();
+  public ar.edu.ajedrez.core.board.Board getBoard();
+  public ar.edu.ajedrez.core.pieces.PieceColor getTurn();
+  public java.util.List<ar.edu.ajedrez.core.game.MoveRecord> getHistory();
+  public int getCapturedPoints(ar.edu.ajedrez.core.pieces.PieceColor);
+  public ar.edu.ajedrez.core.pieces.PieceColor getWinner();
+  public java.util.List<ar.edu.ajedrez.core.game.Move> getTimeline();
+  public boolean canRedo();
+  public java.lang.String getStatus();
+  public boolean isInCheck();
+  public boolean isFinished();
+  public java.util.List<ar.edu.ajedrez.core.board.Position> legalMoves(ar.edu.ajedrez.core.board.Position);
+}
+
+Compiled from "ICommand.java"
+public interface ar.edu.ajedrez.core.game.ICommand {
+  public abstract void execute();
+  public abstract void undo();
+}
+
+Compiled from "IGameService.java"
+public interface ar.edu.ajedrez.core.game.IGameService {
+  public abstract ar.edu.ajedrez.core.game.MoveResult move(ar.edu.ajedrez.core.game.Move);
+  public abstract ar.edu.ajedrez.core.game.MoveResult undo();
+  public abstract ar.edu.ajedrez.core.game.MoveResult redo();
+  public abstract ar.edu.ajedrez.core.board.Board getBoard();
+  public abstract ar.edu.ajedrez.core.pieces.PieceColor getTurn();
+  public abstract java.util.List<ar.edu.ajedrez.core.board.Position> legalMoves(ar.edu.ajedrez.core.board.Position);
+  public abstract java.util.List<ar.edu.ajedrez.core.game.MoveRecord> getHistory();
+  public abstract java.lang.String getStatus();
+  public abstract boolean isInCheck();
+  public abstract boolean isFinished();
+  public abstract boolean canRedo();
+  public abstract int getCapturedPoints(ar.edu.ajedrez.core.pieces.PieceColor);
+  public abstract ar.edu.ajedrez.core.pieces.PieceColor getWinner();
+  public abstract java.util.List<ar.edu.ajedrez.core.game.Move> getTimeline();
+}
+
+Compiled from "Move.java"
+public final class ar.edu.ajedrez.core.game.Move {
+  public ar.edu.ajedrez.core.game.Move(ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position);
+  public ar.edu.ajedrez.core.game.Move(ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceType);
+  public ar.edu.ajedrez.core.board.Position getFrom();
+  public ar.edu.ajedrez.core.board.Position getTo();
+  public ar.edu.ajedrez.core.pieces.PieceType getPromotion();
+}
+
+Compiled from "MoveCommand.java"
+public class ar.edu.ajedrez.core.game.MoveCommand implements ar.edu.ajedrez.core.game.ICommand {
+  public ar.edu.ajedrez.core.game.MoveCommand(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.game.Move, ar.edu.ajedrez.core.pieces.PieceFactory);
+  public void execute();
+  public void undo();
+  public ar.edu.ajedrez.core.game.Move getMove();
+  public ar.edu.ajedrez.core.pieces.Piece getCaptured();
+  public java.lang.String getLabel();
+}
+
+Compiled from "MoveRecord.java"
+public final class ar.edu.ajedrez.core.game.MoveRecord {
+  public ar.edu.ajedrez.core.game.MoveRecord(ar.edu.ajedrez.core.game.Move, ar.edu.ajedrez.core.pieces.Piece, java.lang.String);
+  public ar.edu.ajedrez.core.game.Move getMove();
+  public ar.edu.ajedrez.core.pieces.Piece getCaptured();
+  public java.lang.String getLabel();
+}
+
+Compiled from "MoveResult.java"
+public final class ar.edu.ajedrez.core.game.MoveResult {
+  public ar.edu.ajedrez.core.game.MoveResult(boolean, java.lang.String);
+  public ar.edu.ajedrez.core.game.MoveResult(ar.edu.ajedrez.core.validation.ValidationResult);
+  public java.util.Optional<ar.edu.ajedrez.core.validation.ValidationResult> getValidationResult();
+  public boolean isAccepted();
+  public java.lang.String getMessage();
+}
+
+Compiled from "BishopMovement.java"
+public class ar.edu.ajedrez.core.movement.BishopMovement implements ar.edu.ajedrez.core.movement.IMovementStrategy {
+  public ar.edu.ajedrez.core.movement.BishopMovement();
+  public boolean canMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "IMovementStrategy.java"
+public interface ar.edu.ajedrez.core.movement.IMovementStrategy {
+  public abstract boolean canMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+  public default boolean canAttack(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "KingMovement.java"
+public class ar.edu.ajedrez.core.movement.KingMovement implements ar.edu.ajedrez.core.movement.IMovementStrategy {
+  public ar.edu.ajedrez.core.movement.KingMovement();
+  public boolean canMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "KnightMovement.java"
+public class ar.edu.ajedrez.core.movement.KnightMovement implements ar.edu.ajedrez.core.movement.IMovementStrategy {
+  public ar.edu.ajedrez.core.movement.KnightMovement();
+  public boolean canMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "PawnMovement.java"
+public class ar.edu.ajedrez.core.movement.PawnMovement implements ar.edu.ajedrez.core.movement.IMovementStrategy {
+  public ar.edu.ajedrez.core.movement.PawnMovement();
+  public boolean canAttack(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+  public boolean canMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "QueenMovement.java"
+public class ar.edu.ajedrez.core.movement.QueenMovement implements ar.edu.ajedrez.core.movement.IMovementStrategy {
+  public ar.edu.ajedrez.core.movement.QueenMovement(ar.edu.ajedrez.core.movement.IMovementStrategy, ar.edu.ajedrez.core.movement.IMovementStrategy);
+  public boolean canMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "RookMovement.java"
+public class ar.edu.ajedrez.core.movement.RookMovement implements ar.edu.ajedrez.core.movement.IMovementStrategy {
+  public ar.edu.ajedrez.core.movement.RookMovement();
+  public boolean canMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "Piece.java"
+public final class ar.edu.ajedrez.core.pieces.Piece {
+  public ar.edu.ajedrez.core.pieces.Piece(ar.edu.ajedrez.core.pieces.PieceType, ar.edu.ajedrez.core.pieces.PieceColor, ar.edu.ajedrez.core.movement.IMovementStrategy);
+  public ar.edu.ajedrez.core.pieces.PieceType getType();
+  public ar.edu.ajedrez.core.pieces.PieceColor getColor();
+  public boolean hasMoved();
+  public ar.edu.ajedrez.core.pieces.Piece movedCopy();
+  public boolean canMove(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position);
+  public boolean canAttack(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.board.Position);
+}
+
+Compiled from "PieceColor.java"
+public final class ar.edu.ajedrez.core.pieces.PieceColor extends java.lang.Enum<ar.edu.ajedrez.core.pieces.PieceColor> {
+  public static final ar.edu.ajedrez.core.pieces.PieceColor WHITE;
+  public static final ar.edu.ajedrez.core.pieces.PieceColor BLACK;
+  public static ar.edu.ajedrez.core.pieces.PieceColor[] values();
+  public static ar.edu.ajedrez.core.pieces.PieceColor valueOf(java.lang.String);
+  public ar.edu.ajedrez.core.pieces.PieceColor opposite();
+  public int direction();
+  public int homeRow();
+  public java.lang.String label();
+}
+
+Compiled from "PieceFactory.java"
+public class ar.edu.ajedrez.core.pieces.PieceFactory {
+  public ar.edu.ajedrez.core.pieces.PieceFactory();
+  public ar.edu.ajedrez.core.pieces.Piece create(ar.edu.ajedrez.core.pieces.PieceType, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "PieceType.java"
+public final class ar.edu.ajedrez.core.pieces.PieceType extends java.lang.Enum<ar.edu.ajedrez.core.pieces.PieceType> {
+  public static final ar.edu.ajedrez.core.pieces.PieceType KING;
+  public static final ar.edu.ajedrez.core.pieces.PieceType QUEEN;
+  public static final ar.edu.ajedrez.core.pieces.PieceType ROOK;
+  public static final ar.edu.ajedrez.core.pieces.PieceType BISHOP;
+  public static final ar.edu.ajedrez.core.pieces.PieceType KNIGHT;
+  public static final ar.edu.ajedrez.core.pieces.PieceType PAWN;
+  public static ar.edu.ajedrez.core.pieces.PieceType[] values();
+  public static ar.edu.ajedrez.core.pieces.PieceType valueOf(java.lang.String);
+  public java.lang.String getLabel();
+  public java.lang.Integer getPoints();
+}
+
+Compiled from "GameMode.java"
+public final class ar.edu.ajedrez.core.session.GameMode extends java.lang.Enum<ar.edu.ajedrez.core.session.GameMode> {
+  public static final ar.edu.ajedrez.core.session.GameMode TWO_PLAYERS;
+  public static final ar.edu.ajedrez.core.session.GameMode SOLO;
+  public static ar.edu.ajedrez.core.session.GameMode[] values();
+  public static ar.edu.ajedrez.core.session.GameMode valueOf(java.lang.String);
+}
+
+Compiled from "IGameRepository.java"
+public interface ar.edu.ajedrez.core.session.IGameRepository {
+  public abstract java.util.Optional<ar.edu.ajedrez.core.session.SavedMatch> load();
+  public abstract void save(ar.edu.ajedrez.core.session.SavedMatch);
+}
+
+Compiled from "IMatchService.java"
+public interface ar.edu.ajedrez.core.session.IMatchService {
+  public abstract ar.edu.ajedrez.core.game.IGameService getGame();
+  public abstract ar.edu.ajedrez.core.game.MoveResult newGame(ar.edu.ajedrez.core.session.GameMode, ar.edu.ajedrez.core.ai.Difficulty);
+  public abstract ar.edu.ajedrez.core.game.MoveResult move(ar.edu.ajedrez.core.game.Move);
+  public abstract ar.edu.ajedrez.core.game.MoveResult playAi();
+  public abstract ar.edu.ajedrez.core.game.MoveResult undo();
+  public abstract ar.edu.ajedrez.core.game.MoveResult redo();
+  public abstract ar.edu.ajedrez.core.game.MoveResult save();
+  public abstract boolean isAiTurn();
+  public abstract boolean isConfigured();
+  public abstract ar.edu.ajedrez.core.session.GameMode getMode();
+  public abstract ar.edu.ajedrez.core.ai.Difficulty getDifficulty();
+  public abstract long getElapsedMillis();
+  public abstract ar.edu.ajedrez.core.game.MoveResult presence(java.lang.String, boolean);
+  public abstract boolean isClockRunning();
+}
+
+Compiled from "MatchSession.java"
+public class ar.edu.ajedrez.core.session.MatchSession implements ar.edu.ajedrez.core.session.IMatchService {
+  public ar.edu.ajedrez.core.session.MatchSession(java.util.function.Supplier<ar.edu.ajedrez.core.game.IGameService>, ar.edu.ajedrez.core.session.IGameRepository, ar.edu.ajedrez.core.ai.IChessAi, java.time.Clock);
+  public ar.edu.ajedrez.core.session.SavedMatch snapshot();
+  public ar.edu.ajedrez.core.game.MoveResult newGame(ar.edu.ajedrez.core.session.GameMode, ar.edu.ajedrez.core.ai.Difficulty);
+  public ar.edu.ajedrez.core.game.MoveResult move(ar.edu.ajedrez.core.game.Move);
+  public ar.edu.ajedrez.core.game.MoveResult playAi();
+  public ar.edu.ajedrez.core.game.MoveResult undo();
+  public ar.edu.ajedrez.core.game.MoveResult redo();
+  public ar.edu.ajedrez.core.game.MoveResult save();
+  public ar.edu.ajedrez.core.game.IGameService getGame();
+  public boolean isAiTurn();
+  public boolean isConfigured();
+  public ar.edu.ajedrez.core.session.GameMode getMode();
+  public ar.edu.ajedrez.core.ai.Difficulty getDifficulty();
+  public long getElapsedMillis();
+  public boolean isClockRunning();
+  public ar.edu.ajedrez.core.game.MoveResult presence(java.lang.String, boolean);
+}
+
+Compiled from "PersistenceException.java"
+public class ar.edu.ajedrez.core.session.PersistenceException extends java.lang.RuntimeException {
+  public ar.edu.ajedrez.core.session.PersistenceException(java.lang.String, java.lang.Throwable);
+}
+
+Compiled from "SavedMatch.java"
+public final class ar.edu.ajedrez.core.session.SavedMatch {
+  public final java.util.List<ar.edu.ajedrez.core.game.Move> moves;
+  public final int cursor;
+  public final ar.edu.ajedrez.core.session.GameMode mode;
+  public final ar.edu.ajedrez.core.ai.Difficulty difficulty;
+  public final long startedAt;
+  public final long endedAt;
+  public final long elapsedMillis;
+  public final boolean configured;
+  public ar.edu.ajedrez.core.session.SavedMatch(java.util.List<ar.edu.ajedrez.core.game.Move>, int, ar.edu.ajedrez.core.session.GameMode, ar.edu.ajedrez.core.ai.Difficulty, long, long, boolean, long);
+}
+
+Compiled from "CheckDetector.java"
+public class ar.edu.ajedrez.core.validation.CheckDetector {
+  public ar.edu.ajedrez.core.validation.CheckDetector();
+  public boolean isAttacked(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.board.Position, ar.edu.ajedrez.core.pieces.PieceColor);
+  public boolean isInCheck(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "MoveValidator.java"
+public class ar.edu.ajedrez.core.validation.MoveValidator {
+  public ar.edu.ajedrez.core.validation.MoveValidator(ar.edu.ajedrez.core.validation.CheckDetector, ar.edu.ajedrez.core.pieces.PieceFactory);
+  public ar.edu.ajedrez.core.validation.ValidationResult validate(ar.edu.ajedrez.core.board.Board, ar.edu.ajedrez.core.game.Move, ar.edu.ajedrez.core.pieces.PieceColor);
+}
+
+Compiled from "ValidationResult.java"
+public final class ar.edu.ajedrez.core.validation.ValidationResult extends java.lang.Enum<ar.edu.ajedrez.core.validation.ValidationResult> {
+  public static final ar.edu.ajedrez.core.validation.ValidationResult VALID;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult OUTSIDE_BOARD;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult EMPTY_ORIGIN;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult WRONG_TURN;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult SAME_SQUARE;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult FRIENDLY_DESTINATION;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult KING_CAPTURE;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult ILLEGAL_MOVEMENT;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult INVALID_PROMOTION;
+  public static final ar.edu.ajedrez.core.validation.ValidationResult KING_EXPOSED;
+  public static ar.edu.ajedrez.core.validation.ValidationResult[] values();
+  public static ar.edu.ajedrez.core.validation.ValidationResult valueOf(java.lang.String);
+  public boolean isValid();
+}

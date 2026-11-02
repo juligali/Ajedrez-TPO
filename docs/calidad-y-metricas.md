@@ -1,12 +1,16 @@
 # Calidad y métricas de BLOCKMATE
 
-> Actualización de seguimiento: las etapas 5 y 6 ya incorporan mediciones, pruebas de UI/consola/HTTP, un simulacro automatizado de respaldo y documentos revisados. Los pendientes descritos en la campaña original se conservan como registro histórico; consultar el [estado vigente de incidencias](registro-incidencias.md) y el [cierre técnico](integridad-y-cierre.md). La revisión humana y el ensayo del grupo siguen pendientes.
+## Suite actual con Memento
+
+El 2/11/2026, `mvn -B -ntp clean test` aprobó **65 pruebas**, sin fallos, errores ni omisiones: las 62 existentes y tres BoardMementoTest. La [evidencia actual](evidencias/2026-11-02-memento/README.md) conserva seis informes y hashes de las fuentes de la copia de trabajo basada en `38f2635`. No se eliminaron pruebas anteriores. El indicador de éxito de esta ejecución es 65/65 = 100 %; los 13 grupos de reglas y diez métodos de recuperación históricos permanecen iguales y volvieron a aprobarse. No se ejecutaron de nuevo navegador ni profiler.
+
+## Campaña histórica del 31 de octubre
 
 Etapa 4, ejecutada el **31 de octubre de 2026** sobre el commit `83903e22eec288bd0823b7172d951b78610d9fdc` de `RAMA-VICTORIA`.
 
 **Resultado:** `mvn -B -ntp clean test` terminó con **62 pruebas aprobadas, 0 fallos, 0 errores y 0 omitidas**. Las fuentes y el POM utilizados coincidieron con los blobs de ese commit antes y después de ejecutar Maven. No se modificó el programa, las pruebas ni sus aserciones.
 
-Esta medición comprueba los escenarios Java existentes. No acredita por sí sola la interfaz, todas las posiciones posibles de ajedrez, la recuperación manual desde un respaldo ni el rendimiento de la presentación.
+Esta medición comprueba los escenarios Java existentes. No acredita por sí sola la interfaz, todas las posiciones posibles de ajedrez, la recuperación manual desde un respaldo ni el rendimiento en todos los equipos.
 
 ## Ejecución y evidencia
 
@@ -50,7 +54,7 @@ Las metas, responsables por rol y periodicidad siguientes son propuestas para qu
 
 **Meta:** vincular requisitos de reglas con pruebas concretas. **Pregunta:** ¿cuántos grupos del catálogo tienen todos sus escenarios asociados aprobados? **Fórmula:** grupos de reglas con todos sus escenarios aprobados / grupos comprometidos en el catálogo × 100. Un escenario omitido o fallido impide aprobar su grupo.
 
-**Fuente:** [matriz](matriz-requisitos-pruebas.md), catálogo L01–L13 y XML. **Responsable propuesto:** referente de núcleo y pruebas, con validación del revisor. **Objetivo:** 13/13 para este catálogo v1, sin reducir el denominador para ocultar pendientes. **Periodicidad:** al cambiar reglas o requisitos y antes de presentar. **Decisión asociada:** añadir o corregir escenarios ante un requisito sin evidencia.
+**Fuente:** [matriz](matriz-requisitos-pruebas.md), catálogo L01–L13 y XML. **Responsable propuesto:** referente de núcleo y pruebas, con validación del revisor. **Objetivo:** 13/13 para este catálogo v1, sin reducir el denominador para ocultar pendientes. **Periodicidad:** al cambiar reglas o requisitos y antes de entregar. **Decisión asociada:** añadir o corregir escenarios ante un requisito sin evidencia.
 
 El catálogo fue explicitado en esta etapa y necesita validación grupal; no se presenta como una rúbrica ya acordada con el docente. El 100 % no significa cobertura de líneas ni cumplimiento de todos los requisitos: UI, documentación y pruebas manuales aparecen aparte.
 
@@ -60,13 +64,13 @@ El catálogo fue explicitado en esta etapa y necesita validación grupal; no se 
 
 **Fuente:** los diez métodos listados en la matriz y en [catalogo-indicadores.json](evidencias/2026-10-31-etapa4-83903e2/catalogo-indicadores.json). **Responsable propuesto:** referente de persistencia y respaldo. **Objetivo:** 10/10 y 0 omitidos. **Periodicidad:** al cambiar guardado o sesión y antes de entregar. **Decisión asociada:** no aceptar una regresión de recuperación; investigar antes de integrar.
 
-Siete escenarios usan dobles en memoria y tres usan el adaptador de archivo con directorios temporales. No se ejecutó el simulacro de copia y restauración manual de la etapa 3; ese resultado sigue **sin medición**. No se incorpora artificialmente al denominador de esta suite.
+Siete escenarios usan dobles en memoria y tres el adaptador de archivo con directorios temporales. El simulacro automatizado posterior de copia y restauración se documenta en [integridad](integridad-y-cierre.md); no se suma al denominador de diez métodos ni acredita un procedimiento manual del grupo.
 
 ### KRI Defectos críticos pendientes
 
-**Meta:** evitar presentar una versión con defectos críticos conocidos. **Pregunta:** ¿cuántos defectos críticos confirmados siguen abiertos? **Fórmula:** conteo de entradas abiertas clasificadas como críticas en el registro.
+**Meta:** evitar entregar una versión con defectos críticos conocidos. **Pregunta:** ¿cuántos defectos críticos confirmados siguen abiertos? **Fórmula:** conteo de entradas abiertas clasificadas como críticas en el registro.
 
-**Fuente:** [registro de incidencias](registro-incidencias.md), resultado de la suite y consulta de issues abiertas de GitHub del 31/10/2026, que devolvió 0 issues abiertas. **Responsable propuesto:** coordinación de entrega con autor y revisor. **Objetivo:** 0 críticos abiertos. **Periodicidad:** ante una incidencia y antes de integrar o presentar. **Decisión asociada:** no liberar con un crítico abierto; acordar tratamiento y repetir la verificación afectada.
+**Fuente:** [registro de incidencias](registro-incidencias.md), resultado de la suite y consulta de issues abiertas de GitHub del 31/10/2026, que devolvió 0 issues abiertas. **Responsable propuesto:** coordinación de entrega con autor y revisor. **Objetivo:** 0 críticos abiertos. **Periodicidad:** ante una incidencia y antes de integrar o entregar. **Decisión asociada:** no liberar con un crítico abierto; acordar tratamiento y repetir la verificación afectada.
 
 No se deduce la inexistencia de errores de un resultado verde o de una lista vacía de issues. La evaluación completa del producto sigue pendiente de los escenarios no ejecutados y de revisión humana.
 
@@ -78,13 +82,12 @@ No se midió cobertura de código ni se ejecutó mutation testing. Un grupo de r
 
 Los tiempos por nivel que imprime FeatureTest son observaciones de una sola ejecución funcional. No se usan como garantía, KPI de rendimiento ni sustituto de la etapa 5.
 
-## Pendientes para la entrega
+## Comprobaciones complementarias y estado vigente
 
-- Revisión por otro integrante y confirmación de catálogo, metas y responsables.
-- Comprobación actual de UI, teclado, pantallas de 390 px, tutorial y flujos HTTP/consola.
-- Simulacro de respaldo manual sobre copias aisladas.
-- Mediciones reproducibles de CPU y memoria en la etapa 5.
-- Revisión integral de Word, presentación y equipo de demostración.
+La campaña del 31/10/2026 comprobó además UI, teclado, 390 px, tutorial, HTTP, consola y restauración automatizada. Sus [registros](evidencias/2026-10-31-etapas5-6-d37cbe4/README.md) complementan JUnit y no aumentan el conteo de 62. La medición de CPU y memoria se describe en [rendimiento](rendimiento.md).
 
-La etapa 4 aporta ejecución y métricas trazables del alcance Java. Los pendientes están registrados como brechas de verificación, no como pruebas aprobadas ni defectos confirmados.
+El 2/11/2026 se repitió `mvn -B -ntp test` después de integrar VICTORIA en main (`38f2635`): 62 aprobadas, sin fallos, errores u omisiones. Los informes se generaron en `target/surefire-reports`; no se incorporó una nueva carpeta de evidencia ni se reemplazó la campaña limpia del 31/10.
 
+Para repetir la suite, ejecutar `mvn -B -ntp clean test` desde la raíz con JDK 21 y Maven. La primera ejecución puede descargar dependencias. Conservar los nuevos resultados con su fecha, entorno y commit. Los scripts de navegador deben apuntar a una partida de prueba separada, como se indica en [rendimiento](rendimiento.md).
+
+La única lista de pendientes y acuerdos por registrar está en [integridad y estado de revisión](integridad-y-cierre.md).

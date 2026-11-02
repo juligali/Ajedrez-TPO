@@ -1,14 +1,12 @@
 # Matriz de requisitos y pruebas
 
-> Actualización de seguimiento: las etapas 5 y 6 ya incorporan mediciones, pruebas de UI/consola/HTTP, un simulacro automatizado de respaldo y documentos revisados. Los pendientes descritos en la campaña original se conservan como registro histórico; consultar el [estado vigente de incidencias](registro-incidencias.md) y el [cierre técnico](integridad-y-cierre.md). La revisión humana y el ensayo del grupo siguen pendientes.
-
-Medición del 31/10/2026 sobre `83903e22eec288bd0823b7172d951b78610d9fdc`. Fuente de requisitos: [requisitos.md](requisitos.md). Resultados: [evidencia de la etapa 4](evidencias/2026-10-31-etapa4-83903e2/README.md).
+Suite Java del 31/10/2026 sobre `83903e22eec288bd0823b7172d951b78610d9fdc`. Fuente de requisitos: [requisitos.md](requisitos.md). Resultados: [evidencia de la etapa 4](evidencias/2026-10-31-etapa4-83903e2/README.md).
 
 **Aprobado en el alcance** significa que los escenarios nombrados pasaron; no demuestra todos los comportamientos posibles. **Parcial** indica que hay una comprobación Java pero falta verificar otra parte del requisito. **No ejecutado** no significa fallo.
 
 ## Reglas del catálogo operativo v1
 
-El catálogo propuesto consta de 13 grupos, que permanecen visibles en el denominador. Cada grupo se aprueba solo si todos los métodos asociados fueron ejecutados y aprobados. El grupo debe validar que este catálogo representa las reglas comprometidas para la presentación.
+El catálogo propuesto consta de 13 grupos, que permanecen visibles en el denominador. Cada grupo se aprueba solo si todos los métodos asociados fueron ejecutados y aprobados. El catálogo está pendiente de aceptación grupal; no equivale a una rúbrica docente.
 
 | ID | Regla | Requisito | Métodos ejecutados | Resultado |
 |---|---|---|---|---|
@@ -28,40 +26,46 @@ El catálogo propuesto consta de 13 grupos, que permanecen visibles en el denomi
 
 Las pruebas están en [ChessTest](../src/test/java/ar/edu/ajedrez/ChessTest.java), [FeatureTest](../src/test/java/ar/edu/ajedrez/FeatureTest.java) y [ValidationTest](../src/test/java/ar/edu/ajedrez/ValidationTest.java). La relación máquina-legible se conserva en [catalogo-indicadores.json](evidencias/2026-10-31-etapa4-83903e2/catalogo-indicadores.json).
 
-## Requisitos fuera del porcentaje de reglas
+## Requisitos de interfaz, sesión y documentación
 
-| Requisito | Evidencia de esta campaña | Estado y límite |
+Estado consolidado con la suite de Memento del 2/11/2026 y las campañas anteriores. Los 62 métodos anteriores y los tres nuevos pasaron en la copia de trabajo; las verificaciones web conservan su fecha del 31/10 y no fueron repetidas tras este cambio. “Parcial” conserva los límites del escenario y no significa fallo.
+
+| Requisito | Evidencia | Estado y límite |
 |---|---|---|
-| RF07 Personajes de referencia | No se ejecutó navegador | No ejecutado; requiere inspección de los seis personajes y bandos |
-| RF08 Turno, historial, capturas y destinos visibles | ChessTest scenario10/12/13/31 comprueba datos del núcleo | Parcial; presentación visual pendiente |
-| RF09 Nueva partida con confirmación | FeatureTest scenario15 y ActivityClockTest newGameResetsTimeAndKeepsTheVisibleView | Parcial; reinicio de sesión aprobado, diálogo de confirmación no ejecutado |
-| RF10 Consola alternativa | Se compiló ConsoleUI con el proyecto | Parcial; no se ejecutó un flujo interactivo de consola |
-| RF11 Motivo semántico de rechazo | Los tres primeros métodos de ValidationTest | Aprobado en escenarios Java; incluido en L03/L04 |
-| RF12 Traducción del rechazo en web y consola | ValidationTest adaptersTranslateEveryReasonAndKeepExistingSuccessMessages | Parcial; traductor probado, visualización real en ambos adaptadores pendiente |
-| RNF01 Estabilidad de reglas y sesión | 62 métodos aprobados | Aprobado en escenarios de la suite, no garantía de ausencia de regresiones fuera de ellos |
-| RNF02 Trayectorias inválidas terminan | Ambos métodos de BoardPathTest | Aprobado en escenarios ejecutados |
-| DOC01 Correspondencia UML y programa | Evidencia documental anterior del 31/10; no hubo cambios Java desde esa revisión | Verificación histórica reutilizable sobre el mismo código; no se cuenta como test JUnit |
-| DOC02 Decisiones e informe | Documentos de etapas 1–3 disponibles | Revisión humana integral pendiente; fuera de esta campaña de tests |
-| Accesibilidad y ancho 390 px | No se ejecutaron verify-ui ni verify-features | No ejecutado |
-| Uso offline y portabilidad de ejecución | Maven pudo compilar y probar en este entorno | Parcial; no se ensayó el juego sin conexión en el equipo de presentación |
-| Rendimiento percibido | La suite imprime tiempos funcionales puntuales | Sin medición de rendimiento reproducible; etapa 5 |
+| RF07 Personajes | Capturas y tutorial automatizado de seis piezas | Parcial: no consta inspección individual de cada personaje y bando |
+| RF08 Información visible | ChessTest scenario10/12/13/31 y flujos web | Comprobado en escenarios; no es cobertura visual exhaustiva |
+| RF09 Nueva partida | FeatureTest scenario15, ActivityClockTest y creación desde UI | Reinicio comprobado; no se declara cobertura de todas las cancelaciones del diálogo |
+| RF10 Consola | console-session.txt: mover, deshacer, rehacer, salir | Flujo básico comprobado |
+| RF11 Rechazos semánticos | Primeros tres métodos de ValidationTest; L03/L04 | Aprobado en escenarios Java |
+| RF12 Traducción | ValidationTest adaptersTranslateEveryReasonAndKeepExistingSuccessMessages | Traductor probado; no se verificó cada mensaje en ambos adaptadores |
+| RF13 Puntaje | FeatureTest scenario1/2 y flujo web | Aprobado en escenarios de captura y undo/redo |
+| RF14 Ganador | FeatureTest scenario3/4/5 y corona web | Mate y reversión comprobados en posiciones concretas |
+| RF15 Reloj activo | FeatureTest scenario13 y nueve ActivityClockTest | Sesión comprobada; reloj finalizado en web. No se atribuye a esta campaña una prueba exhaustiva de eventos reales de visibilidad |
+| RF16 Persistencia | Diez métodos del KPI y backup-result.json | Recuperación automatizada comprobada; procedimiento manual no acreditado |
+| RF17 Tutorial | verify-features.cjs y ui-result.txt | Seis piezas y flujos automatizados comprobados |
+| RF18 Modos | FeatureTest scenario8/9 y undo/redo solo en web | Separación de modos y flujos comprobados |
+| RF19 Dificultad | FeatureTest scenario6/7 y cinco niveles en web | Legalidad, no fuerza ajedrecística ni garantía general de latencia |
+| RNF01 Estabilidad | 65 métodos JUnit aprobados | Escenarios de la suite; no garantía de ausencia de regresiones |
+| RNF02 Trayectorias | Ambos métodos de BoardPathTest | Aprobado en escenarios ejecutados |
+| RNF03 Dependencias | Fronteras y colaboradores descritos en arquitectura | Contraste estructural; no es una métrica de cobertura |
+| RNF04 Uso local | Ejecución Java/web en campañas registradas | No se ensayó arranque offline en todos los equipos |
+| RNF05 Teclado | Enter sobre e2/e4 en browser-results.json | Parcial; no es evaluación integral de accesibilidad |
+| RNF06 Adaptabilidad | verify-features.cjs y captura de 390 × 844 | Escenario móvil comprobado; otros tamaños/navegadores no garantizados |
+| RNF07 Rendimiento | CSV, JFR y DevTools | Medido en un equipo; ver metodología y límites |
+| DOC01 UML | API compilada: 38 tipos y 196 miembros; fuente y PDF actualizados con Memento | Board.Memento es un tipo anidado, no un archivo superior nuevo |
+| DOC02 Documentación | Informe y documentación técnica | Contenido actualizado; revisión independiente pendiente |
 
-## Funcionalidades agregadas
+Fuentes: [campaña Java](evidencias/2026-10-31-etapa4-83903e2/README.md), [campaña web y recuperación](evidencias/2026-10-31-etapas5-6-d37cbe4/README.md), [UML](evidencias/2026-10-31-revision-uml.md) y [rendimiento](rendimiento.md). Los pendientes se mantienen en [integridad](integridad-y-cierre.md).
 
-Los identificadores A01–A10 son auxiliares de esta matriz, no nuevos requisitos del docente.
+## Contrato de Memento y RF06
 
-| ID | Funcionalidad existente | Métodos o evidencia | Estado y límite |
-|---|---|---|---|
-| A01 | Puntaje y valores de piezas | FeatureTest scenario1/2 | Aprobado en el núcleo |
-| A02 | Corona solo para el ganador por mate | FeatureTest scenario3/4 comprueba ganador y reversión | Parcial; dibujo de corona pendiente de navegador |
-| A03 | Cronómetro de tiempo activo | FeatureTest scenario13 y los nueve métodos de ActivityClockTest | Aprobado en sesión; eventos reales de visibilidad del navegador pendientes |
-| A04 | Guardado, recuperación e historial futuro | FeatureTest scenario10/11/12/14/16; ActivityClockTest fileFormatPreservesAccumulatedTime y checkpointSurvivesAbruptRestartWithoutAClosingEvent | Aprobado en escenarios automatizados; respaldo manual no ejecutado |
-| A05 | Tutorial interactivo | Sin ejecución de navegador | No ejecutado |
-| A06 | Uno o dos jugadores | FeatureTest scenario8/9 | Aprobado en sesión; selector visual pendiente |
-| A07 | Cinco niveles de IA | FeatureTest scenario6/7 | Legalidad, no mutación y mate sencillo aprobados; no mide fuerza ajedrecística ni garantiza tiempo |
-| A08 | Mate con una sola pieza atacante cuando es legal | FeatureTest scenario3/4/5 | Aprobado en posiciones del test; conserva material insuficiente |
-| A09 | Destinos resaltados y undo/redo | ChessTest scenario10/26/27 y FeatureTest scenario9 | Parcial; reglas comprobadas y resaltado visual pendiente |
-| A10 | Informe Word | Artefacto existente en docs | Revisión documental integral pendiente |
+| Método nuevo | Comprobación | Resultado 2/11 |
+|---|---|---|
+| BoardMementoTest#restoresPiecesMovedFlagsAndRuleMetadata | Piezas, marcas, casillas vacías, al paso y contador | Aprobado |
+| BoardMementoTest#independentSnapshotsCanBeRestoredRepeatedly | Capturas independientes, sin alias de matriz y reutilizables | Aprobado |
+| BoardMementoTest#nullSnapshotIsRejectedBeforeChangingTheBoard | Rechazo antes de mutar | Aprobado |
+
+Los escenarios L07–L10 de Command y jugadas especiales también pasaron con Memento. Los diez métodos del KPI histórico de recuperación se mantienen sin inflar su denominador con estas pruebas nuevas. [Evidencia actual](evidencias/2026-11-02-memento/README.md).
 
 ## Diez escenarios del KPI de recuperación
 
@@ -79,4 +83,3 @@ Los identificadores A01–A10 son auxiliares de esta matriz, no nuevos requisito
 | ActivityClockTest#migratesLegacySaveOnlyUntilItsLastWrite | Migración del formato anterior y nuevo guardado | Archivo en @TempDir | Aprobado |
 
 El catálogo tiene 10 métodos distintos. No son diez recuperaciones de una partida personal ni diez ensayos de backup. Un mismo método puede respaldar varios requisitos, pero se cuenta una sola vez dentro de este KPI.
-

@@ -1,10 +1,10 @@
 # Revisión de patrones de BLOCKMATE
 
-Revisión técnica del 31 de octubre de 2026 sobre `d90061e81c85b010f1a691bd7797cd20f55fc16d`. Rama: `RAMA-VICTORIA`. Presentación: 6 de noviembre de 2026.
+Diseño del código integrado en main. El contraste UML del 31/10/2026 se conserva como [evidencia histórica](evidencias/2026-10-31-revision-uml.md).
 
 ## Resultado de la revisión
 
-Strategy, Command y Simple Factory ya tienen usos concretos en el código. Se propone conservarlos. No se identifica una necesidad actual que justifique agregar Decorator, Proxy, State u Observer para cumplir una cantidad de patrones. La decisión debe revisarse si cambia el alcance o aparece evidencia de un problema.
+Strategy, Command y Simple Factory se conservan. Memento se incorpora el 2/11/2026 para encapsular el estado que Command ya necesitaba al deshacer. No se identifica una necesidad actual que justifique agregar Decorator, Proxy, State u Observer para cumplir una cantidad de patrones. La decisión debe revisarse si cambia el alcance o aparece evidencia de un problema.
 
 La arquitectura de puertos y adaptadores organiza dependencias. La inyección por constructor conecta colaboradores. Son conceptos distintos de los tres patrones de diseño revisados.
 
@@ -24,17 +24,31 @@ La arquitectura de puertos y adaptadores organiza dependencias. La inyección po
 
 ## Command para ejecutar y deshacer
 
-**Problema:** restaurar exactamente una jugada, incluidas capturas y reglas especiales. [MoveCommand](../src/main/java/ar/edu/ajedrez/core/game/MoveCommand.java) implementa [ICommand](../src/main/java/ar/edu/ajedrez/core/game/ICommand.java); conserva una copia del tablero anterior. [Game](../src/main/java/ar/edu/ajedrez/core/game/Game.java) administra el historial y la pila de rehacer.
+**Problema:** restaurar exactamente una jugada, incluidas capturas y reglas especiales. [MoveCommand](../src/main/java/ar/edu/ajedrez/core/game/MoveCommand.java) implementa [ICommand](../src/main/java/ar/edu/ajedrez/core/game/ICommand.java); conserva un Board.Memento opaco del tablero anterior. [Game](../src/main/java/ar/edu/ajedrez/core/game/Game.java) administra el historial y la pila de rehacer.
 
 **Alternativa sencilla:** reescribir la lógica inversa de cada movimiento dentro de Game. Aumentaría la duplicación entre capturas, promoción, enroque y al paso.
 
 **Beneficio:** ejecutar y deshacer quedan encapsulados. Rehacer reutiliza `execute`. Move representa la solicitud de datos; el patrón está en MoveCommand.
 
-**Costo y límite:** cada comando conserva una copia del tablero y metadatos. El historial crece con el número de jugadas; no consume memoria constante. Para 64 casillas resulta sencillo de comprender.
+**Costo y límite:** cada comando conserva un memento con las casillas y metadatos del tablero. El historial crece con el número de jugadas; no consume memoria constante. Para 64 casillas resulta sencillo de comprender.
 
 **Decisión:** conservar. Evaluar almacenar diferencias solo si mediciones y un caso de uso justifican ese cambio.
 
 **Pruebas existentes:** ChessTest `scenario26` verifica execute/undo y `scenario27` la invalidación de rehacer; los escenarios 18 a 25 cubren enroque, al paso y promoción. [FeatureTest](../src/test/java/ar/edu/ajedrez/FeatureTest.java) `scenario2` comprueba puntos tras undo/redo.
+
+## Memento para conservar el estado previo
+
+**Problema:** antes MoveCommand retenía otro Board mutable como estado anterior. El comando dependía de una representación que también ofrecía operaciones de juego. El estado de undo debe conservarse sin que el historial pueda modificarlo ni leer sus detalles.
+
+**Aplicación:** Board es el originador, Board.Memento el estado encapsulado y MoveCommand el custodio. `createMemento()` y `restoreMemento(Memento)` pertenecen a Board. La clase anidada final tiene constructor/campos privados y no expone getters, setters ni arrays.
+
+**Alternativa sencilla:** mantener Board.copy()/restore(Board). Ya resolvía la restauración, pero entregaba un objeto mutable al custodio. Memento hace explícita la frontera de acceso sin cambiar las reglas.
+
+**Beneficio:** Board controla qué estado capturar y restaurar: piezas y marcas de movimiento, casilla de al paso y contador. El comando solo guarda y devuelve el token. La copia es independiente y se puede restaurar varias veces.
+
+**Costo y límite:** suma un tipo anidado y dos métodos. Sigue guardando O(n) referencias por jugada y O(m × n) en el historial; no es una optimización de memoria. Piece y Position son inmutables; sus referencias se comparten. No incluye turno, pilas, puntos de sesión ni disco, que pertenecen a otras responsabilidades.
+
+**Pruebas:** BoardMementoTest verifica contenido completo, independencia/reutilización y rechazo de null sin mutación. Las pruebas existentes de Command y reglas especiales vuelven a ejecutarse. [Resultados y API](evidencias/2026-11-02-memento/README.md).
 
 ## Simple Factory para crear piezas
 
@@ -60,34 +74,15 @@ Las piezas y QueenMovement utilizan composición. Estas decisiones favorecen pru
 
 | Opción | Problema que podría resolver | Alternativa sencilla | Beneficio potencial | Costo | Decisión propuesta |
 |---|---|---|---|---|---|
-| Decorator sobre IChessAi | Medir cada respuesta sin mezclar métricas con minimax | Medir llamadas en un escenario de rendimiento aislado | Instrumentación reutilizable | Clase adicional, destino de métricas y pruebas del contrato | Diferir hasta que la etapa 5 demuestre necesidad de instrumentación permanente |
+| Decorator sobre IChessAi | Medir cada respuesta sin mezclar métricas con minimax | Medir llamadas en un escenario de rendimiento aislado | Instrumentación reutilizable | Clase adicional, destino de métricas y pruebas del contrato | No agregar: la campaña de rendimiento se resolvió con instrumentos aislados; reevaluar si se requieren métricas permanentes |
 | Proxy sobre IChessAi | Controlar acceso a un recurso o integración externa | Llamada al puerto local actual | Controlar un recurso real | Indirección y gestión de fallos | No agregar: no existe esa integración ni control de acceso requerido |
 | State | Gestionar estados con comportamientos y transiciones complejas | Estado calculado por Game y validaciones actuales | Aislar transiciones si crece el flujo | Más clases y coordinación | No agregar: los estados actuales no justifican ese costo |
 | Observer | Notificar a varios suscriptores independientes | Actualizar la interfaz con la respuesta HTTP | Desacoplar consumidores de eventos | Suscripciones, orden y liberación de referencias | No agregar: el núcleo no necesita un sistema de suscripciones actual |
 
-Si el grupo acepta un patrón nuevo, debe registrar el requisito concreto, implementar y probar su comportamiento y actualizar UML e informe. Esta revisión no incorpora ninguno.
+Si el grupo acepta un patrón nuevo, debe registrar el requisito concreto, implementar y probar su comportamiento y actualizar UML e informe. No se incorporan Decorator, Proxy, State u Observer; Memento se aplica al undo existente.
 
-## Correspondencia entre UML y programa
+## Verificación
 
-El docente pidió que los diagramas coincidan con las clases. Se contrastó [el UML](UML-Ajedrez-TPO.puml) con los **37 tipos públicos de producción** y **194 miembros públicos declarados o constructores implícitos**, obtenidos al compilar la base y consultar `javap -public`. Se excluyen métodos heredados, miembros privados y `values/valueOf` generados para enums.
+Los métodos citados forman parte de la suite actual de 65 pruebas. Los resultados de ejecución se registran en [calidad](calidad-y-metricas.md), sin duplicarlos como una campaña nueva de revisión de patrones. El contraste actual de 38 tipos y 196 miembros públicos está en la [evidencia de Memento](evidencias/2026-11-02-memento/README.md). El registro UML del 31/10 conserva la API anterior.
 
-Las diferencias detectadas en la versión de GitHub eran:
-
-- IMatchService y MatchSession no mostraban `presence(String, boolean)` ni `isClockRunning()`.
-- SavedMatch no mostraba `elapsedMillis` y su constructor todavía tenía siete parámetros, en lugar de ocho.
-- Se agregó una aclaración sobre `canAttack` por defecto y su redefinición en PawnMovement.
-
-Se corrigieron esas declaraciones y se regeneró el [PDF](UML-Ajedrez-TPO.pdf) desde la misma fuente, manteniendo seis vistas. Las relaciones principales se contrastaron con las dependencias del código. Los nodos sin miembros en una vista son referencias a tipos desarrollados en otra vista o tipos del JDK.
-
-## Verificación y límites
-
-- Código de producción compilado en una carpeta temporal con JDK 21.0.6 y codificación UTF-8.
-- API pública contrastada con `javap -public`: 37 tipos y 194 miembros; ninguna declaración pendiente tras la corrección.
-- Fuente renderizada con PlantUML 1.2026.9; PDF de seis páginas revisado visualmente.
-- No se modificó código de producción ni tests.
-- Se localizaron las pruebas citadas, pero no se ejecutó Maven en esta revisión. Los 62 métodos de prueba existentes no se presentan como 62 pruebas aprobadas hoy.
-- No se hicieron mediciones de rendimiento ni revisión nueva del navegador.
-- La correspondencia revisada alcanza el archivo PlantUML y su PDF. Revisar cualquier diagrama reproducido dentro del informe Word o las diapositivas antes de la presentación.
-- La revisión por otro integrante y la aceptación grupal de las decisiones siguen pendientes; ver [alcance y criterios](alcance-y-criterios.md).
-
-Para repetir el contraste sobre otra versión: registrar el nuevo commit, compilar sus fuentes, comparar las declaraciones públicas, revisar relaciones, renderizar la fuente actualizada y comprobar cada página del PDF. Conservar los resultados de ejecuciones anteriores identificados por su propia fecha y commit.
+El [estado de revisión](integridad-y-cierre.md) identifica los acuerdos del grupo aún no registrados. Si se incorpora un patrón, registrar el requisito, probar su comportamiento y actualizar UML e informe.
